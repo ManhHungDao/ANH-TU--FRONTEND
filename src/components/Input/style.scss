@@ -1,0 +1,61 @@
+.react-select-container {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  position: relative;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  vertical-align: top;
+  min-width: 100%;
+  .css-yk16xz-control {
+    background-color: transparent;
+  }
+  input {
+    font: inherit;
+    letter-spacing: inherit;
+    color: currentColor;
+    padding: 4px 0 5px;
+    border: 0;
+    box-sizing: content-box;
+    background: none;
+    height: 1.4375em;
+    margin: 0;
+    -webkit-tap-highlight-color: transparent;
+    display: block;
+    min-width: 0;
+    width: 100%;
+    -webkit-animation-name: mui-auto-fill-cancel;
+    animation-name: mui-auto-fill-cancel;
+    -webkit-animation-duration: 10ms;
+    animation-duration: 10ms;
+  }
+  .css-g1d714-ValueContainer {
+    padding: 10.5px 14px !important;
+  }
+  .css-1wa3eu0-placeholder {
+    font-family: "Source Sans Pro", sans-serif !important;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.4375em;
+    box-sizing: border-box;
+  }
+}
+
+.select-error {
+  .css-yk16xz-control {
+    border-color: #dc3545;
+  }
+  .css-1wa3eu0-placeholder {
+    color: #dc3545;
+    font-weight: 400;
+  }
+  input:focus .css-yk16xz-control {
+    border: 2px solid #dc3545 !important;
+  }
+}

@@ -1,0 +1,13 @@
+.detail-doctor {
+  .detail {
+    h2,
+    h3,
+    h4 {
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .table {
+      width: fit-content !important;
+    }
+  }
+}
