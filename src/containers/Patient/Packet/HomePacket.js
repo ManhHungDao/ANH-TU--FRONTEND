@@ -1,14 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import {
-  Stack,
-  Typography,
-  Box,
-  IconButton,
-  Button,
-  Container,
-} from "@mui/material";
+import { Stack, Box, IconButton, Button, Container } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 import * as actions from "../../../store/actions";
 import InputLabel from "@mui/material/InputLabel";
@@ -17,8 +10,6 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import HomeHeader from "../../HomePage/Section/Header";
 import bgpacket from "../../../assets/bg-packet.jpg";
-import useIsTablet from "../../../components/useScreen/useIsTablet";
-import useIsMobile from "../../../components/useScreen/useIsMobile";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputAdornment from "@mui/material/InputAdornment";
 import CachedIcon from "@mui/icons-material/Cached";
@@ -41,7 +32,7 @@ const HomePacket = ({
   const [typePackets, setTypePackets] = useState("");
   const [filterClinic, setFilterClinic] = useState("");
   const [filterPacker, setFilterPacker] = useState("");
-  const [size, setSize] = useState(8);
+  const [size, setSize] = useState(24);
   const [page, setPage] = useState(1);
   const [countItem, setCountItem] = useState(0);
 
@@ -132,42 +123,25 @@ const HomePacket = ({
     fetchDataPacket(newPage, size, search, clinicId, type);
   };
 
-  const styles = {
-    backgroundImage: `url(${bgpacket})`,
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center center",
-  };
-
   return (
     <>
       <HomeHeader />
-      <Stack style={styles}>
+      <Stack>
         <div
-          className="detail-handbook-opacity d-flex flex-column justify-content-center align-items-center"
+          className="d-flex flex-column justify-content-center align-items-center"
           style={{
-            height: 500,
-            position: "relative",
+            height: 200,
+            marginTop: "30px",
           }}
         >
-          <Typography
-            variant="h4"
-            sx={{
-              color: "rgb(255, 255, 255)",
-              textShadow: `3px 4px 7px rgba(81,67,21,0.8)`,
-            }}
-          >
-            <b>QUẢN LÝ FILE</b>
-          </Typography>
           <Box
             sx={{
-              bgcolor: "#ffeb3b",
+              bgcolor: "#64b9e5",
               height: "fit-content",
               width: "50%",
-              boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px`,
-              position: "absolute",
-              top: 410,
+              // boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px`,
               padding: "20px 30px",
+              borderRadius: 2,
             }}
           >
             <div className="mb-3 d-flex align-items-center">
@@ -184,7 +158,7 @@ const HomePacket = ({
                     bgcolor: "#fff",
                     borderRadius: 2,
                   }}
-                  placeholder="TÌm kiếm tên gói khám"
+                  placeholder="TÌm kiếm theo từ khóa"
                   onChange={(e) => setSearch(e.target.value)}
                   value={search}
                   endAdornment={
@@ -221,12 +195,12 @@ const HomePacket = ({
                 }}
                 size="small"
               >
-                <InputLabel id="demo-select-small">Loại gói khám</InputLabel>
+                <InputLabel id="demo-select-small">Loại án</InputLabel>
                 <Select
                   labelId="demo-select-small"
                   id="demo-select-small"
                   value={filterPacker}
-                  label="Loại gói khám"
+                  label="Loại án"
                   onChange={(e) => handleChange(e, "packet")}
                 >
                   {typePackets &&
@@ -242,12 +216,12 @@ const HomePacket = ({
                 sx={{ minWidth: 160, bgcolor: "#fff", borderRadius: 2 }}
                 size="small"
               >
-                <InputLabel id="demo-select-small">Phòng khám</InputLabel>
+                <InputLabel id="demo-select-small">Ngày tháng</InputLabel>
                 <Select
                   labelId="demo-select-small"
                   id="demo-select-small"
                   value={filterClinic}
-                  label="Phòng khám"
+                  label="Ngày tháng"
                   onChange={(e) => handleChange(e, "clinic")}
                 ></Select>
               </FormControl>
@@ -263,47 +237,38 @@ const HomePacket = ({
           </Box>
         </div>
       </Stack>
-      <Box
-        sx={{
-          mt: { xs: 20, sm: 20, md: 11 },
-        }}
-      >
-        <Container>
-          <div
-            className="section-data homepacket__packet"
-            style={{ border: "none", padding: 0, marginBottom: "15px" }}
-          >
-            <div className="container__body mt-5">
-              {packets &&
-                packets.length > 0 &&
-                packets.map((e, index) => (
-                  <div
-                    className="container__body--item"
-                    onClick={() => handleClickDetailPacket(e.id)}
-                  >
-                    <img src={e.image} alt={e.name} />
-                    <div className="container__body--item--title">{e.name}</div>
-                    <div className="container__body--item--price">
-                      <span>Giá:</span> <span>{e.price}</span>
-                    </div>
-                  </div>
-                ))}
-            </div>
-            <Stack mt={3}>
-              {countItem > size && (
-                <span className="d-flex justify-content-center">
-                  <Pagination
-                    count={Math.ceil(countItem / size)}
-                    color="primary"
-                    onChange={handleChangePage}
-                    page={page}
-                  />
-                </span>
-              )}
-            </Stack>
+      <Container>
+        <div
+          className="section-data homepacket__packet"
+          style={{ border: "none", padding: 0, marginBottom: "15px" }}
+        >
+          <div className="container__body">
+            {packets &&
+              packets.length > 0 &&
+              packets.map((e, index) => (
+                <div
+                  className="container__body--item"
+                  onClick={() => handleClickDetailPacket(e.id)}
+                >
+                  <img src={e.image} alt={e.name} />
+                  <div className="container__body--item--title">{e.name}</div>
+                </div>
+              ))}
           </div>
-        </Container>
-      </Box>
+          <Stack mt={3}>
+            {countItem > size && (
+              <span className="d-flex justify-content-center">
+                <Pagination
+                  count={Math.ceil(countItem / size)}
+                  color="primary"
+                  onChange={handleChangePage}
+                  page={page}
+                />
+              </span>
+            )}
+          </Stack>
+        </div>
+      </Container>
       <Footer />
     </>
   );
