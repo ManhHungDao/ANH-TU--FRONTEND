@@ -21,8 +21,6 @@ import {
   DoctorProfile,
 } from "./section/DetailProfile";
 import dayjs from "dayjs";
-import { emailCancel } from "../../../data/emailCancel";
-import { emailDesciption } from "../../../data/emailDescription";
 
 const mailDrescription = `<figure class="table" style="width:98.65%;"><table class="ck-table-resized"><colgroup><col style="width:38.11%;"><col style="width:12.08%;"><col style="width:49.81%;"></colgroup><tbody><tr><td>Tên thuốc</td><td>Số lượng</td><td>Liều dùng</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
 <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -161,56 +159,8 @@ const DetailSchedule = ({
       packetId: data?.packet?.id ? data.packet.id : null,
     };
     updateStatusSchedule(dataSend);
-
-    if (status[0] === "Đã hủy" && !_.isElement(patient)) {
-      const dataEmail = dataSentEmail();
-      const emailCancelHtml = emailCancel(patient.name, dataEmail);
-      const dataSendMail = {
-        to: patient.email,
-        subject: "Thông báo hủy lịch khám",
-        html: emailCancelHtml,
-      };
-      sentMail(dataSendMail);
-    }
   };
-  const handleSendMail = () => {
-    const errors = checkValidate();
-    const checkValidInPut = isValid(errors);
-    if (!checkValidInPut) {
-      setErrors(errors);
-      return;
-    }
-    const dataEmail = dataSentEmail();
-    const emailDescriptionHTML = emailDesciption(
-      patient.name,
-      dataEmail,
-      detailPrescription,
-      result
-    );
-    const dataSentMail = {
-      to: patient?.email ? patient.email : "",
-      subject: title[0],
-      html: emailDescriptionHTML,
-    };
-    sentMail(dataSentMail);
-    createPrescription({
-      scheduleId: data._id,
-      doctor: data?.doctor?.name ? data?.doctor?.name : "",
-      packet: data?.packet?.name ? data?.packet?.name : "",
-      clinic: data.doctor.clinic.name
-        ? data.doctor.clinic.name
-        : data?.packet?.clinic?.name
-        ? data?.packet?.clinic?.name
-        : "",
-      specialty: data.doctor.specialty.name
-        ? data.doctor.specialty.name
-        : data?.packet?.specialty
-        ? data?.packet?.specialty
-        : "",
-      detail: detailPrescription,
-      result,
-    });
-  };
+  const handleSendMail = () => {};
 
   return (
     <>

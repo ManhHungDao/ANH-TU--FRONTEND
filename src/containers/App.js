@@ -17,9 +17,6 @@ import HomePage from "../containers/HomePage/HomePage";
 import HomePacket from "../containers/Patient/Packet/HomePacket";
 import DetailPacket from "../containers/Patient/Packet/DetailPacket";
 import PatientConfirmBooking from "../containers/Patient/Schedule/Booking/PatientConfirmBooking";
-import PatientLogin from "../containers/Patient/Auth/Login";
-import PatientRegister from "../containers/Patient/Auth/Register";
-import ForgotPassword from "../containers/Patient/Auth/ForgotPassword";
 import AssistantRoute from "../routes/AssistantRoute";
 
 class App extends Component {
@@ -56,11 +53,6 @@ class App extends Component {
                 path={path.CONFIRM_BOOKING}
                 element={<PatientConfirmBooking />}
               />
-
-              {/* manager account patient */}
-              <Route path={path.LOGIN} element={<PatientLogin />} />
-              <Route path={path.FORGOT_PASSWORD} element={<ForgotPassword />} />
-              <Route path={path.RESGISTER} element={<PatientRegister />} />
 
               {/* route control */}
               <Route path={path.SYSTEM_LOGIN} element={<Login />} />
