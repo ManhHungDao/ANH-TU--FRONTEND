@@ -14,15 +14,9 @@ import SystemAuthRoute from "../hoc/SystemAuthRoute";
 import PatienAuthtRoute from "../hoc/PatienAuthtRoute";
 //
 import HomePage from "../containers/HomePage/HomePage";
-import DetailDoctor from "../containers/Patient/Doctor/DetailDoctor";
-import DetailSpecialty from "../containers/Patient/Specialty/DetailSpecialty";
-import DetailClinic from "../containers/Patient/Clinic/DetailClinic";
-import DetailHandbook from "../containers/Patient/Handbook/DetailHandbook";
 import HomePacket from "../containers/Patient/Packet/HomePacket";
 import DetailPacket from "../containers/Patient/Packet/DetailPacket";
 import PatientConfirmBooking from "../containers/Patient/Schedule/Booking/PatientConfirmBooking";
-import HomeHandbook from "../containers/Patient/Handbook/HomeHandbook";
-import Feedback from "../containers/Patient/Feedback/Feedback";
 import PatientLogin from "../containers/Patient/Auth/Login";
 import PatientRegister from "../containers/Patient/Auth/Register";
 import ForgotPassword from "../containers/Patient/Auth/ForgotPassword";
@@ -55,11 +49,6 @@ class App extends Component {
           <Router history={history}>
             <Routes>
               <Route path={path.HOME} element={<HomePage />} />
-              <Route path={path.SPECIALTY} element={<DetailSpecialty />} />
-              <Route path={path.CLINIC} element={<DetailClinic />} />
-              <Route path={path.DETAIL_DOCTOR} element={<DetailDoctor />} />
-              <Route path={path.HANDBOOK} element={<HomeHandbook />} />
-              <Route path={path.DETAIL_HANDBOOK} element={<DetailHandbook />} />
 
               <Route path={path.PACKET} element={<HomePacket />} />
               <Route path={path.DETAIL_PACKET} element={<DetailPacket />} />
@@ -67,7 +56,6 @@ class App extends Component {
                 path={path.CONFIRM_BOOKING}
                 element={<PatientConfirmBooking />}
               />
-              <Route path={path.FEEDBACK} element={<Feedback />} />
 
               {/* manager account patient */}
               <Route path={path.LOGIN} element={<PatientLogin />} />

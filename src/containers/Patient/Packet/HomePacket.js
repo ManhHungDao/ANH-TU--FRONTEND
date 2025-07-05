@@ -1,9 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { FormattedMessage } from "react-intl";
 import {
-  Grid,
   Stack,
   Typography,
   Box,
@@ -213,7 +211,7 @@ const HomePacket = ({
               textShadow: `3px 4px 7px rgba(81,67,21,0.8)`,
             }}
           >
-            <b>GÓI KHÁM TỔNG HỢP</b>
+            <b>QUẢN LÝ FILE</b>
           </Typography>
           <Box
             sx={{
@@ -348,126 +346,38 @@ const HomePacket = ({
         }}
       >
         <Container>
-          {!mobiScreen && (
-            <div
-              className="section-data homepacket__packet"
-              style={{ border: "none", padding: 0 }}
-            >
-              <div className="container__header d-flex justify-content-between align-items-center mb-2">
-                <div className="container__header--title">Gói nổi bật</div>
-                {/* <div
-                  className="container__header--btn"
-                  //   onClick={() => handleClickViewMore()}
-                >
-                  <FormattedMessage id="homepage.more-info" />
-                </div> */}
-              </div>
-              <Divider />
-              <div className="container__body mt-5">
-                {packets &&
-                  packets.length > 0 &&
-                  packets.map((e, index) => (
-                    <div
-                      className="container__body--item"
-                      onClick={() => handleClickDetailPacket(e.id)}
-                    >
-                      <img src={e.image} alt={e.name} />
-                      <div className="container__body--item--title">
-                        {e.name}
-                      </div>
-                      <div className="container__body--item--price">
-                        <span>Giá:</span> <span>{e.price}</span>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-              <Stack mt={3}>
-                {countItem > size && (
-                  <span className="d-flex justify-content-center">
-                    <Pagination
-                      count={Math.ceil(countItem / size)}
-                      color="primary"
-                      onChange={handleChangePage}
-                      page={page}
-                    />
-                  </span>
-                )}
-              </Stack>
-            </div>
-          )}
-          {mobiScreen && (
-            <div
-              className="section-data homepacket__clinic mt-5"
-              style={{ borderTop: "none", padding: 0, backgroundColor: "#fff" }}
-            >
-              <div className="container__header d-flex justify-content-between align-items-center mb-2">
-                <div className="container__header--title">Gói nổi bật</div>
-                {/* <div
-                  className="container__header--btn"
-                  //   onClick={() => handleClickViewMoreClinic()}
-                >
-                  <FormattedMessage id="homepage.more-info" />
-                </div> */}
-              </div>
-              <Divider />
-              <div className="container__body mt-5">
-                <Slider {...settings}>
-                  {packets &&
-                    packets.length > 0 &&
-                    packets.map((e, index) => (
-                      <div
-                        key={index}
-                        className="d-flex justify-content-center"
-                      >
-                        <div
-                          className="container__body--item"
-                          onClick={() => handleClickDetailPacket(e.id)}
-                        >
-                          <img src={e.image} alt={e.name} />
-                          <div className="container__body--item--title">
-                            {e.name}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </Slider>
-              </div>
-            </div>
-          )}
-          {/* phân chia gói khám và cơ sở y tế */}
           <div
-            className="section-data homepacket__clinic mt-5"
-            style={{ borderTop: "none", padding: 0, backgroundColor: "#fff" }}
+            className="section-data homepacket__packet"
+            style={{ border: "none", padding: 0, marginBottom: "15px" }}
           >
-            <div className="container__header d-flex justify-content-between align-items-center mb-2">
-              <div className="container__header--title">Cơ sở y tế</div>
-              <div
-                className="container__header--btn"
-                onClick={() => handleClickViewMoreClinic()}
-              >
-                <FormattedMessage id="homepage.more-info" />
-              </div>
-            </div>
-            <Divider />
             <div className="container__body mt-5">
-              <Slider {...settings}>
-                {clinics &&
-                  clinics.length > 0 &&
-                  clinics.map((e, index) => (
-                    <div key={index} className="d-flex justify-content-center">
-                      <div
-                        className="container__body--item"
-                        onClick={() => handleClickDetailClinic(e.value)}
-                      >
-                        <img src={e.image} alt={e.name} />
-                        <div className="container__body--item--title">
-                          {e.name}
-                        </div>
-                      </div>
+              {packets &&
+                packets.length > 0 &&
+                packets.map((e, index) => (
+                  <div
+                    className="container__body--item"
+                    onClick={() => handleClickDetailPacket(e.id)}
+                  >
+                    <img src={e.image} alt={e.name} />
+                    <div className="container__body--item--title">{e.name}</div>
+                    <div className="container__body--item--price">
+                      <span>Giá:</span> <span>{e.price}</span>
                     </div>
-                  ))}
-              </Slider>
+                  </div>
+                ))}
             </div>
+            <Stack mt={3}>
+              {countItem > size && (
+                <span className="d-flex justify-content-center">
+                  <Pagination
+                    count={Math.ceil(countItem / size)}
+                    color="primary"
+                    onChange={handleChangePage}
+                    page={page}
+                  />
+                </span>
+              )}
+            </Stack>
           </div>
         </Container>
       </Box>

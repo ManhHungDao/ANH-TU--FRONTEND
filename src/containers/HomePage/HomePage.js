@@ -9,8 +9,6 @@ import DataSection from "./Section/DataSection.js";
 import "./HomePage.scss";
 import useIsMobile from "../../components/useScreen/useIsMobile.js";
 import Contact from "./Section/Contact";
-import DoctorSection from "./Section/DoctorSection.js";
-import HandbookSection from "./Section/HandbookSection";
 
 const HomePage = ({ listHandbook, getAllHandbookHome, isLoggedIn }) => {
   const [clinics, setClinics] = useState([]);
