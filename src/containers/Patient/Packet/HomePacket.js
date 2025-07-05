@@ -8,7 +8,6 @@ import {
   IconButton,
   Button,
   Container,
-  Divider,
 } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
 import * as actions from "../../../store/actions";
@@ -25,26 +24,20 @@ import InputAdornment from "@mui/material/InputAdornment";
 import CachedIcon from "@mui/icons-material/Cached";
 import { useNavigate } from "react-router-dom";
 import Footer from "../../HomePage/Section/Footer";
-import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./HomePacket.scss";
 
 const HomePacket = ({
   listClinic,
-  getListClinicHome,
   fetchTypePacketCode,
   typePacket,
   listPacket,
   getAllPacket,
-  loadingToggleAction,
 }) => {
-  const smsScreen = useIsTablet();
-  const mobiScreen = useIsMobile();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [packets, setPackets] = useState("");
-  const [clinics, setClinics] = useState([]);
   const [typePackets, setTypePackets] = useState("");
   const [filterClinic, setFilterClinic] = useState("");
   const [filterPacker, setFilterPacker] = useState("");
@@ -60,36 +53,23 @@ const HomePacket = ({
       clinicId,
       type,
     };
-    // localStorage.removeItem("localPacket");
-    // localStorage.setItem("localPacket", JSON.stringify(dateFetchPacket));
+
     getAllPacket(dateFetchPacket);
   };
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-    getListClinicHome();
     const dataFetchClinic = {
       page: 1,
       size: 999,
       filter: "PACKET",
     };
     fetchTypePacketCode(dataFetchClinic);
-    // const localPacket = JSON.parse(localStorage.getItem("localPacket"));
-    // if (localPacket) {
-    //   setPage(localPacket?.page);
-    //   fetchDataPacket({ localPacket });
-    // } else fetchDataPacket(page, size, "", "", "");
+
     fetchDataPacket(page, size, "", "", "");
   }, []);
 
   useEffect(() => {
-    setClinics(
-      listClinic.map((e) => ({
-        value: e._id,
-        name: e.name,
-        image: e.image.url,
-      }))
-    );
     setTypePackets(
       typePacket?.list?.map((e) => ({
         value: e._id,
@@ -134,12 +114,7 @@ const HomePacket = ({
       fetchDataPacket(1, size, "", clinicId, value);
     }
   };
-  const handleClickDetailClinic = (id) => {
-    navigate(`/clinic/${id}`);
-  };
-  const handleClickViewMoreClinic = () => {
-    navigate("/viewmore/clinic");
-  };
+
   const handleClickDetailPacket = (id) => {
     navigate(`/packet/${id}`);
   };
@@ -163,36 +138,7 @@ const HomePacket = ({
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center center",
   };
-  const settings = {
-    infinite: true,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 4,
-    initialSlide: 0,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 3,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        },
-      },
-    ],
-  };
+
   return (
     <>
       <HomeHeader />
@@ -200,7 +146,7 @@ const HomePacket = ({
         <div
           className="detail-handbook-opacity d-flex flex-column justify-content-center align-items-center"
           style={{
-            height: smsScreen ? 200 : 500,
+            height: 500,
             position: "relative",
           }}
         >
@@ -217,10 +163,10 @@ const HomePacket = ({
             sx={{
               bgcolor: "#ffeb3b",
               height: "fit-content",
-              width: smsScreen ? "100%" : "50%",
+              width: "50%",
               boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px`,
               position: "absolute",
-              top: smsScreen ? 200 : 410,
+              top: 410,
               padding: "20px 30px",
             }}
           >
@@ -229,7 +175,7 @@ const HomePacket = ({
                 fullWidth
                 variant="standard"
                 sx={{
-                  width: mobiScreen ? "85%" : "100%",
+                  width: "100%",
                 }}
               >
                 <OutlinedInput
@@ -259,19 +205,6 @@ const HomePacket = ({
                   }
                 />
               </FormControl>
-              {mobiScreen && (
-                <IconButton
-                  color="primary"
-                  aria-label="upload picture"
-                  component="label"
-                  sx={{
-                    marginLeft: 2,
-                  }}
-                  onClick={handleClickReset}
-                >
-                  <CachedIcon />
-                </IconButton>
-              )}
             </div>
             <Stack
               display="flex"
@@ -316,26 +249,16 @@ const HomePacket = ({
                   value={filterClinic}
                   label="Phòng khám"
                   onChange={(e) => handleChange(e, "clinic")}
-                >
-                  {clinics &&
-                    clinics.length > 0 &&
-                    clinics.map((e) => (
-                      <MenuItem key={e.value || ""} value={e.value || ""}>
-                        {e.name || ""}
-                      </MenuItem>
-                    ))}
-                </Select>
+                ></Select>
               </FormControl>
-              {!mobiScreen && (
-                <IconButton
-                  color="primary"
-                  aria-label="upload picture"
-                  component="label"
-                  onClick={handleClickReset}
-                >
-                  <CachedIcon />
-                </IconButton>
-              )}
+              <IconButton
+                color="primary"
+                aria-label="upload picture"
+                component="label"
+                onClick={handleClickReset}
+              >
+                <CachedIcon />
+              </IconButton>
             </Stack>
           </Box>
         </div>
@@ -389,7 +312,6 @@ const HomePacket = ({
 const mapStateToProps = (state) => {
   return {
     listPacket: state.client.listPacket,
-    listClinic: state.client.listClinic,
     typePacket: state.client.allcodeType,
   };
 };

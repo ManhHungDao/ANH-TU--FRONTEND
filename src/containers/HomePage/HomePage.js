@@ -5,19 +5,15 @@ import _ from "lodash";
 import HomeHeader from "./Section/Header.js";
 import Footer from "./Section/Footer";
 import * as actions from "../../store/actions";
-import DataSection from "./Section/DataSection.js";
 import "./HomePage.scss";
 import useIsMobile from "../../components/useScreen/useIsMobile.js";
 import Contact from "./Section/Contact";
 
 const HomePage = ({ listHandbook, getAllHandbookHome, isLoggedIn }) => {
-  const [clinics, setClinics] = useState([]);
   const [specialties, setSpecialties] = useState([]);
-  const [users, setUsers] = useState([]);
   const [handbooks, setHandbooks] = useState([]);
   const [slide, setSlide] = useState("");
   const [showNav, setShowNav] = useState("");
-  const isMobile = useIsMobile();
 
   useEffect(() => {
     getAllHandbookHome({
@@ -46,14 +42,6 @@ const HomePage = ({ listHandbook, getAllHandbookHome, isLoggedIn }) => {
   return (
     <>
       <HomeHeader isShowBanner={true} />
-      <DataSection
-        data={specialties}
-        titleSection={<FormattedMessage id="homepage.specialty-popular" />}
-        slidesPerView={slide}
-        navigation={showNav}
-        linkItem="specialty"
-      />
-
       <Footer />
       <Contact />
     </>
