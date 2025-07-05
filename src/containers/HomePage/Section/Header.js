@@ -2,13 +2,11 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import { FormattedMessage } from "react-intl";
-import { languages } from "../../../utils";
 import { changLanguageApp } from "../../../store/actions";
 import { Grid, Stack, Button, Menu, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import "./style.scss";
 import useIsTablet from "../../../components/useScreen/useIsTablet.js";
-import SwipeableTemporaryDrawer from "./LeftBar";
 import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import * as actions from "../../../store/actions";
 
@@ -26,10 +24,7 @@ const HomeHeader = ({ processLogout, isLoggedIn }) => {
     setAnchorEl(null);
   };
   const returnHome = () => {
-    navigate(`/`);
-  };
-  const handleClick = () => {
-    setOpen(true);
+    navigate(`/packet`);
   };
   const handleClickMenuItem = (link) => {
     setOpen(false);
@@ -53,94 +48,13 @@ const HomeHeader = ({ processLogout, isLoggedIn }) => {
               justifyContent={"flex-start"}
               alignItems={"center"}
             >
-              <i
-                className="fas fa-bars menu-mobile"
-                style={{ fontSize: 20, zIndex: 100000 }}
-                onClick={handleClick}
-              ></i>
-
               <div
                 className="header-logo"
                 style={{ cursor: "pointer" }}
                 onClick={returnHome}
               ></div>
             </Grid>
-            {!smScreen && (
-              <Grid
-                className="header-bar"
-                item
-                md={6}
-                display={"flex"}
-                justifyContent={"space-between"}
-                alignItems={"center"}
-              >
-                <div
-                  className="child-content"
-                  onClick={() => {
-                    navigate(`/viewmore/specialty`);
-                  }}
-                  style={{
-                    ":hover": {
-                      bgcolor: "rgb(151, 200, 240)",
-                    },
-                  }}
-                >
-                  <div>
-                    <b className="header-title">
-                      <FormattedMessage id="home-header.specialty" />
-                    </b>
-                  </div>
-                  <span className="subs-title">
-                    <FormattedMessage id="home-header.search-doctor" />
-                  </span>
-                </div>
-                <div
-                  className="child-content"
-                  onClick={() => {
-                    navigate(`/viewmore/clinic`);
-                  }}
-                >
-                  <div>
-                    <b className="header-title">
-                      <FormattedMessage id="home-header.health-facility" />
-                    </b>
-                  </div>
-                  <span className="subs-title">
-                    <FormattedMessage id="home-header.select-room" />
-                  </span>
-                </div>
-                <div
-                  className="child-content"
-                  onClick={() => {
-                    navigate(`/viewmore/doctor`);
-                  }}
-                >
-                  <div>
-                    <b className="header-title">
-                      <FormattedMessage id="home-header.doctor" />
-                    </b>
-                  </div>
-                  <span className="subs-title">
-                    <FormattedMessage id="home-header.select-doctor" />
-                  </span>
-                </div>
-                <div
-                  className="child-content"
-                  onClick={() => {
-                    navigate(`/packet`);
-                  }}
-                >
-                  <div>
-                    <b className="header-title">
-                      <FormattedMessage id="home-header.fee" />
-                    </b>
-                  </div>
-                  <span className="subs-title">
-                    <FormattedMessage id="home-header.check-health" />
-                  </span>
-                </div>
-              </Grid>
-            )}
+
             <Grid
               item
               sm={6}
@@ -212,11 +126,6 @@ const HomeHeader = ({ processLogout, isLoggedIn }) => {
           </Grid>
         </div>
       </div>
-      <SwipeableTemporaryDrawer
-        direction="left"
-        show={open}
-        setOpen={setOpen}
-      />
     </>
   );
 };

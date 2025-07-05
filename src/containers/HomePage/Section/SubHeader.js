@@ -14,7 +14,6 @@ import {
   Menu,
   Button,
 } from "@mui/material";
-import SwipeableTemporaryDrawer from "../Section/LeftBar";
 import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 
 const SubHeader = ({ isLoggedIn, processLogout }) => {
@@ -111,11 +110,6 @@ const SubHeader = ({ isLoggedIn, processLogout }) => {
           </Grid>
         </Container>
       </Box>
-      <SwipeableTemporaryDrawer
-        direction="right"
-        show={open}
-        setOpen={setOpen}
-      />
     </>
   );
 };
