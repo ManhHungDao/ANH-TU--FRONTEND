@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import * as actions from "../../../store/actions";
+import * as actions from "../../store/actions";
 import { useParams } from "react-router-dom";
 import { Container, Stack, Divider } from "@mui/material";
 import _ from "lodash";
-import SubHeader from "../../HomePage/Section/SubHeader";
-import { getSinglePacket } from "../../../services/packetService";
-import BackToTop from "../../../components/BackToTop ";
+import SubHeader from "../HomePage/Section/SubHeader";
+import { getSinglePacket } from "../../services/packetService";
+import BackToTop from "../../components/BackToTop ";
 
-const DetailPacket = ({ loadingToggleAction }) => {
+const FileDetail = ({ loadingToggleAction }) => {
   const { id } = useParams();
   const [data, setData] = useState("");
 
@@ -53,4 +53,4 @@ const mapDispatchToProps = (dispatch) => {
     loadingToggleAction: (id) => dispatch(actions.loadingToggleAction(id)),
   };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(DetailPacket);
+export default connect(mapStateToProps, mapDispatchToProps)(FileDetail);

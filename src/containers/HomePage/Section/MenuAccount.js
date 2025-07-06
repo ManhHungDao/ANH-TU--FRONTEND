@@ -45,8 +45,8 @@ const MenuAccount = ({ color }) => {
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={() => handleClickMenuItem("/patient/account")}>
-          Thông tin cá nhân
+        <MenuItem onClick={() => handleClickMenuItem("/file/add")}>
+          Thêm tập tin
         </MenuItem>
         <MenuItem onClick={() => handleClickMenuItem("/patient/booking")}>
           Đơn đặt lịch

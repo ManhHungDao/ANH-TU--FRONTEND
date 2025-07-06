@@ -5,17 +5,13 @@ import { ConnectedRouter as Router } from "connected-react-router";
 import { history } from "../redux";
 import { ToastContainer } from "react-toastify";
 import { path } from "../utils";
-import Login from "./Auth/login";
 import AdminRoute from "../routes/AdminRoute";
 import DoctorRoute from "../routes/DoctorRoute";
-import PatientRoute from "../routes/PatientRoute";
 import Loading from "../components/Loading";
 import SystemAuthRoute from "../hoc/SystemAuthRoute";
-import PatienAuthtRoute from "../hoc/PatienAuthtRoute";
 //
-import HomePacket from "../containers/Patient/Packet/HomePacket";
-import DetailPacket from "../containers/Patient/Packet/DetailPacket";
-import PatientConfirmBooking from "../containers/Patient/Schedule/Booking/PatientConfirmBooking";
+import File from "./File/File";
+import FileDetail from "./File/FileDetail";
 import AssistantRoute from "../routes/AssistantRoute";
 
 class App extends Component {
@@ -44,23 +40,11 @@ class App extends Component {
         <BrowserRouter>
           <Router history={history}>
             <Routes>
-              <Route path={path.HOME} element={<HomePacket />} />
-              <Route path={path.DETAIL_PACKET} element={<DetailPacket />} />
-              <Route
-                path={path.CONFIRM_BOOKING}
-                element={<PatientConfirmBooking />}
-              />
+              <Route path={path.HOME} element={<File />} />
+              <Route path={path.DETAIL_PACKET} element={<FileDetail />} />
 
               {/* route control */}
-              <Route path={path.SYSTEM_LOGIN} element={<Login />} />
-              <Route
-                path={path.PATIENT}
-                element={
-                  <PatienAuthtRoute>
-                    <PatientRoute />
-                  </PatienAuthtRoute>
-                }
-              />
+
               <Route
                 path={path.ADMIN}
                 element={

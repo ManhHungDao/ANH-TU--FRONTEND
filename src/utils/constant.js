@@ -17,7 +17,8 @@ export const path = {
   VIEWMORE_CLINIC: "/viewmore/clinic",
   VIEWMORE_DOCTOR: "/viewmore/doctor",
   FEEDBACK: "/feedback",
-
+  FILE: "/file/*",
+  FILE_ADD: "/file/add",
   SYSTEM_LOGIN: "/system-login",
   LOGIN: "/login",
   RESGISTER: "/register",

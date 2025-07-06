@@ -3,22 +3,22 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Stack, Box, IconButton, Button, Container } from "@mui/material";
 import Pagination from "@mui/material/Pagination";
-import * as actions from "../../../store/actions";
+import * as actions from "../../store/actions";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import HomeHeader from "../../HomePage/Section/Header";
+import HomeHeader from "../HomePage/Section/Header";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputAdornment from "@mui/material/InputAdornment";
 import CachedIcon from "@mui/icons-material/Cached";
 import { useNavigate } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import "./HomePacket.scss";
-import image from "../../../assets/word.png";
+import "./File.scss";
+import image from "../../assets/word.png";
 
-const HomePacket = ({
+const File = ({
   listClinic,
   fetchTypePacketCode,
   typePacket,
@@ -292,4 +292,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(HomePacket);
+export default connect(mapStateToProps, mapDispatchToProps)(File);

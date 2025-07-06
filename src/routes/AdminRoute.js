@@ -5,7 +5,6 @@ import TableManageUser from "../containers/System/Admin/TableManageUser";
 import TableManageClinic from "../containers/System/Clinic/TableManageClinic";
 import TableManageSpecialty from "../containers/System/Specialty/TableManageSpecialty";
 import Dashboard from "../containers/System/dashboard";
-import ResetPassword from "../containers/Auth/ResetPassword";
 import Topbar from "../containers/System/global/Topbar";
 import Sidebar from "../containers/System/global/Sidebar";
 import AddNewUser from "../containers/System/Admin/AddNewUser";
@@ -43,7 +42,6 @@ const AdminRoute = ({ systemMenuPath, isLoggedIn }) => {
           <Topbar setIsSidebar={setIsSidebar} />
           <Routes>
             <Route index element={<Dashboard />} />
-            <Route path="reset-password" element={<ResetPassword />} />
             <Route
               path="manage-account-patient"
               element={<TableManageAccountPatient />}
