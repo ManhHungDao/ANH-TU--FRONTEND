@@ -2,19 +2,10 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../../store/actions";
 import { useParams } from "react-router-dom";
-import {
-  Box,
-  Container,
-  Grid,
-  Stack,
-  Divider,
-  Rating,
-  Typography,
-} from "@mui/material";
+import { Container, Stack, Divider } from "@mui/material";
 import _ from "lodash";
 import SubHeader from "../../HomePage/Section/SubHeader";
 import { getSinglePacket } from "../../../services/packetService";
-import ProfilePacket from "./ProfilePacket";
 import BackToTop from "../../../components/BackToTop ";
 
 const DetailPacket = ({ loadingToggleAction }) => {
@@ -35,16 +26,7 @@ const DetailPacket = ({ loadingToggleAction }) => {
   return (
     <>
       <SubHeader />
-      <Stack className="introduce-doctor">
-        <Container>
-          <ProfilePacket id={id} />
-        </Container>
-      </Stack>
-      <Divider />
-      <Stack
-        className="detail-doctor"
-        sx={{ backgroundColor: "#efefef", p: 2 }}
-      >
+      <Stack className="detail-doctor" sx={{ p: 8, paddingBottom: 1 }}>
         <Container>
           <span
             className="detail"

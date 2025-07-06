@@ -15,7 +15,6 @@ import {
   Menu,
   Button,
 } from "@mui/material";
-import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
 import MenuAccount from "../Section/MenuAccount";
 
 const SubHeader = () => {
