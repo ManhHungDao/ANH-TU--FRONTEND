@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../../store/actions";
-import Footer from "../../HomePage/Section/Footer";
 import { useParams } from "react-router-dom";
 import {
   Box,
@@ -56,7 +55,6 @@ const DetailPacket = ({ loadingToggleAction }) => {
       <Divider />
 
       <Divider />
-      <Footer />
       <BackToTop />
     </>
   );

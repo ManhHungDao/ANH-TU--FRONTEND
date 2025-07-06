@@ -13,7 +13,6 @@ import Loading from "../components/Loading";
 import SystemAuthRoute from "../hoc/SystemAuthRoute";
 import PatienAuthtRoute from "../hoc/PatienAuthtRoute";
 //
-import HomePage from "../containers/HomePage/HomePage";
 import HomePacket from "../containers/Patient/Packet/HomePacket";
 import DetailPacket from "../containers/Patient/Packet/DetailPacket";
 import PatientConfirmBooking from "../containers/Patient/Schedule/Booking/PatientConfirmBooking";
@@ -45,9 +44,7 @@ class App extends Component {
         <BrowserRouter>
           <Router history={history}>
             <Routes>
-              <Route path={path.HOME} element={<HomePage />} />
-
-              <Route path={path.PACKET} element={<HomePacket />} />
+              <Route path={path.HOME} element={<HomePacket />} />
               <Route path={path.DETAIL_PACKET} element={<DetailPacket />} />
               <Route
                 path={path.CONFIRM_BOOKING}

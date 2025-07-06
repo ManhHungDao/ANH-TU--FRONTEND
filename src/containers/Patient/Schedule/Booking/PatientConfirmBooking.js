@@ -9,7 +9,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import Footer from "../../../HomePage/Section/Footer";
 import confirmImg from "../../../../assets/verified.png";
 import failedImg from "../../../../assets/failed.png";
 import { patientConfirmBooking } from "../../../../services/scheduleService";
@@ -106,7 +105,6 @@ const PatientConfirmBooking = () => {
           {isSucceed === false && failed()}
         </Stack>
       </Box>
-      <Footer />
     </>
   );
 };

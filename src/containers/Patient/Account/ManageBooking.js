@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../../store/actions";
 import HomeHeader from "../../HomePage/Section/Header";
-import HomeFooter from "../../HomePage/Section/Footer";
 import Header from "../../../components/Header";
 import {
   Box,
@@ -357,7 +356,6 @@ const ManageBooking = ({
           </Box>
         </Modal>
       )}
-      <HomeFooter />
     </>
   );
 };

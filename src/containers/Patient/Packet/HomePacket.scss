@@ -2,7 +2,7 @@
   .container__body {
     display: grid;
     width: 100%;
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 20px;
     &--item {
       place-self: center;
@@ -11,15 +11,28 @@
         rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
       padding: 1px;
       border-radius: 4px;
-      background-color: #fff;
+      background-color: #efefee;
       min-height: 70px;
       img {
-        width: 110px;
+        width: 70px;
         height: 70px;
         border-radius: 4px;
+        background: transparent;
+        &:hover .container__body--item--title {
+          white-space: normal;
+          background-color: #fff;
+          padding: 5px;
+          border-radius: 4px;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+          position: absolute;
+          top: 100%; /* hoặc top: auto; bottom: 0 nếu muốn hiển thị phía trên */
+          left: 0;
+          width: max-content;
+          max-width: 300px;
+          z-index: 10;
+        }
       }
       &--title {
-        font-weight: bold;
         margin: 5px;
         min-height: 39px;
         overflow: hidden;

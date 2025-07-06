@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import HomeHeader from "../../HomePage/Section/Header";
-import HomeFooter from "../../HomePage/Section/Footer";
 import { Container, Box, TextField, Grid, Button } from "@mui/material";
 import Header from "../../../components/Header";
 import { toast } from "react-toastify";
@@ -104,7 +103,6 @@ const ChangePassword = ({
           </Grid>
         </Container>
       </Box>
-      <HomeFooter />
     </>
   );
 };

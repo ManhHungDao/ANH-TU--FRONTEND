@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import HomeHeader from "../../HomePage/Section/Header";
-import HomeFooter from "../../HomePage/Section/Footer";
 import { connect } from "react-redux";
 import * as actions from "../../../store/actions";
 import {
@@ -212,7 +211,6 @@ const AccountInfo = ({
           </Grid>
         </Container>
       </Box>
-      <HomeFooter />
     </>
   );
 };

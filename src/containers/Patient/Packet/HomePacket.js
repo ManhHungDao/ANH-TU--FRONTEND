@@ -9,15 +9,14 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import HomeHeader from "../../HomePage/Section/Header";
-import bgpacket from "../../../assets/bg-packet.jpg";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputAdornment from "@mui/material/InputAdornment";
 import CachedIcon from "@mui/icons-material/Cached";
 import { useNavigate } from "react-router-dom";
-import Footer from "../../HomePage/Section/Footer";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./HomePacket.scss";
+import image from "../../../assets/word.png";
 
 const HomePacket = ({
   listClinic,
@@ -32,7 +31,7 @@ const HomePacket = ({
   const [typePackets, setTypePackets] = useState("");
   const [filterClinic, setFilterClinic] = useState("");
   const [filterPacker, setFilterPacker] = useState("");
-  const [size, setSize] = useState(24);
+  const [size, setSize] = useState(18);
   const [page, setPage] = useState(1);
   const [countItem, setCountItem] = useState(0);
 
@@ -107,7 +106,7 @@ const HomePacket = ({
   };
 
   const handleClickDetailPacket = (id) => {
-    navigate(`/packet/${id}`);
+    navigate(`/${id}`);
   };
   const handleSearchPacket = () => {
     if (!search) return;
@@ -250,7 +249,9 @@ const HomePacket = ({
                   className="container__body--item"
                   onClick={() => handleClickDetailPacket(e.id)}
                 >
-                  <img src={e.image} alt={e.name} />
+                  <span style={{ display: "flex", justifyContent: "center" }}>
+                    <img src={image} alt={e.name} />
+                  </span>
                   <div className="container__body--item--title">{e.name}</div>
                 </div>
               ))}
@@ -269,7 +270,6 @@ const HomePacket = ({
           </Stack>
         </div>
       </Container>
-      <Footer />
     </>
   );
 };
