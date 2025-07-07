@@ -11,8 +11,6 @@ import Loading from "../components/Loading";
 import SystemAuthRoute from "../hoc/SystemAuthRoute";
 //
 import File from "./File/File";
-import FileDetail from "./File/FileDetail";
-import Addfile from "./System/Admin/Addfile";
 
 class App extends Component {
   handlePersistorState = () => {
@@ -41,8 +39,6 @@ class App extends Component {
           <Router history={history}>
             <Routes>
               <Route path={path.HOME} element={<File />} />
-              <Route path={path.DETAIL_PACKET} element={<FileDetail />} />
-              <Route path="/add" element={<Addfile />} />
 
               {/* route control */}
 

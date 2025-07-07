@@ -24,6 +24,14 @@ import CachedIcon from "@mui/icons-material/Cached";
 import { styled } from "@mui/material/styles";
 import { tableCellClasses } from "@mui/material/TableCell";
 import { Typography, Box, Grid, Paper, OutlinedInput } from "@mui/material";
+import Image from "../../assets/word.png";
+// select
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import ModalEditFile from "../../components/modal/ModalEditFile";
+import ModalViewFile from "../../components/modal/ModalViewFile";
+
 const Addfile = ({
   getListClinicAction,
   listClinic,
@@ -36,10 +44,17 @@ const Addfile = ({
   const [page, setPage] = useState(0);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [open, setOpen] = useState(false);
-  const [clinicEdit, setClinicEdit] = useState({});
   const [clinicDelete, setClinicDelete] = useState({});
   const [search, setSearch] = useState("");
-  const [enableEdit, setEnableEdit] = useState(false);
+  const [openViewModal, setOpenViewModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [age, setAge] = useState("");
+  const [idFile, setIdFile] = useState(null);
+  const [content, setContent] = useState("");
+
+  const handleChange = (event) => {
+    setAge(event.target.value);
+  };
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -56,8 +71,7 @@ const Addfile = ({
       let data = listClinic.list.map((e) => {
         return {
           id: e._id,
-          logo: e.logo.url,
-          image: e.image.url,
+          logo: Image,
           name: e.name,
           address: e.address,
           introduce: e.introduce,
@@ -74,7 +88,8 @@ const Addfile = ({
     if (isSuccess !== null) {
       if (isSuccess === true) {
         setOpen(false);
-        setEnableEdit(false);
+        setOpenEditModal(false);
+        setOpenViewModal(false);
         const searchValue = search ? search : "";
         fetchDataAPI(page + 1, rowsPerPage, searchValue);
       }
@@ -101,13 +116,17 @@ const Addfile = ({
     fetchDataAPI(page + 1, +event.target.value, search);
   };
 
-  const handleClickView = (data) => {
-    setClinicEdit(data);
-    setOpen(true);
-  };
-  const handelClickDelete = (data) => {
-    setOpenConfirmModal(true);
-    setClinicDelete(data);
+  const handleClickFile = (data, type) => {
+    setIdFile(data.id);
+    setContent(data);
+    if (type === "Edit") {
+      setOpenEditModal(true);
+    } else if (type === "View") {
+      setOpenViewModal(true);
+    } else if (type === "Delete") {
+      setOpenConfirmModal(true);
+      setClinicDelete(data);
+    }
   };
   const handleDeleteClinic = () => {
     const id = clinicDelete.id;
@@ -116,6 +135,7 @@ const Addfile = ({
   const handelClickEmpty = () => {
     setSearch("");
     setPage(0);
+    setAge("");
     setRowsPerPage(10);
     fetchDataAPI(1, 10);
   };
@@ -151,17 +171,17 @@ const Addfile = ({
           <TableCell>{address?.detail ? address.detail : ""}</TableCell>
           <TableCell>
             <Tooltip title="Xem">
-              <IconButton onClick={() => handleClickView(props)}>
+              <IconButton onClick={() => handleClickFile(props, "View")}>
                 <RemoveRedEyeRoundedIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Sửa">
-              <IconButton onClick={() => handleClickView(props)}>
+              <IconButton onClick={() => handleClickFile(props, "Edit")}>
                 <EditIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Xóa">
-              <IconButton onClick={() => handelClickDelete(props)}>
+              <IconButton onClick={() => handleClickFile(props, "Delete")}>
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
@@ -175,7 +195,7 @@ const Addfile = ({
       <Box m="20px">
         <Header
           title="Quản lý danh sách tập tin"
-          subtitle="Quản lý phòng khám"
+          subtitle="Quản lý tệp tin"
           titleBtn="Thêm file"
           isShowBtn={true}
           // link="/add"
@@ -189,7 +209,7 @@ const Addfile = ({
         ></Typography>
         <Box m="20px 0 0 0">
           <Box m="0 0 7px 0">
-            <Grid container spacing={2}>
+            <Grid container spacing={2} display="flex" alignItems="center">
               <Grid item xs={12} md={3}>
                 <FormControl sx={{ width: "100%" }} variant="outlined">
                   <OutlinedInput
@@ -208,7 +228,29 @@ const Addfile = ({
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={12} md={3} display="flex" alignItems="center">
+              <Grid item>
+                <FormControl sx={{ minWidth: 120 }}>
+                  <InputLabel id="demo-simple-select-autowidth-label">
+                    Loại án
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-autowidth-label"
+                    id="demo-simple-select-autowidth"
+                    value={age}
+                    onChange={handleChange}
+                    autoWidth
+                    label="Loại án"
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    <MenuItem value={20}>Twenty</MenuItem>
+                    <MenuItem value={21}>Twenty one</MenuItem>
+                    <MenuItem value={22}>Twenty one and a half</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item>
                 <Tooltip title="Làm trống">
                   <IconButton onClick={() => handelClickEmpty()}>
                     <CachedIcon />
@@ -250,11 +292,25 @@ const Addfile = ({
       <ConfirmModal
         open={openConfirmModal}
         setOpen={setOpenConfirmModal}
-        title="Xóa phòng khám"
+        title="XÓA TẬP TIN"
         content={`${clinicDelete?.name ? clinicDelete.name : ""}`}
         type="DELETE"
         confirmFunc={handleDeleteClinic}
       />
+      {openEditModal && (
+        <ModalEditFile
+          open={openEditModal}
+          setOpen={setOpenEditModal}
+          id={idFile}
+        />
+      )}
+      {openViewModal && (
+        <ModalViewFile
+          open={openViewModal}
+          setOpen={setOpenViewModal}
+          id={idFile}
+        />
+      )}
     </>
   );
 };

@@ -10,7 +10,6 @@ import UpLoadAvatar from "../../../components/UpLoadAvatar";
 import CKEditorFieldBasic from "../../../components/Ckeditor/CKEditorFieldBasic";
 import ButtonComponent from "../../../components/ButtonComponent";
 import AutocompleteAddress from "../../../components/Input/AutocompleteAddress";
-import useIsTablet from "../../../components/useScreen/useIsTablet";
 import "./style.scss";
 const AddClinic = ({ createClinicAction, isSuccess, message, clearStatus }) => {
   const [content, setContent] = useState("");
@@ -27,7 +26,6 @@ const AddClinic = ({ createClinicAction, isSuccess, message, clearStatus }) => {
   const [previewImgUrl, setPreviewImgUrl] = useState("");
   const [previewLogoUrl, setPreviewLogoUrl] = useState("");
   const [errors, setErrors] = useState({});
-  const smScreen = useIsTablet();
   useEffect(() => {
     if (isSuccess === true) {
       setContent("");
@@ -129,20 +127,7 @@ const AddClinic = ({ createClinicAction, isSuccess, message, clearStatus }) => {
             display="flex"
             justifyContent="space-around"
             alignItems="center"
-          >
-            <UpLoadAvatar
-              content="Hình đại diện"
-              borderRadius="5px"
-              preWidth={smScreen ? "250px" : "400px"}
-              preHeight={smScreen ? "150px" : "200px"}
-              setImg={setLogo}
-              backgroundSize="contain"
-              setPreviewImgUrl={setPreviewLogoUrl}
-              previewImgUrl={previewLogoUrl}
-              isError={errors.logo ? true : false}
-              errorText={errors.logo}
-            />
-          </Grid>
+          ></Grid>
           <Grid
             item
             xs={12}
@@ -150,19 +135,7 @@ const AddClinic = ({ createClinicAction, isSuccess, message, clearStatus }) => {
             display="flex"
             justifyContent="space-around"
             alignItems="center"
-          >
-            <UpLoadAvatar
-              content="Hình nền"
-              borderRadius="5px"
-              preHeight={smScreen ? "150px" : "200px"}
-              preWidth={smScreen ? "250px" : "400px"}
-              setImg={setImage}
-              previewImgUrl={previewImgUrl}
-              setPreviewImgUrl={setPreviewImgUrl}
-              isError={errors.image ? true : false}
-              errorText={errors.image}
-            />
-          </Grid>
+          ></Grid>
           <Grid item xs={12} md={12}>
             <span className="detail__clinic--introduce">
               <CKEditorFieldBasic

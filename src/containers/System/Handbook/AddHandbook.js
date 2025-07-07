@@ -7,7 +7,6 @@ import UpLoadAvatar from "../../../components/UpLoadAvatar";
 import CKEditorFieldBasic from "../../../components/Ckeditor/CKEditorFieldBasic";
 import InputSelect from "../../../components/Input/InputSelect";
 import ButtonComponent from "../../../components/ButtonComponent";
-import useIsTablet from "../../../components/useScreen/useIsTablet";
 
 const AddHandbook = ({
   getListClinicAction,
@@ -30,7 +29,6 @@ const AddHandbook = ({
   const [previewImgUrl, setPreviewImgUrl] = useState("");
   const [dataClinic, setDataClinic] = useState([]);
   const [dataSpecialty, setDataSpecialty] = useState([]);
-  const smScreen = useIsTablet();
 
   useEffect(() => {
     getListClinicAction();
@@ -180,19 +178,7 @@ const AddHandbook = ({
                 md={12}
                 display="flex"
                 justifyContent={"center"}
-              >
-                <UpLoadAvatar
-                  content="Tải ảnh"
-                  borderRadius="5px"
-                  preHeight={smScreen ? "150px" : "200px"}
-                  preWidth={smScreen ? "250px" : "390px"}
-                  setImg={setImage}
-                  previewImgUrl={previewImgUrl}
-                  setPreviewImgUrl={setPreviewImgUrl}
-                  isError={errors.image ? true : false}
-                  errorText={errors.image}
-                />
-              </Grid>
+              ></Grid>
             </Grid>
           </Grid>
           <Grid item xs={12} md={9}>

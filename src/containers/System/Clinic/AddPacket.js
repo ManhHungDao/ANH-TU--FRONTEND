@@ -7,7 +7,6 @@ import Grid from "@mui/material/Grid";
 import UpLoadAvatar from "../../../components/UpLoadAvatar";
 import CKEditorFieldBasic from "../../../components/Ckeditor/CKEditorFieldBasic";
 import ButtonComponent from "../../../components/ButtonComponent";
-import useIsTablet from "../../../components/useScreen/useIsTablet";
 import InputSelect from "../../../components/Input/InputSelect";
 import _ from "lodash";
 const AddPacket = ({
@@ -21,7 +20,7 @@ const AddPacket = ({
   clearStatus,
   createPacket,
 }) => {
-  const smScreen = useIsTablet();
+  const smScreen = null;
   const [content, setContent] = useState("");
   const [previewImgUrl, setPreviewImgUrl] = useState("");
   const [image, setImage] = useState("");

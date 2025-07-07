@@ -8,7 +8,6 @@ import UpLoadAvatar from "../../../components/UpLoadAvatar";
 import CKEditorFieldBasic from "../../../components/Ckeditor/CKEditorFieldBasic";
 import ButtonComponent from "../../../components/ButtonComponent";
 import _ from "lodash";
-import useIsTablet from "../../../components/useScreen/useIsTablet";
 import InputSelect from "../../../components/Input/InputSelect";
 
 const AddSpecialty = ({
@@ -29,7 +28,6 @@ const AddSpecialty = ({
   const [selectClinic, setSelectClinic] = useState("");
   const [selectSpecialty, setSelectSpecialty] = useState("");
   const [errors, setErrors] = useState("");
-  const smScreen = useIsTablet();
 
   useEffect(() => {
     if (isPopular === true) setSelectClinic("");
@@ -147,19 +145,7 @@ const AddSpecialty = ({
             display="flex"
             justifyContent="center"
             alignItems="center"
-          >
-            <UpLoadAvatar
-              setImg={setImage}
-              content="Tải ảnh"
-              borderRadius="5px"
-              preHeight={smScreen ? "150px" : "200px"}
-              preWidth={smScreen ? "250px" : "400px"}
-              previewImgUrl={previewImgUrl}
-              setPreviewImgUrl={setPreviewImgUrl}
-              isError={errors.image ? true : false}
-              errorText={errors.image}
-            />
-          </Grid>
+          ></Grid>
           <Grid item xs={12} md={12}>
             <CKEditorFieldBasic
               value={content}

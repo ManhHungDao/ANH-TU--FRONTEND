@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Card, CardContent, Typography } from "@mui/material";
 import UpLoadAvatar from "../../../../components/UpLoadAvatar";
-import useIsMobile from "../../../../components/useScreen/useIsMobile";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
@@ -21,7 +20,7 @@ const ClinicProfile = ({
   views,
   enableEdit,
 }) => {
-  const isMobile = useIsMobile();
+  const isMobile = "";
   return (
     <>
       <Card>
