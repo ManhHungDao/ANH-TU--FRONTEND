@@ -42,7 +42,6 @@ import CachedIcon from "@mui/icons-material/Cached";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { toast } from "react-toastify";
 import ConfirmModal from "../../../components/confirmModal/ConfirmModal";
-import { getSinglePacketSchedule } from "../../../services/scheduleService";
 const tomorrow = dayjs().add(1, "day");
 
 const ManagePacketSchedule = ({
@@ -139,49 +138,7 @@ const ManagePacketSchedule = ({
       );
     }
   }, [listPacket, allcodes]);
-  const fetchDataSchedule = async (id, date) => {
-    loadingToggleAction(true);
-    const res = await getSinglePacketSchedule(id, date);
-    if (res && res.success === true) {
-      const data = res.schedule;
-      const { detail, schedule } = data;
-      setScheduleData(schedule);
-      setNote(detail?.note ? detail.note : "");
-      setPayment({
-        value: detail?.payment?.id ? detail.payment.id : "",
-        label: detail?.payment?.name ? detail.payment.name : "",
-      });
-      setPrice({
-        value: detail?.price?.id ? detail.price.id : "",
-        label: detail?.price?.name ? detail.price.name : "",
-      });
-      if (schedule && schedule.length > 0) {
-        let list = timeSchedule.map((e) => {
-          schedule.map((item) => {
-            if (item.time === e.id) {
-              e.active = true;
-            }
-            return e;
-          });
-          return e;
-        });
-        setTimeSchedule(list);
-        loadingToggleAction(false);
-      }
-    } else if (res.success === false) {
-      setScheduleData([]);
-      setNote(packetEdit?.detail?.note ? packetEdit.detail.note : "");
-      setPayment({
-        value: packetEdit?.payment?.id ? packetEdit.payment.id : "",
-        label: packetEdit?.payment?.name ? packetEdit.payment.name : "",
-      });
-      setPrice({
-        value: packetEdit?.price?.id ? packetEdit.price.id : "",
-        label: packetEdit?.price?.name ? packetEdit.price.name : "",
-      });
-      loadingToggleAction(false);
-    }
-  };
+  const fetchDataSchedule = async (id, date) => {};
   useEffect(() => {
     setErrors({});
     setTimeSchedule(

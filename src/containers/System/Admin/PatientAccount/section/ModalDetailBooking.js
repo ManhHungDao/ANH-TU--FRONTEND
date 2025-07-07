@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { connect } from "react-redux";
 import * as actions from "../../../../../store/actions";
-import { getDetailSchedule } from "../../../../../services/scheduleService";
 import dayjs from "dayjs";
 import Header from "../../../../../components/Header";
 import _ from "lodash";
@@ -44,21 +43,7 @@ const ModalDetailBooking = ({
   const [detailSchedule, setDetailSchedule] = useState("");
   const [resultExamMedical, setResultExamMedical] = useState("");
 
-  const fetchDataDetailSchedule = async (id, time) => {
-    try {
-      loadingToggleAction(true);
-      let res = await getDetailSchedule(id, time);
-      if (res && res.success) {
-        setDetailSchedule(res.schedule);
-        getSinglePrescription(res.schedule?.schedule?._id);
-        loadingToggleAction(false);
-      } else {
-        loadingToggleAction(false);
-      }
-    } catch (error) {
-      loadingToggleAction(false);
-    }
-  };
+  const fetchDataDetailSchedule = async (id, time) => {};
 
   useEffect(() => {
     if (open === true) fetchDataDetailSchedule(dataFetch?.id, dataFetch?.time);
