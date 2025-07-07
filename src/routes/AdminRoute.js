@@ -27,9 +27,6 @@ import ManageSchedule from "../containers/System/Doctor/ManageSchedule";
 import MyInfo from "../containers/System/Doctor/MyInfo";
 import { CssBaseline } from "@mui/material";
 import "./style.css";
-import AddNewAssistant from "../containers/System/Assistant/AddNewAssistant";
-import TableManageAssistant from "../containers/System/Assistant/TableManageAssistant";
-import ManageRoleAssistant from "../containers/System/Doctor/ManageRoleAssistant";
 
 const AdminRoute = ({ systemMenuPath, isLoggedIn }) => {
   const [isSidebar, setIsSidebar] = React.useState(true);
@@ -87,14 +84,6 @@ const AdminRoute = ({ systemMenuPath, isLoggedIn }) => {
             <Route path="manage-my-schedule" element={<ManageSchedule />} />
 
             <Route path="*" element={<Navigate replace to="/admin" />} />
-
-            {/* route manage assistant */}
-            <Route path="add-assistant" element={<AddNewAssistant />} />
-            <Route path="manage-assistant" element={<TableManageAssistant />} />
-            <Route
-              path="manage-role-assistant"
-              element={<ManageRoleAssistant />}
-            />
           </Routes>
         </main>
       </div>

@@ -1,9 +1,5 @@
 import axios from "../axios";
 
-const loginApiService = (email, password) => {
-  return axios.post("/api/login", { email, password });
-};
-
 const changePasswordApiService = (data) => {
   return axios.patch("/api/change-password", data);
 };
@@ -97,7 +93,6 @@ export {
   changePasswordApiService,
   updateUserService,
   getSingleUserService,
-  loginApiService,
   getAllUserService,
   createNewUserService,
   deleteUserService,

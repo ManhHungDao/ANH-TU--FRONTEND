@@ -12,7 +12,6 @@ import SystemAuthRoute from "../hoc/SystemAuthRoute";
 //
 import File from "./File/File";
 import FileDetail from "./File/FileDetail";
-import AssistantRoute from "../routes/AssistantRoute";
 
 class App extends Component {
   handlePersistorState = () => {
@@ -58,14 +57,6 @@ class App extends Component {
                 element={
                   <SystemAuthRoute>
                     <DoctorRoute />
-                  </SystemAuthRoute>
-                }
-              />
-              <Route
-                path={path.ASSISTANT}
-                element={
-                  <SystemAuthRoute>
-                    <AssistantRoute />
                   </SystemAuthRoute>
                 }
               />

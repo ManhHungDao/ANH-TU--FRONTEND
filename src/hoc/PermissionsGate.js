@@ -12,19 +12,18 @@ const hasPermission = ({ permissions, scopes }) => {
 
 export const PermissionsGate = ({
   children,
-  scopes = [],
-  // permissions,
-  userInfo,
+  // scopes = [],
+  // userInfo,
 }) => {
-  if (userInfo.roleId === "R2" || userInfo.roleId === "R4") {
-    const data = localStorage.getItem("permissions");
-    const permissions = JSON.parse(data);
-    const permissionGranted = hasPermission({ permissions, scopes });
+  // if (userInfo.roleId === "R2" || userInfo.roleId === "R4") {
+  //   const data = localStorage.getItem("permissions");
+  //   const permissions = JSON.parse(data);
+  //   const permissionGranted = hasPermission({ permissions, scopes });
 
-    if (!permissionGranted) return <></>;
+  //   if (!permissionGranted) return <></>;
 
-    return <>{children}</>;
-  }
+  //   return <>{children}</>;
+  // }
   return <>{children}</>;
 };
 

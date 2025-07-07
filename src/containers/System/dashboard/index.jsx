@@ -1,12 +1,5 @@
 import { connect } from "react-redux";
-import {
-  Box,
-  IconButton,
-  Typography,
-  Grid,
-  Button,
-  Stack,
-} from "@mui/material";
+import { Box, Grid, Button, Stack } from "@mui/material";
 import * as actions from "../../../store/actions";
 import Header from "../../../components/Header";
 import StatBox from "../../../components/StatBox";
@@ -17,26 +10,16 @@ import iconUser from "../../../assets/icon-dashboard/user.png";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import { useEffect, useState } from "react";
 import ModalReport from "./modalReport";
-import { getAllLocationClinic } from "../../../services/userService";
-import GoogleMaps from "../../../components/maps/GoogleMaps";
 
 const Dashboard = ({ getAllCountAction, count, userInfo }) => {
   const [data, setData] = useState({});
   const [open, setOpen] = useState(false);
-  const [listLocation, setListLocation] = useState([]);
   const [zoom, setZoom] = useState(15);
   const [selected, setSelected] = useState([21.0161926, 105.8486047]);
   // '21.0161926', lng: '105.8486047'
-  const getAllClinicLocation = async () => {
-    const res = await getAllLocationClinic();
-    if (res && res.success) {
-      setListLocation(res.list);
-    }
-  };
 
   useEffect(() => {
     getAllCountAction();
-    getAllClinicLocation();
   }, []);
 
   useEffect(() => {
@@ -116,17 +99,7 @@ const Dashboard = ({ getAllCountAction, count, userInfo }) => {
                 width: "100%",
                 height: { xs: 500, lg: 650 },
               }}
-            >
-              {listLocation.length > 0 && (
-                <GoogleMaps
-                  load={true}
-                  zoom={zoom}
-                  center={selected}
-                  idSelect={""}
-                  data={listLocation}
-                />
-              )}
-            </Stack>
+            ></Stack>
           </Grid>
         </Grid>
       </Box>

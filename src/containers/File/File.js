@@ -15,7 +15,7 @@ import CachedIcon from "@mui/icons-material/Cached";
 import { useNavigate } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import "./File.scss";
+import "./style.scss";
 import image from "../../assets/word.png";
 
 const File = ({
