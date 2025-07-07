@@ -5,10 +5,7 @@ import { ConnectedRouter as Router } from "connected-react-router";
 import { history } from "../redux";
 import { ToastContainer } from "react-toastify";
 import { path } from "../utils";
-import AdminRoute from "../routes/AdminRoute";
-import DoctorRoute from "../routes/DoctorRoute";
 import Loading from "../components/Loading";
-import SystemAuthRoute from "../hoc/SystemAuthRoute";
 //
 import File from "./File/File";
 
@@ -39,25 +36,6 @@ class App extends Component {
           <Router history={history}>
             <Routes>
               <Route path={path.HOME} element={<File />} />
-
-              {/* route control */}
-
-              <Route
-                path={path.ADMIN}
-                element={
-                  <SystemAuthRoute>
-                    <AdminRoute />
-                  </SystemAuthRoute>
-                }
-              />
-              <Route
-                path={path.DOCTOR}
-                element={
-                  <SystemAuthRoute>
-                    <DoctorRoute />
-                  </SystemAuthRoute>
-                }
-              />
             </Routes>
             <ToastContainer
               position="top-right"

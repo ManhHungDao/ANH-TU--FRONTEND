@@ -30,7 +30,6 @@ import RemoveRedEyeRoundedIcon from "@mui/icons-material/RemoveRedEyeRounded";
 import ConfirmModal from "../../../../components/confirmModal/ConfirmModal";
 import "dayjs/locale/vi";
 import dayjs from "dayjs";
-import { deleteAccountPatient } from "../../../../services/patientService";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -130,20 +129,7 @@ const TableManageAccountPatient = ({
     setOpenConfirmModal(true);
     setUserDelete(user);
   };
-  const handleDeleteAccount = async () => {
-    try {
-      const id = accountDelete._id;
-      let res = await deleteAccountPatient(id);
-      if (res && res.success) {
-        fetchDataAPI(page + 1, rowsPerPage, search);
-        setOpenConfirmModal(false);
-        toast.success("Xóa thành công");
-      }
-    } catch (error) {
-      setOpenConfirmModal(false);
-      toast.error("Xóa thất bại");
-    }
-  };
+  const handleDeleteAccount = async () => {};
   const TableRowName = () => (
     <TableRow className="table__clinic--header">
       <StyledTableCell>Email</StyledTableCell>

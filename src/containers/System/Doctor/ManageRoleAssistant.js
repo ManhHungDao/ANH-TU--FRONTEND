@@ -11,11 +11,8 @@ import {
   Card,
   CardHeader,
 } from "@mui/material";
-import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
-import { roles } from "../../../utils";
 import ButtonComponent from "../../../components/ButtonComponent";
 import { toast } from "react-toastify";
-import { getAssistantsUnderDoctor } from "../../../services/assistantService";
 
 const ManageRoleAssistant = ({
   upsertRoleUserAction,
@@ -36,25 +33,7 @@ const ManageRoleAssistant = ({
     setOpenAssistant(false);
   };
 
-  const getListAssistant = async () => {
-    try {
-      if (!userInfo) return;
-      const id = userInfo._id || userInfo.id;
-      const res = await getAssistantsUnderDoctor(id);
-      if (res && res.success) {
-        setData(
-          res.assistants.map((e) => ({
-            name: e.name,
-            id: e._id || e.id,
-          }))
-        );
-      } else {
-        toast.error("Lấy danh sách không thành công");
-      }
-    } catch {
-      toast.error("Đã có lỗi xảy ra");
-    }
-  };
+  const getListAssistant = async () => {};
 
   useEffect(() => {
     getListAssistant();

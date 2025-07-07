@@ -10,17 +10,9 @@ import {
   getSingleSpecialty,
   getClinicById,
 } from "../../services/specialtySerivce";
-import {
-  getAllHandbookHomePatient,
-  getSingleHandbook,
-} from "../../services/handbookService";
+
 import { getAllUserHomePatient } from "../../services/userService";
-import {
-  createUserBookingSchedule,
-  sentMailPatient,
-} from "../../services/scheduleService";
-import { getAllPacket } from "../../services/packetService";
-import { getAllCodeByType } from "../../services/allcodeService";
+import { sentMailPatient } from "../../services/scheduleService";
 import { loadingToggleAction } from "./adminActions";
 import { toast } from "react-toastify";
 
@@ -121,27 +113,6 @@ export const getSpecialtyByClinicIdHomeAction = (id) => {
   };
 };
 
-export const fetchAllcodeByTypeHomeAction = (data) => {
-  return async (dispatch, getState) => {
-    try {
-      const res = await getAllCodeByType(data);
-      if (res && res.success) {
-        dispatch({
-          type: actionTypes.FETCH_ALLCODE_TYPE_PATIENT_SUCCESS,
-          data: {
-            list: res.allcodes,
-            count: res.count,
-          },
-        });
-      }
-    } catch (error) {
-      dispatch({
-        type: actionTypes.FETCH_ALLCODE_TYPE_PATIENT_FAILED,
-      });
-    }
-  };
-};
-
 export const getListSpecialtyHomePatientAction = (name) => {
   return async (dispatch, getState) => {
     try {
@@ -201,79 +172,6 @@ export const getListUserHomePatientAction = (name) => {
       // dispatch(loadingToggleAction(false));
       dispatch({
         type: actionTypes.PATIENT_GET_LIST_USER_FAILED,
-      });
-    }
-  };
-};
-
-// HANBOOK
-
-export const getAllHandbookHomePatientAction = (data) => {
-  return async (dispatch, getState) => {
-    try {
-      // dispatch(loadingToggleAction(true));
-      const res = await getAllHandbookHomePatient(data);
-      if (res && res.success) {
-        // dispatch(loadingToggleAction(false));
-        dispatch({
-          type: actionTypes.GET_LIST_HANDBOOK_HOME_SUCCEED,
-          data: {
-            list: res.handbooks,
-            count: res.count,
-          },
-        });
-      }
-    } catch (error) {
-      // dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.GET_LIST_HANDBOOK_HOME_FAILED,
-      });
-    }
-  };
-};
-
-export const getSingleHandbookAction = (id) => {
-  return async (dispatch, getState) => {
-    try {
-      // dispatch(loadingToggleAction(true));
-      const res = await getSingleHandbook(id);
-      if (res && res.success) {
-        // dispatch(loadingToggleAction(false));
-        dispatch({
-          type: actionTypes.GET_SINGLE_HANDBOOK_SUCCEED,
-          data: res.handbook,
-        });
-      }
-    } catch (error) {
-      // dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.GET_SINGLE_HANDBOOK_FAILED,
-      });
-    }
-  };
-};
-
-// PACKET
-
-export const getAllPacketPatientHomeAction = (data) => {
-  return async (dispatch, getState) => {
-    try {
-      // dispatch(loadingToggleAction(true));
-      const res = await getAllPacket(data);
-      if (res && res.success) {
-        // dispatch(loadingToggleAction(false));
-        dispatch({
-          type: actionTypes.GET_ALL_PACKET_HOME_SUCCESS,
-          data: {
-            list: res.packets,
-            count: res.count,
-          },
-        });
-      }
-    } catch (error) {
-      // dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.GET_ALL_PACKET_HOME_FAILED,
       });
     }
   };

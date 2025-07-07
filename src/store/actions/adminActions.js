@@ -10,7 +10,6 @@ import {
   upsertRoleUser,
   getRoleUser,
 } from "../../services/userService";
-import { getAllAssistant } from "../../services/assistantService";
 
 import {
   updateClinic,
@@ -21,26 +20,12 @@ import {
 } from "../../services/clinicService";
 import {
   updateSpecialty,
-  getSingleSpecialty,
   getAllSpecialty,
   createSpecialty,
   deleteSpecialty,
   getClinicById,
 } from "../../services/specialtySerivce.js";
-import {
-  getAllcode,
-  createAllcode,
-  updateAllcode,
-  deleteAllcode,
-  getAllCodeByType,
-} from "../../services/allcodeService";
-import {
-  createHandbook,
-  getAllHandbook,
-  deleteHandbook,
-  updateHandbook,
-  getAllSpecialtyInHandbook,
-} from "../../services/handbookService";
+
 import {
   upsertSchedule,
   getSingleUserSchedule,
@@ -53,19 +38,10 @@ import {
 } from "../../services/scheduleService";
 
 import {
-  createPacketService,
-  deletePacket,
-  updatePacket,
-  getAllPacket,
-} from "../../services/packetService";
-
-import {
   createPrescription,
   getSinglePrescription,
   getRecentMedicalHistory,
 } from "../../services/prescriptionService";
-
-import { getAllAccountPatient } from "../../services/patientService";
 
 import { toast } from "react-toastify";
 
@@ -73,115 +49,6 @@ export const loadingToggleAction = (status) => {
   return {
     type: actionTypes.LOADING_TOGGLE_ACTION,
     data: status,
-  };
-};
-
-export const fetchAllcodeAction = () => {
-  return async (dispatch, getState) => {
-    try {
-      const res = await getAllcode();
-      if (res && res.success) {
-        dispatch({
-          type: actionTypes.FETCH_ALLCODE_SUCCESS,
-          data: res.allcodes,
-        });
-      }
-    } catch (error) {
-      dispatch({
-        type: actionTypes.FETCH_ALLCODE_FAILED,
-      });
-      toast.error("Lấy tất cả mã thất bại");
-    }
-  };
-};
-export const fetchAllcodeByTypeAction = (data) => {
-  return async (dispatch, getState) => {
-    try {
-      const res = await getAllCodeByType(data);
-      if (res && res.success) {
-        dispatch({
-          type: actionTypes.FETCH_ALLCODE_TYPE_SUCCESS,
-          data: {
-            list: res.allcodes,
-            count: res.count,
-          },
-        });
-      }
-    } catch (error) {
-      dispatch({
-        type: actionTypes.FETCH_ALLCODE_TYPE_FAILED,
-      });
-      toast.error(`Lấy tất cả mã ${data.type ? data.type : ""} thất bại`);
-    }
-  };
-};
-export const createAllCodeAction = (data) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(loadingToggleAction(true));
-      const res = await createAllcode(data);
-      if (res && res.success) {
-        dispatch(loadingToggleAction(false));
-        dispatch({
-          type: actionTypes.CREATE_SUCCESS,
-        });
-        toast.success("Tạo mã thành công");
-      }
-    } catch (error) {
-      dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.CREATE_FAILED,
-      });
-      if (error.response.data.error.statusCode === 409)
-        toast.warning("Mã định danh đã tồn tại");
-      else toast.error("Tạo mã thất bại");
-    }
-  };
-};
-
-export const updateAllCodeAction = (id, data) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(loadingToggleAction(true));
-      const res = await updateAllcode(id, data);
-      if (res && res.success) {
-        dispatch(loadingToggleAction(false));
-        dispatch({
-          type: actionTypes.UPDATE_SUCCESS,
-        });
-        toast.success("Cập nhập mã thành công");
-      }
-    } catch (error) {
-      dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.UPDATE_FAILED,
-      });
-      if (error.response.data.error.statusCode === 409)
-        toast.warning("Mã định danh đã tồn tại");
-      else toast.error("Cập nhập mã thất bại");
-    }
-  };
-};
-
-export const deleteAllCodeAction = (id) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(loadingToggleAction(true));
-      const res = await deleteAllcode(id);
-      if (res && res.success) {
-        dispatch(loadingToggleAction(false));
-        dispatch({
-          type: actionTypes.DELETE_SUCCESS,
-        });
-        toast.success("Xóa mã thành công");
-      }
-    } catch (error) {
-      dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.DELETE_FAILED,
-      });
-      toast.error("Xóa mã thất bại");
-    }
   };
 };
 
@@ -599,115 +466,6 @@ export const updateSpecialtyAction = (id, data) => {
 };
 
 // handbook
-export const createHandbookAction = (data) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(loadingToggleAction(true));
-      const res = await createHandbook(data);
-      if (res && res.success) {
-        dispatch({
-          type: actionTypes.CREATE_SUCCESS,
-        });
-        dispatch(loadingToggleAction(false));
-        toast.success("Tạo cẩm nang thành công");
-      }
-    } catch (error) {
-      dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.CREATE_FAILED,
-      });
-      toast.error("Tạo cẩm nang thất bại");
-    }
-  };
-};
-
-export const getAllHandbookAction = (data) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(loadingToggleAction(true));
-      const res = await getAllHandbook(data);
-      if (res && res.success) {
-        dispatch({
-          type: actionTypes.GET_LIST_HANDBOOK_SUCCEED,
-          data: { list: res.handbooks, count: res.count },
-        });
-        dispatch(loadingToggleAction(false));
-      }
-    } catch (error) {
-      dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.GET_LIST_HANDBOOK_FAILED,
-      });
-      toast.error("Lấy danh sách thất bại");
-    }
-  };
-};
-
-export const deleteHandbookAction = (id) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(loadingToggleAction(true));
-      const res = await deleteHandbook(id);
-      if (res && res.success) {
-        dispatch({
-          type: actionTypes.DELETE_SUCCESS,
-        });
-        dispatch(loadingToggleAction(false));
-        toast.success("Xóa cẩm nang thành công");
-      }
-    } catch (error) {
-      dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.DELETE_FAILED,
-      });
-      toast.error("Xóa cẩm nang thất bại");
-    }
-  };
-};
-
-export const updateHandbookAction = (id, data) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(loadingToggleAction(true));
-      const res = await updateHandbook(id, data);
-      if (res && res.success) {
-        dispatch({
-          type: actionTypes.UPDATE_SUCCESS,
-        });
-        dispatch(loadingToggleAction(false));
-        toast.success("Cập nhập cẩm nang thành công");
-      }
-    } catch (error) {
-      dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.UPDATE_FAILED,
-      });
-      toast.error("Cập nhập cẩm nang thất bại");
-    }
-  };
-};
-
-export const getAllSpecialtyInHandbookAction = (id, data) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(loadingToggleAction(true));
-      const res = await getAllSpecialtyInHandbook(id, data);
-      if (res && res.success) {
-        dispatch({
-          type: actionTypes.GET_LIST_SPECIALTY_IN_HANDBOOK_SUCCEED,
-          data: res.list,
-        });
-        dispatch(loadingToggleAction(false));
-      }
-    } catch (error) {
-      dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.GET_LIST_SPECIALTY_IN_HANDBOOK_FAILED,
-      });
-    }
-  };
-};
-
 // SCHEDULE
 export const upsertScheduleAction = (data) => {
   return async (dispatch, getState) => {
@@ -892,128 +650,6 @@ export const sentMailAction = (data) => {
     }
   };
 };
-
-// PACKET
-export const createPacketAction = (data) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(loadingToggleAction(true));
-      const res = await createPacketService(data);
-      if (res && res.success) {
-        dispatch({
-          type: actionTypes.CREATE_SUCCESS,
-        });
-        dispatch(loadingToggleAction(false));
-        toast.success("Tạo gói khám thành công");
-      }
-    } catch (error) {
-      dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.CREATE_FAILED,
-      });
-      toast.error("Tạo gói khám thất bại");
-    }
-  };
-};
-
-export const deletePacketAction = (id) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(loadingToggleAction(true));
-      const res = await deletePacket(id);
-      if (res && res.success) {
-        dispatch({
-          type: actionTypes.DELETE_SUCCESS,
-        });
-        dispatch(loadingToggleAction(false));
-        toast.success("Xóa gói khám thành công");
-      }
-    } catch (error) {
-      dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.DELETE_FAILED,
-      });
-      toast.error("Xóa gói khám thất bại");
-    }
-  };
-};
-
-export const getAllPacketAction = (data) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(loadingToggleAction(true));
-      const res = await getAllPacket(data);
-      if (res && res.success) {
-        dispatch({
-          type: actionTypes.GET_PACKET_PAGINATION_SUCCESS,
-          data: {
-            list: res.packets,
-            count: res.count,
-          },
-        });
-        dispatch(loadingToggleAction(false));
-      }
-    } catch (error) {
-      dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.GET_PACKET_PAGINATION_FAILED,
-      });
-      toast.error("Lấy danh sách thất bại");
-    }
-  };
-};
-
-export const updatePacketAction = (id, data) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(loadingToggleAction(true));
-      const res = await updatePacket(id, data);
-      if (res && res.success) {
-        dispatch({
-          type: actionTypes.UPDATE_SUCCESS,
-        });
-        dispatch(loadingToggleAction(false));
-        toast.success("Cập nhập gói khám thành công");
-      }
-    } catch (error) {
-      dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.UPDATE_FAILED,
-      });
-      toast.error("Cập nhập gói khám thất bại");
-    }
-  };
-};
-
-// ACCOUNT PATIENT
-
-export const getAllAccountPatientAction = (data) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(loadingToggleAction(true));
-      const res = await getAllAccountPatient(data);
-      if (res && res.success) {
-        dispatch({
-          type: actionTypes.GET_ALL_ACCOUNT_PATIENT_SUCCESS,
-          data: {
-            list: res.users,
-            count: res.count,
-          },
-        });
-        dispatch(loadingToggleAction(false));
-      }
-    } catch (error) {
-      dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.GET_ALL_ACCOUNT_PATIENT_FAILED,
-      });
-      toast.error("Lấy danh sách thất bại");
-    }
-  };
-};
-
-// PRESCRIPTION
-
 export const createPrescriptionAction = (data) => {
   return async (dispatch, getState) => {
     try {
@@ -1083,28 +719,3 @@ export const getRecentMedicalHistoryAction = (email) => {
 };
 
 // ASSISTANT
-
-export const getAllAssistantAction = (data) => {
-  return async (dispatch, getState) => {
-    try {
-      dispatch(loadingToggleAction(true));
-      const res = await getAllAssistant(data);
-      if (res && res.success) {
-        dispatch(loadingToggleAction(false));
-        dispatch({
-          type: actionTypes.FETCH_ALL_ASSISTANT_SUCCEED,
-          assistants: {
-            list: res.assistants,
-            count: res.count,
-          },
-        });
-      }
-    } catch (error) {
-      dispatch(loadingToggleAction(false));
-      dispatch({
-        type: actionTypes.FETCH_ALL_ASSISTANT_FAILED,
-      });
-      toast.error("Lấy danh sách thất bại");
-    }
-  };
-};
