@@ -9,10 +9,17 @@ import {
   ListItemText,
 } from "@mui/material";
 import { UploadCloud, X } from "lucide-react";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import FormControl from "@mui/material/FormControl";
 
 const ModalAddFiles = ({ open, onClose, onSubmit }) => {
   const [files, setFiles] = useState([]);
-
+  const [age, setAge] = useState("");
+  const handleChange = (event) => {
+    setAge(event.target.value);
+  };
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
     setFiles(selectedFiles);
@@ -28,7 +35,7 @@ const ModalAddFiles = ({ open, onClose, onSubmit }) => {
       setFiles([]);
       onClose();
     } else {
-      alert("Please select at least one file.");
+      alert("Chưa có file nào được chọn.");
     }
   };
   const style = {
@@ -51,7 +58,7 @@ const ModalAddFiles = ({ open, onClose, onSubmit }) => {
       className="flex items-center justify-center"
     >
       <Box sx={style}>
-        <Typography variant="h6" className="mb-4 font-semibold text-xl">
+        <Typography variant="h6" className="mb-2 font-semibold text-xl">
           <UploadCloud className="inline-block mr-2" /> Tải tệp tin
         </Typography>
 
@@ -85,7 +92,26 @@ const ModalAddFiles = ({ open, onClose, onSubmit }) => {
             </Typography>
           )}
         </List>
-
+        <FormControl sx={{ minWidth: 120, mb: 3 }}>
+          <InputLabel id="demo-simple-select-autowidth-label">
+            Loại án
+          </InputLabel>
+          <Select
+            labelId="demo-simple-select-autowidth-label"
+            id="demo-simple-select-autowidth"
+            value={age}
+            onChange={handleChange}
+            autoWidth
+            label="Loại án"
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={21}>Twenty one</MenuItem>
+            <MenuItem value={22}>Twenty one and a half</MenuItem>
+          </Select>
+        </FormControl>
         <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
           <Button variant="outlined" onClick={onClose}>
             Thoát
