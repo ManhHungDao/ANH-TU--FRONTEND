@@ -15,7 +15,6 @@ import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
 import { roles } from "../../../utils";
 import ButtonComponent from "../../../components/ButtonComponent";
 import { toast } from "react-toastify";
-import ListComponent from "../Allcode/List";
 import { getAssistantsUnderDoctor } from "../../../services/assistantService";
 
 const ManageRoleAssistant = ({
@@ -149,18 +148,7 @@ const ManageRoleAssistant = ({
                   maxHeight: 650,
                   overflow: "auto",
                 }}
-              >
-                <ListComponent
-                  setOpen={setOpenAssistant}
-                  open={openAssistant}
-                  icon={<PermIdentityOutlinedIcon />}
-                  list={roles.assistant}
-                  handleToggle={handleToggle}
-                  toggleName="assistant"
-                  checked={checkedAssistant}
-                  primaryName="Bác sĩ"
-                />
-              </CardContent>
+              ></CardContent>
             </Card>
           </Grid>
           <Grid item xs={12} md={12} display="flex" justifyContent="flex-end">

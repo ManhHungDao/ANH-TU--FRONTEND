@@ -12,9 +12,7 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import InputSelect from "../../../../components/Input/InputSelect";
 import "dayjs/locale/vi";
-import dayjs from "dayjs";
 import AutocompleteAddress from "../../../../components/Input/AutocompleteAddress";
 import CKEditorFieldBasic from "../../../../components/Ckeditor/CKEditorFieldBasic";
 import { useEffect, useState } from "react";
@@ -73,17 +71,7 @@ export const AccountProfileDetails = ({
                   helperText={errors.name}
                 />
               </Grid>
-              <Grid xs={12} md={6}>
-                <InputSelect
-                  label="Giới tính"
-                  value={gender}
-                  onChange={setGender}
-                  data={CONST_GENDER}
-                  isError={errors?.gender ? true : false}
-                  errorText={errors?.gender ? errors.gender : ""}
-                  name="Giới tính"
-                />
-              </Grid>
+              <Grid xs={12} md={6}></Grid>
               <Grid xs={12} md={6}>
                 <LocalizationProvider
                   dateAdapter={AdapterDayjs}
@@ -119,17 +107,7 @@ export const AccountProfileDetails = ({
                   }}
                 />
               </Grid>
-              <Grid xs={12} md={6}>
-                <InputSelect
-                  label="Chức danh"
-                  value={position}
-                  onChange={setPosition}
-                  data={dataSelect.filter((e) => e.type === "POSITION")}
-                  isError={errors?.position ? true : false}
-                  errorText={errors?.position ? errors.position : ""}
-                  name="Chức danh"
-                />
-              </Grid>
+              <Grid xs={12} md={6}></Grid>
               <Grid xs={12} md={12}>
                 <AutocompleteAddress
                   isErr={errors?.address ? true : false}
@@ -193,52 +171,10 @@ export const AccountProfileClinic = ({
         <CardContent sx={{ pt: 0 }}>
           <Box sx={{ m: -1.5 }}>
             <Grid container spacing={3}>
-              <Grid xs={12} md={6}>
-                <InputSelect
-                  label="Chọn phòng khám"
-                  value={clinic}
-                  onChange={setClinic}
-                  data={listClinicSelect}
-                  isError={errors?.clinic ? true : false}
-                  errorText={errors?.clinic ? errors.clinic : ""}
-                  name="Chọn phòng khám"
-                />
-              </Grid>
-              <Grid xs={12} md={6}>
-                <InputSelect
-                  label="Chọn chuyên khoa"
-                  value={specialty}
-                  onChange={setSpecialty}
-                  data={listSpecialty}
-                  isError={errors?.specialty ? true : false}
-                  errorText={errors?.specialty ? errors.specialty : ""}
-                  name="Chọn chuyên khoa"
-                />
-              </Grid>
-              <Grid xs={12} md={6}>
-                <InputSelect
-                  label="Chọn giá (VNĐ)"
-                  value={price}
-                  onChange={setPrice}
-                  data={dataSelect.filter((e) => e.type === "PRICE")}
-                  isActive={true}
-                  isError={errors?.price ? true : false}
-                  errorText={errors?.price ? errors.price : ""}
-                  name="Chọn giá (VNĐ)"
-                />
-              </Grid>
-              <Grid xs={12} md={6}>
-                <InputSelect
-                  label="Chọn phương thức thanh toán"
-                  value={payment}
-                  onChange={setPayment}
-                  data={dataSelect.filter((e) => e.type === "PAYMENT")}
-                  isActive={true}
-                  isError={errors?.payment ? true : false}
-                  errorText={errors?.payment ? errors.payment : ""}
-                  name="Chọn phương thức thanh toán"
-                />
-              </Grid>
+              <Grid xs={12} md={6}></Grid>
+              <Grid xs={12} md={6}></Grid>
+              <Grid xs={12} md={6}></Grid>
+              <Grid xs={12} md={6}></Grid>
               <Grid xs={12} md={6}>
                 <TextField
                   id="outlined-multiline-flexible"
