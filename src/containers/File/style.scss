@@ -1,74 +1,41 @@
-.homepacket__packet {
-  .container__body {
-    display: grid;
-    width: 100%;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 20px;
-    &--item {
-      place-self: center;
-      width: 110px;
-      box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
-        rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-      padding: 1px;
-      border-radius: 4px;
-      background-color: #efefee;
-      min-height: 70px;
-      img {
-        width: 70px;
-        height: 70px;
-        border-radius: 4px;
-        background: transparent;
-        &:hover .container__body--item--title {
-          white-space: normal;
-          background-color: #fff;
-          padding: 5px;
-          border-radius: 4px;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-          position: absolute;
-          top: 100%; /* hoặc top: auto; bottom: 0 nếu muốn hiển thị phía trên */
-          left: 0;
-          width: max-content;
-          max-width: 300px;
-          z-index: 10;
-        }
-      }
-      &--title {
-        margin: 5px;
-        min-height: 39px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2; /* number of lines to show */
-        line-clamp: 2;
-        -webkit-box-orient: vertical;
-      }
-      &--price {
-        display: flex;
-        justify-content: space-between;
-        border-top: 1px solid #eee;
-        padding-top: 6px;
-        margin: 50px 5px 5px 5px;
-        span {
-          &:nth-child(2) {
-            font-weight: bold;
-          }
-        }
-      }
-    }
+.detail__clinic--introduce {
+  .ck-rounded-corners .ck.ck-editor__editable:not(.ck-editor__nested-editable),
+  .ck.ck-editor__editable.ck-rounded-corners:not(.ck-editor__nested-editable) {
+    min-height: 100px !important;
+    max-height: 180px !important;
   }
 }
 
-@media screen and (max-width: 768px) {
-  .homepacket__packet {
-    .container__body {
-      grid-template-columns: repeat(2, 1fr);
-      &--item {
-        width: 300px !important;
-      }
-      img {
-        width: 300px !important;
-        height: 150px !important;
-      }
-    }
+.detail__handbook--introduce {
+  .ck-rounded-corners .ck.ck-editor__editable:not(.ck-editor__nested-editable),
+  .ck.ck-editor__editable.ck-rounded-corners:not(.ck-editor__nested-editable) {
+    min-height: 380px !important;
+    max-height: 500px !important;
   }
+}
+
+.MuiTableCell-head {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+.table__clinic--header {
+  height: 50px;
+}
+.table__clinic--logo {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.table__clinic--pagination {
+  p {
+    margin: 0 !important;
+  }
+}
+
+.clinic-profile__detail--text {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }

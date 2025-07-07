@@ -1,295 +1,277 @@
-/* eslint-disable jsx-a11y/alt-text */
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { Stack, Box, IconButton, Button, Container } from "@mui/material";
-import Pagination from "@mui/material/Pagination";
 import * as actions from "../../store/actions";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import HomeHeader from "../HomePage/Section/Header";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputAdornment from "@mui/material/InputAdornment";
-import CachedIcon from "@mui/icons-material/Cached";
-import { useNavigate } from "react-router-dom";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import Header from "../../components/Header";
+import _ from "lodash";
 import "./style.scss";
-import image from "../../assets/word.png";
-
-const File = ({
+import ConfirmModal from "../../components/confirmModal/ConfirmModal";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import DeleteIcon from "@mui/icons-material/Delete";
+import RemoveRedEyeRoundedIcon from "@mui/icons-material/RemoveRedEyeRounded";
+import InputAdornment from "@mui/material/InputAdornment";
+import EditIcon from "@mui/icons-material/Edit";
+import FormControl from "@mui/material/FormControl";
+import SearchIcon from "@mui/icons-material/Search";
+import CachedIcon from "@mui/icons-material/Cached";
+import { styled } from "@mui/material/styles";
+import { tableCellClasses } from "@mui/material/TableCell";
+import { Typography, Box, Grid, Paper, OutlinedInput } from "@mui/material";
+const Addfile = ({
+  getListClinicAction,
   listClinic,
-  fetchTypePacketCode,
-  typePacket,
-  listPacket,
-  getAllPacket,
+  isSuccess,
+  clearStatus,
+  deleteClincAction,
 }) => {
-  const navigate = useNavigate();
+  const [list, setList] = useState([]);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPage] = useState(0);
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [clinicEdit, setClinicEdit] = useState({});
+  const [clinicDelete, setClinicDelete] = useState({});
   const [search, setSearch] = useState("");
-  const [packets, setPackets] = useState("");
-  const [typePackets, setTypePackets] = useState("");
-  const [filterClinic, setFilterClinic] = useState("");
-  const [filterPacker, setFilterPacker] = useState("");
-  const [size, setSize] = useState(18);
-  const [page, setPage] = useState(1);
-  const [countItem, setCountItem] = useState(0);
+  const [enableEdit, setEnableEdit] = useState(false);
 
-  const fetchDataPacket = (page, size, filter, clinicId, type) => {
-    const dateFetchPacket = {
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: "#ddd",
+      color: "black",
+      // minWidth: 170,
+    },
+  }));
+  useEffect(() => {
+    fetchDataAPI(1, rowsPerPage);
+  }, []);
+  useEffect(() => {
+    if (listClinic.list && listClinic.list.length > 0) {
+      let data = listClinic.list.map((e) => {
+        return {
+          id: e._id,
+          logo: e.logo.url,
+          image: e.image.url,
+          name: e.name,
+          address: e.address,
+          introduce: e.introduce,
+          detail: e.detail,
+        };
+      });
+      setList(data);
+    } else {
+      setList([]);
+    }
+  }, [listClinic]);
+
+  useEffect(() => {
+    if (isSuccess !== null) {
+      if (isSuccess === true) {
+        setOpen(false);
+        setEnableEdit(false);
+        const searchValue = search ? search : "";
+        fetchDataAPI(page + 1, rowsPerPage, searchValue);
+      }
+      setOpenConfirmModal(false);
+      clearStatus();
+    }
+  }, [isSuccess]);
+
+  const fetchDataAPI = (page, size, filter = "") => {
+    const data = {
       page,
       size,
       filter,
-      clinicId,
-      type,
     };
-
-    getAllPacket(dateFetchPacket);
+    getListClinicAction(data);
   };
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    const dataFetchClinic = {
-      page: 1,
-      size: 999,
-      filter: "PACKET",
-    };
-    fetchTypePacketCode(dataFetchClinic);
-
-    fetchDataPacket(page, size, "", "", "");
-  }, []);
-
-  useEffect(() => {
-    setTypePackets(
-      typePacket?.list?.map((e) => ({
-        value: e._id,
-        name: e.valueVI,
-      }))
-    );
-  }, [listClinic, typePacket]);
-
-  useEffect(() => {
-    setPackets(
-      listPacket?.list?.map((e) => ({
-        id: e._id,
-        name: e.name || "",
-        image: e.image.url || "",
-        price: e.price.name || "",
-      }))
-    );
-    setCountItem(listPacket?.count);
-  }, [listPacket]);
-
-  const handleClickReset = () => {
-    if (!filterClinic && !filterPacker && !search) return;
-    fetchDataPacket(1, size, "", "", "");
-    setFilterClinic("");
-    setFilterPacker("");
-    setSearch("");
-    setPage(1);
-  };
-  const handleChange = (event, type) => {
-    setSearch("");
-    setPage(1);
-    const clinicId = filterClinic ? [filterClinic] : "";
-    const typePacket = filterPacker ? [filterPacker] : "";
-    const {
-      target: { value },
-    } = event;
-    if (type === "clinic") {
-      setFilterClinic(typeof value === "string" ? value.split(",") : value);
-      fetchDataPacket(1, size, "", value, typePacket);
-    } else {
-      setFilterPacker(typeof value === "string" ? value.split(",") : value);
-      fetchDataPacket(1, size, "", clinicId, value);
-    }
-  };
-
-  const handleClickDetailPacket = (id) => {
-    navigate(`/${id}`);
-  };
-  const handleSearchPacket = () => {
-    if (!search) return;
-    setFilterClinic("");
-    setFilterPacker("");
-    setPage(1);
-    fetchDataPacket(1, size, search, "", "");
-  };
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    const clinicId = filterClinic ? [filterClinic] : "";
-    const type = filterPacker ? [filterPacker] : "";
-    fetchDataPacket(newPage, size, search, clinicId, type);
+    fetchDataAPI(newPage + 1, rowsPerPage, search);
+  };
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    fetchDataAPI(page + 1, +event.target.value, search);
   };
 
+  const handleClickView = (data) => {
+    setClinicEdit(data);
+    setOpen(true);
+  };
+  const handelClickDelete = (data) => {
+    setOpenConfirmModal(true);
+    setClinicDelete(data);
+  };
+  const handleDeleteClinic = () => {
+    const id = clinicDelete.id;
+    if (id) deleteClincAction(id);
+  };
+  const handelClickEmpty = () => {
+    setSearch("");
+    setPage(0);
+    setRowsPerPage(10);
+    fetchDataAPI(1, 10);
+  };
+  const handleClickSearch = () => {
+    setPage(0);
+    fetchDataAPI(1, rowsPerPage, search);
+  };
+  const handleEnterSearch = (e) => {
+    if (e.which === 13) {
+      handleClickSearch();
+    }
+  };
+  const TableRowName = () => (
+    <TableRow className="table__clinic--header">
+      <StyledTableCell>Tên file</StyledTableCell>
+      <StyledTableCell>Loại án</StyledTableCell>
+      <StyledTableCell></StyledTableCell>
+    </TableRow>
+  );
+  const TableColumn = (props) => {
+    const { address, name, logo } = props;
+    return (
+      <>
+        <TableRow>
+          <TableCell>
+            <span className="d-flex justify-content-start align-items-center gap-2">
+              <div>
+                <img className="table__clinic--logo" src={logo} alt={name} />
+              </div>
+              <div> {name}</div>
+            </span>
+          </TableCell>
+          <TableCell>{address?.detail ? address.detail : ""}</TableCell>
+          <TableCell>
+            <Tooltip title="Xem">
+              <IconButton onClick={() => handleClickView(props)}>
+                <RemoveRedEyeRoundedIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Sửa">
+              <IconButton onClick={() => handleClickView(props)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Xóa">
+              <IconButton onClick={() => handelClickDelete(props)}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </TableCell>
+        </TableRow>
+      </>
+    );
+  };
   return (
     <>
-      <HomeHeader />
-      <Stack>
-        <div
-          className="d-flex flex-column justify-content-center align-items-center"
-          style={{
-            height: 200,
-            marginTop: "30px",
-          }}
-        >
-          <Box
-            sx={{
-              bgcolor: "#64b9e5",
-              height: "fit-content",
-              width: "50%",
-              // boxShadow: `rgba(0, 0, 0, 0.35) 0px 5px 15px`,
-              padding: "20px 30px",
-              borderRadius: 2,
-            }}
-          >
-            <div className="mb-3 d-flex align-items-center">
-              <FormControl
-                fullWidth
-                variant="standard"
-                sx={{
-                  width: "100%",
-                }}
-              >
-                <OutlinedInput
-                  size="small"
-                  sx={{
-                    bgcolor: "#fff",
-                    borderRadius: 2,
-                  }}
-                  placeholder="TÌm kiếm theo từ khóa"
-                  onChange={(e) => setSearch(e.target.value)}
-                  value={search}
-                  endAdornment={
-                    <InputAdornment position="end" size="small">
-                      <Button
-                        variant="contained"
-                        sx={{
-                          bgcolor: "#ebebeb",
-                          color: "#000",
-                          textTransform: "capitalize",
-                          padding: "3px 5px",
-                        }}
-                        onClick={handleSearchPacket}
-                      >
-                        Tìm kiếm
-                      </Button>
-                    </InputAdornment>
-                  }
-                />
-              </FormControl>
-            </div>
-            <Stack
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              direction={"row"}
-              gap={1}
-            >
-              <FormControl
-                sx={{
-                  minWidth: 160,
-                  bgcolor: "#fff",
-                  borderRadius: 2,
-                }}
-                size="small"
-              >
-                <InputLabel id="demo-select-small">Loại án</InputLabel>
-                <Select
-                  labelId="demo-select-small"
-                  id="demo-select-small"
-                  value={filterPacker}
-                  label="Loại án"
-                  onChange={(e) => handleChange(e, "packet")}
-                >
-                  {typePackets &&
-                    typePackets.length > 0 &&
-                    typePackets.map((e) => (
-                      <MenuItem key={e.value || ""} value={e.value || ""}>
-                        {e.name || ""}
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
-              <FormControl
-                sx={{ minWidth: 160, bgcolor: "#fff", borderRadius: 2 }}
-                size="small"
-              >
-                <InputLabel id="demo-select-small">Ngày tháng</InputLabel>
-                <Select
-                  labelId="demo-select-small"
-                  id="demo-select-small"
-                  value={filterClinic}
-                  label="Ngày tháng"
-                  onChange={(e) => handleChange(e, "clinic")}
-                ></Select>
-              </FormControl>
-              <IconButton
-                color="primary"
-                aria-label="upload picture"
-                component="label"
-                onClick={handleClickReset}
-              >
-                <CachedIcon />
-              </IconButton>
-            </Stack>
+      <Box m="20px">
+        <Header
+          title="Quản lý danh sách tập tin"
+          subtitle="Quản lý phòng khám"
+          titleBtn="Thêm file"
+          isShowBtn={true}
+          // link="/add"
+          activeMenu="Thêm phòng khám"
+        />
+        <Typography
+          variant="h4"
+          color="#141414"
+          fontWeight="bold"
+          sx={{ m: "0 0 5px 0", textTransform: "capitalize" }}
+        ></Typography>
+        <Box m="20px 0 0 0">
+          <Box m="0 0 7px 0">
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={3}>
+                <FormControl sx={{ width: "100%" }} variant="outlined">
+                  <OutlinedInput
+                    placeholder="Lọc theo tên"
+                    id="outlined-adornment-weight"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onKeyPress={(e) => handleEnterSearch(e)}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton onClick={handleClickSearch}>
+                          <SearchIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={3} display="flex" alignItems="center">
+                <Tooltip title="Làm trống">
+                  <IconButton onClick={() => handelClickEmpty()}>
+                    <CachedIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </Grid>
           </Box>
-        </div>
-      </Stack>
-      <Container>
-        <div
-          className="section-data homepacket__packet"
-          style={{ border: "none", padding: 0, marginBottom: "15px" }}
-        >
-          <div className="container__body">
-            {packets &&
-              packets.length > 0 &&
-              packets.map((e, index) => (
-                <div
-                  className="container__body--item"
-                  onClick={() => handleClickDetailPacket(e.id)}
-                >
-                  <span style={{ display: "flex", justifyContent: "center" }}>
-                    <img src={image} alt={e.name} />
-                  </span>
-                  <div className="container__body--item--title">{e.name}</div>
-                </div>
-              ))}
-          </div>
-          <Stack mt={3}>
-            {countItem > size && (
-              <span className="d-flex justify-content-center">
-                <Pagination
-                  count={Math.ceil(countItem / size)}
-                  color="primary"
-                  onChange={handleChangePage}
-                  page={page}
-                />
-              </span>
-            )}
-          </Stack>
-        </div>
-      </Container>
+          <TableContainer component={Paper} sx={{ maxHeight: 550 }}>
+            <Table
+              sx={{ minWidth: 650 }}
+              size="small"
+              aria-label="simple table"
+              stickyHeader
+            >
+              <TableHead>
+                <TableRowName />
+              </TableHead>
+              <TableBody>
+                {list &&
+                  list.length > 0 &&
+                  list.map((e) => <TableColumn key={e.id} {...e} />)}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 50]}
+            component="div"
+            count={parseInt(listClinic?.count ? listClinic.count : 0)}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            className="table__clinic--pagination"
+          />
+        </Box>
+      </Box>
+
+      <ConfirmModal
+        open={openConfirmModal}
+        setOpen={setOpenConfirmModal}
+        title="Xóa phòng khám"
+        content={`${clinicDelete?.name ? clinicDelete.name : ""}`}
+        type="DELETE"
+        confirmFunc={handleDeleteClinic}
+      />
     </>
   );
 };
 
 const mapStateToProps = (state) => {
   return {
-    listPacket: state.client.listPacket,
-    typePacket: state.client.allcodeType,
+    listClinic: state.admin.listClinic,
+    isSuccess: state.app.isSuccess,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getListClinicHome: () => dispatch(actions.getListClinicHomePatientAction()),
-    fetchTypePacketCode: (type) =>
-      dispatch(actions.fetchAllcodeByTypeHomeAction(type)),
-    getAllPacket: (data) =>
-      dispatch(actions.getAllPacketPatientHomeAction(data)),
-    loadingToggleAction: (id) => dispatch(actions.loadingToggleAction(id)),
+    getListClinicAction: (data) => dispatch(actions.getListClinicAction(data)),
+    clearStatus: () => dispatch(actions.clearStatus()),
+    deleteClincAction: (id) => dispatch(actions.deleteClincAction(id)),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(File);
+export default connect(mapStateToProps, mapDispatchToProps)(Addfile);

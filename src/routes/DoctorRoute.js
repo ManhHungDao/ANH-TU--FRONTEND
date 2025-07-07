@@ -1,7 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Route, Routes, Navigate } from "react-router-dom";
-import Dashboard from "../containers/System/dashboard";
 import Topbar from "../containers/System/global/Topbar";
 import DoctorSideBar from "../containers/System/global/DoctorSideBar";
 import ManageSchedule from "../containers/System/Doctor/ManageSchedule";
@@ -21,7 +20,6 @@ const DoctorRoute = ({ systemMenuPath, isLoggedIn }) => {
         <main className="content">
           <Topbar setIsSidebar={setIsSidebar} />
           <Routes>
-            <Route index element={<Dashboard />} />
             <Route path="view-myinfo" element={<MyInfo />} />
             <Route path="schedule-today" element={<TodaySchedule />} />
             <Route path="manage-schedule" element={<ManageSchedule />} />
