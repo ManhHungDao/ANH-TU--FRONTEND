@@ -5,7 +5,6 @@ import { Box, Grid, TextField } from "@mui/material";
 import Header from "../../../components/Header.jsx";
 import UpLoadAvatar from "../../../components/UpLoadAvatar";
 import CKEditorFieldBasic from "../../../components/Ckeditor/CKEditorFieldBasic";
-import InputSelect from "../../../components/Input/InputSelect";
 import ButtonComponent from "../../../components/ButtonComponent";
 
 const AddHandbook = ({
@@ -140,26 +139,6 @@ const AddHandbook = ({
         <Grid container spacing={2}>
           <Grid item xs={12} md={3}>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={12}>
-                <InputSelect
-                  value={selectClinic}
-                  onChange={setSelectClinic}
-                  data={dataClinic}
-                  name="Chọn cơ sở"
-                />
-              </Grid>
-              <Grid item xs={12} md={12}>
-                <InputSelect
-                  value={selectSpecialty}
-                  onChange={setSelectSpecialty}
-                  data={dataSpecialty}
-                  isError={errors.selectSpecialty ? true : false}
-                  errorText={
-                    errors.selectSpecialty ? errors.selectSpecialty : ""
-                  }
-                  name="Chọn chuyên khoa"
-                />
-              </Grid>
               <Grid item xs={12} md={12}>
                 <TextField
                   required

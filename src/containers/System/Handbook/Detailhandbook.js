@@ -15,7 +15,6 @@ import {
 import ButtonComponent from "../../../components/ButtonComponent";
 import CKEditorFieldBasic from "../../../components/Ckeditor/CKEditorFieldBasic";
 import HandbookProfile from "./section/HandbookProfile";
-import { HandbookDetail } from "./section/HandbookDetail";
 import { scopes } from "../../../utils";
 import PermissionsGate from "../../../hoc/PermissionsGate";
 import _ from "lodash";
@@ -192,20 +191,7 @@ const DetailHandbook = ({
                   </Grid>
                   {enableEdit && (
                     <>
-                      <Grid xs={12} md={6} lg={8}>
-                        <HandbookDetail
-                          name={name}
-                          setName={setName}
-                          detail={detail}
-                          setDetail={setDetail}
-                          note={note}
-                          setNote={setNote}
-                          dataSpecialty={dataSpecialty}
-                          errors={errors}
-                          specialty={specialty}
-                          setSpecialty={setSpecialty}
-                        />
-                      </Grid>
+                      <Grid xs={12} md={6} lg={8}></Grid>
                       <Grid xs={12} md={12} lg={12}>
                         <Card>
                           <CardHeader title="Thông tin chi tiết" />

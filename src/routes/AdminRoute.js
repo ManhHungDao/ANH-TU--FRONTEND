@@ -1,7 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Route, Routes, Navigate } from "react-router-dom";
-import TableManageUser from "../containers/System/Admin/TableManageUser";
 import TableManageClinic from "../containers/System/Clinic/TableManageClinic";
 import TableManageSpecialty from "../containers/System/Specialty/TableManageSpecialty";
 import Topbar from "../containers/System/global/Topbar";
@@ -10,8 +9,6 @@ import AddClinic from "../containers/System/Clinic/AddClinic";
 import AddSpecialty from "../containers/System/Specialty/AddSpecialty";
 import AddHandbook from "../containers/System/Handbook/AddHandbook";
 import TableManageHandbook from "../containers/System/Handbook/TableManageHandbook";
-import ManageUserSchedule from "../containers/System/Admin/ManageUserSchedule";
-import TableManageUserSchedule from "../containers/System/Admin/TableManageUserSchedule";
 import ManagePacketSchedule from "../containers/System/Clinic/ManagePacketSchedule";
 import AddPacket from "../containers/System/Clinic/AddPacket";
 import TableManagePacket from "../containers/System/Clinic/TableManagePacket";
@@ -39,12 +36,7 @@ const AdminRoute = ({ systemMenuPath, isLoggedIn }) => {
               element={<TableManageAccountPatient />}
             />
             <Route path="detail-account-patient" element={<DetailAccount />} />
-            <Route path="manage-user" element={<TableManageUser />} />
-            <Route path="add-user-schedule" element={<ManageUserSchedule />} />
-            <Route
-              path="manage-user-schedule"
-              element={<TableManageUserSchedule />}
-            />
+
             <Route path="add-clinic" element={<AddClinic />} />
             <Route path="manage-clinic" element={<TableManageClinic />} />
             <Route path="add-packet" element={<AddPacket />} />

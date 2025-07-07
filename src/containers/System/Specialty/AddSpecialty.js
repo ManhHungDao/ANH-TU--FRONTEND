@@ -8,7 +8,6 @@ import UpLoadAvatar from "../../../components/UpLoadAvatar";
 import CKEditorFieldBasic from "../../../components/Ckeditor/CKEditorFieldBasic";
 import ButtonComponent from "../../../components/ButtonComponent";
 import _ from "lodash";
-import InputSelect from "../../../components/Input/InputSelect";
 
 const AddSpecialty = ({
   listClinic,
@@ -111,32 +110,7 @@ const AddSpecialty = ({
         />
         <Grid container spacing={2}>
           <Grid item xs={12} md={4}>
-            <Grid container spacing={2}>
-              {!isPopular && (
-                <Grid item xs={12} md={12}>
-                  <InputSelect
-                    value={selectClinic}
-                    onChange={setSelectClinic}
-                    data={dataClinic}
-                    name="Chọn phòng khám"
-                    isError={errors.selectClinic ? true : false}
-                    errorText={errors.selectClinic ? errors.selectClinic : ""}
-                  />
-                </Grid>
-              )}
-              <Grid item xs={12} md={12}>
-                <InputSelect
-                  value={selectSpecialty}
-                  onChange={setSelectSpecialty}
-                  data={dataSpecialty}
-                  name="Chọn chuyên khoa"
-                  isError={errors.selectSpecialty ? true : false}
-                  errorText={
-                    errors.selectSpecialty ? errors.selectSpecialty : ""
-                  }
-                />
-              </Grid>
-            </Grid>
+            <Grid container spacing={2}></Grid>
           </Grid>
           <Grid
             item

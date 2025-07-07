@@ -6,7 +6,6 @@ import {
   TextField,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
-import InputSelect from "../../../../components/Input/InputSelect";
 import { connect } from "react-redux";
 
 const PacketDetail = ({
@@ -64,28 +63,7 @@ const PacketDetail = ({
                   }}
                 />
               </Grid>
-              <Grid xs={12} md={4}>
-                <InputSelect
-                  label="Chọn phương thức thanh toán"
-                  value={payment}
-                  onChange={setPayment}
-                  data={dataSelect.filter((e) => e.type === "PAYMENT")}
-                  isError={errors.payment ? true : false}
-                  errorText={errors.payment ? errors.payment : ""}
-                  name="Chọn phương thức thanh toán"
-                />
-              </Grid>
-              <Grid xs={12} md={4}>
-                <InputSelect
-                  label="Chọn giá (VNĐ)"
-                  value={price}
-                  onChange={setPrice}
-                  data={dataSelect.filter((e) => e.type === "PRICE")}
-                  isError={errors.price ? true : false}
-                  errorText={errors.price ? errors.price : ""}
-                  name="Chọn giá (VNĐ)"
-                />
-              </Grid>
+
               <Grid xs={12} md={12}>
                 <TextField
                   required

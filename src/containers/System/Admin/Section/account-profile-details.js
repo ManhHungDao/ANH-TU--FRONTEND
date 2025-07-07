@@ -13,7 +13,6 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import "dayjs/locale/vi";
-import AutocompleteAddress from "../../../../components/Input/AutocompleteAddress";
 import CKEditorFieldBasic from "../../../../components/Ckeditor/CKEditorFieldBasic";
 import { useEffect, useState } from "react";
 
@@ -108,14 +107,7 @@ export const AccountProfileDetails = ({
                 />
               </Grid>
               <Grid xs={12} md={6}></Grid>
-              <Grid xs={12} md={12}>
-                <AutocompleteAddress
-                  isErr={errors?.address ? true : false}
-                  errName={errors?.address ? errors?.address : ""}
-                  setAddress={setAddress}
-                  address={address}
-                />
-              </Grid>
+              <Grid xs={12} md={12}></Grid>
             </Grid>
           </Box>
         </CardContent>

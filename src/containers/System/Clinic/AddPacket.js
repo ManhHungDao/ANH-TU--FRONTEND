@@ -7,7 +7,6 @@ import Grid from "@mui/material/Grid";
 import UpLoadAvatar from "../../../components/UpLoadAvatar";
 import CKEditorFieldBasic from "../../../components/Ckeditor/CKEditorFieldBasic";
 import ButtonComponent from "../../../components/ButtonComponent";
-import InputSelect from "../../../components/Input/InputSelect";
 import _ from "lodash";
 const AddPacket = ({
   fetchAllcode,
@@ -133,58 +132,6 @@ const AddPacket = ({
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={8}>
-                <InputSelect
-                  value={clinic}
-                  onChange={setClinic}
-                  data={listClinicSelect}
-                  name="Chọn phòng khám"
-                  isError={errors.clinic ? true : false}
-                  errorText={errors.clinic ? errors.clinic : ""}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <InputSelect
-                  value={type}
-                  onChange={setType}
-                  data={dataSelect.filter((e) => e.type === "PACKET")}
-                  name="Chọn loại gói"
-                  isError={errors.type ? true : false}
-                  errorText={errors.type ? errors.type : ""}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <InputSelect
-                  value={specialty}
-                  onChange={setSpecialty}
-                  data={dataSelect.filter((e) => e.type === "SPECIALTY")}
-                  name="Chọn chuyên khoa"
-                  isError={errors.specialty ? true : false}
-                  errorText={errors.specialty ? errors.specialty : ""}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <InputSelect
-                  label="Chọn giá (VNĐ)"
-                  value={price}
-                  onChange={setPrice}
-                  data={dataSelect.filter((e) => e.type === "PRICE")}
-                  isError={errors.price ? true : false}
-                  errorText={errors.price ? errors.price : ""}
-                  name="Chọn giá (VNĐ)"
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <InputSelect
-                  label="Chọn phương thức thanh toán"
-                  value={payment}
-                  onChange={setPayment}
-                  data={dataSelect.filter((e) => e.type === "PAYMENT")}
-                  isError={errors.payment ? true : false}
-                  errorText={errors.payment ? errors.payment : ""}
-                  name="Chọn phương thức thanh toán"
-                />
-              </Grid>
               <Grid item xs={12} md={12}>
                 <TextField
                   required

@@ -9,7 +9,6 @@ import Header from "../../../components/Header.jsx";
 import UpLoadAvatar from "../../../components/UpLoadAvatar";
 import CKEditorFieldBasic from "../../../components/Ckeditor/CKEditorFieldBasic";
 import ButtonComponent from "../../../components/ButtonComponent";
-import AutocompleteAddress from "../../../components/Input/AutocompleteAddress";
 import "./style.scss";
 const AddClinic = ({ createClinicAction, isSuccess, message, clearStatus }) => {
   const [content, setContent] = useState("");
@@ -106,15 +105,6 @@ const AddClinic = ({ createClinicAction, isSuccess, message, clearStatus }) => {
                   value={name}
                   error={errors.name}
                   helperText={errors.name}
-                />
-              </Grid>
-              <Grid item xs={12} md={12}>
-                <AutocompleteAddress
-                  isErr={errors.address ? true : false}
-                  errName={errors.address}
-                  setAddress={setAddress}
-                  setCoordinates={setCoordinates}
-                  address={address}
                 />
               </Grid>
             </Grid>

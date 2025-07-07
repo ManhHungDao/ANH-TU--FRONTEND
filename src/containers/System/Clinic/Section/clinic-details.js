@@ -6,7 +6,6 @@ import {
   TextField,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
-import AutocompleteAddress from "../../../../components/Input/AutocompleteAddress";
 import CKEditorFieldBasic from "../../../../components/Ckeditor/CKEditorFieldBasic";
 
 export const ClinicDetail = ({
@@ -38,21 +37,14 @@ export const ClinicDetail = ({
                   helperText={errors.name}
                 />
               </Grid>
-              <Grid xs={12} md={6}>
-                <AutocompleteAddress
-                  isErr={errors?.address ? true : false}
-                  errName={errors?.address ? errors?.address : ""}
-                  setAddress={setAddress}
-                  setProvince={setProvince}
-                  setCoordinates={setCoordinates}
-                  address={address}
-                />
-              </Grid>
+              <Grid xs={12} md={6}></Grid>
               <Grid className="detail__clinic--introduce">
-                <CKEditorFieldBasic value={introduce} onChange={setIntroduce} 
-                 isError={errors.introduce ? true : false}
-                 errorText={errors.introduce}
-                 title="Giới thiệu"
+                <CKEditorFieldBasic
+                  value={introduce}
+                  onChange={setIntroduce}
+                  isError={errors.introduce ? true : false}
+                  errorText={errors.introduce}
+                  title="Giới thiệu"
                 />
               </Grid>
             </Grid>

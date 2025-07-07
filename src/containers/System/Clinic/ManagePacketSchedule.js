@@ -36,7 +36,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import "dayjs/locale/vi";
 import dayjs from "dayjs";
 import HomeWorkOutlinedIcon from "@mui/icons-material/HomeWorkOutlined";
-import InputSelect from "../../../components/Input/InputSelect";
 import ButtonComponent from "../../../components/ButtonComponent";
 import SearchIcon from "@mui/icons-material/Search";
 import CachedIcon from "@mui/icons-material/Cached";
@@ -515,30 +514,7 @@ const ManagePacketSchedule = ({
                 </LocalizationProvider>
               </Grid>
               <Grid item xs={12} md={12}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={6}>
-                    <InputSelect
-                      label="Chọn giá (VNĐ)"
-                      value={price}
-                      onChange={setPrice}
-                      data={dataSelect.filter((e) => e.type === "PRICE")}
-                      isError={errors.price ? true : false}
-                      errorText={errors.price ? errors.price : ""}
-                      name="Chọn giá (VNĐ)"
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <InputSelect
-                      label="Chọn phương thức thanh toán"
-                      value={payment}
-                      onChange={setPayment}
-                      data={dataSelect.filter((e) => e.type === "PAYMENT")}
-                      isError={errors.payment ? true : false}
-                      errorText={errors.payment ? errors.payment : ""}
-                      name="Chọn phương thức thanh toán"
-                    />
-                  </Grid>
-                </Grid>
+                <Grid container spacing={2}></Grid>
               </Grid>
               <Grid item xs={12} md={12}>
                 <TextField
