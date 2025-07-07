@@ -25,18 +25,7 @@ const appReducer = (state = initialState, action) => {
         isLoggedIn: false,
         userInfo: null,
       };
-    // case actionTypes.PATIENT_LOGIN_SUCCESS:
-    //   return {
-    //     ...state,
-    //     isPatientLoggedIn: true,
-    //     patientInfo: action.userInfo,
-    //   };
-    // case actionTypes.PATIENT_LOGIN_FAIL:
-    //   return {
-    //     ...state,
-    //     isPatientLoggedIn: false,
-    //     patientInfo: null,
-    //   };
+
     case actionTypes.GET_PERMISSION_LOGIN_SUCCESS:
       return {
         ...state,
