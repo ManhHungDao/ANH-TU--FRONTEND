@@ -12,7 +12,6 @@ const style = {
   width: "80%",
   height: "90%",
   bgcolor: "background.paper",
-  border: "2px solid #000",
   boxShadow: 24,
   p: 4,
   overflow: "auto",
@@ -67,7 +66,12 @@ export default function ModalEditFile({ id, open, setOpen }) {
             // errorText={errors.content}
             title="Chỉnh sửa nội dung"
           />
-          <Button variant="contained" color="primary" onClick={handleSave}>
+          <Button
+            sx={{ marginTop: "10px", display: "flex", alignSelf: "flex-end" }}
+            variant="contained"
+            color="primary"
+            onClick={handleSave}
+          >
             Lưu nội dung
           </Button>
         </Box>

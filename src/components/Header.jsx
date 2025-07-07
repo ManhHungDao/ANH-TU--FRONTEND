@@ -1,72 +1,69 @@
-import { Typography, Box, Button, Grid, Switch } from "@mui/material";
+import { useState } from "react";
+import { Typography, Box, Button, Grid } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import AddIcon from "@mui/icons-material/Add";
-import * as actions from "../store/actions";
+import ModalAddFiles from "./modal/ModalAddFiles";
 
-const Header = ({
-  title,
-  subtitle,
-  titleBtn,
-  isShowBtn,
-  activeMenu,
-  link,
-  isChecked,
-  setChecked,
-  isShowSwitch,
-  titleSwich,
-}) => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+const Header = ({ title, titleBtn, setChecked }) => {
+  const [open, setOpen] = useState(false);
   const onClick = () => {
-    navigate(link);
-    dispatch({ type: actions.SET_MENU, data: activeMenu });
+    setOpen(true);
+    // Optionally, you can dispatch an action or perform other logic here
+    // For example, if you want to reset the checked state when opening the modal:
+    // setChecked(false);
+  };
+  const handleOnClose = () => {
+    setOpen(!open);
   };
   const handleChange = (event) => {
     setChecked(event.target.checked);
   };
   return (
-    <Box mb="30px">
-      <Grid container>
-        <Grid item xs={12} md={6} direction="column">
-          <Typography
-            variant="h4"
-            color="#141414"
-            fontWeight="bold"
-            sx={{ m: "0 0 5px 0", textTransform: "capitalize" }}
+    <>
+      <Box mb="30px">
+        <Grid container>
+          <Grid item xs={12} md={6} direction="column">
+            <Typography
+              variant="h4"
+              color="#141414"
+              fontWeight="bold"
+              sx={{ m: "0 0 5px 0", textTransform: "capitalize" }}
+            >
+              {title}
+            </Typography>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            display="flex"
+            justifyContent="flex-end"
+            alignItems="flex-end"
+            sx={{ height: "fit-content" }}
           >
-            {title}
-          </Typography>
+            <Button
+              sx={{
+                backgroundColor: "rgb(33, 150, 243)",
+                color: "#fff",
+                fontSize: "14px",
+                fontWeight: "light",
+                padding: "5px 10px",
+                ":hover": {
+                  bgcolor: "rgb(151, 200, 240)",
+                },
+                fontWeight: "bold",
+              }}
+              variant="contained"
+              // startIcon={<AddIcon />}
+              onClick={onClick}
+            >
+              {titleBtn}
+            </Button>
+          </Grid>
         </Grid>
-        <Grid
-          item
-          xs={12}
-          md={6}
-          display="flex"
-          justifyContent="flex-end"
-          alignItems="flex-end"
-          sx={{ height: "fit-content" }}
-        >
-          <Button
-            sx={{
-              backgroundColor: "rgb(33, 150, 243)",
-              color: "#141414",
-              fontSize: "14px",
-              fontWeight: "light",
-              padding: "5px 10px",
-              ":hover": {
-                bgcolor: "rgb(151, 200, 240)",
-              },
-            }}
-            variant="contained"
-            // startIcon={<AddIcon />}
-            onClick={onClick}
-          >
-            {titleBtn}
-          </Button>
-        </Grid>
-      </Grid>
-    </Box>
+      </Box>
+      {open && <ModalAddFiles open={open} onClose={handleOnClose} />}
+    </>
   );
 };
 
