@@ -6,10 +6,6 @@ import {
   getSuggestClinicPatient,
 } from "../../services/clinicService";
 
-import { getAllUserHomePatient } from "../../services/userService";
-import { loadingToggleAction } from "./adminActions";
-import { toast } from "react-toastify";
-
 // CLINIC
 export const getSuggestClinicPatientAction = (id) => {
   return async (dispatch, getState) => {

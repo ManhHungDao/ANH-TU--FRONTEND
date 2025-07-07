@@ -1,59 +1,5 @@
 import axios from "../axios";
 
-const changePasswordApiService = (data) => {
-  return axios.patch("/api/change-password", data);
-};
-
-const resetPasswordApiService = (email) => {
-  return axios.patch("/api/reset-password", email);
-};
-
-const getAllUserService = (data) => {
-  return axios.get(
-    `/api/get-all-user?page=${data.page}&clinicId=${data.clinicId}&filter=${data.filter}&size=${data.size}`
-  );
-};
-
-const getSingleUserService = (id) => {
-  return axios.get(`/api/get-user?id=${id}`);
-};
-
-const createNewUserService = (data) => {
-  return axios.post(`/api/create-user`, data);
-};
-
-const updateUserService = (id, data) => {
-  return axios.put(`/api/update-user?id=${id}`, data);
-};
-
-const deleteUserService = (id) => {
-  return axios.delete(`/api/delete-user?id=${id}`);
-};
-
-const getAllCountDashboard = () => {
-  return axios.get(`/api/get-all-count`);
-};
-
-const getAllUserHomePatient = (name) => {
-  return axios.get(`/api/get-all-user-home?filter=${name}`);
-};
-
-const getAllUserBySpecialtyHome = (data) => {
-  return axios.get(
-    `/api/get-user-by-specialty-home?page=${data.page}&size=${data.size}&id=${data.id}`
-  );
-};
-const getAllDoctorBySpecialtyOfClinicHome = (data) => {
-  return axios.get(
-    `/api/get-user-by-specialty-clinic-home?page=${data.page}&size=${data.size}&clinicId=${data.clinicId}&specialtyId=${data.specialtyId}`
-  );
-};
-
-const getAllDoctorByProvince = (data) => {
-  return axios.get(
-    `/api/get-user-by-province-home?page=${data.page}&size=${data.size}&id=${data.id}&province=${data.province}`
-  );
-};
 // dashboard
 const getAllPatientAccount = () => {
   return axios.get(`/api/get-all-patient-account`);
@@ -90,19 +36,7 @@ export {
   getAllPatientAccount,
   getAllDoctorAccount,
   getAllMedicalHistory,
-  changePasswordApiService,
-  updateUserService,
-  getSingleUserService,
-  getAllUserService,
-  createNewUserService,
-  deleteUserService,
-  resetPasswordApiService,
-  getAllCountDashboard,
-  getAllUserHomePatient,
-  getAllUserBySpecialtyHome,
-  getAllDoctorByProvince,
   getAllLocationClinic,
   getAllManager,
   statisticTimeBooking,
-  getAllDoctorBySpecialtyOfClinicHome,
 };
