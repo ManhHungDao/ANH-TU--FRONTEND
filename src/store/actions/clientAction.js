@@ -1,65 +1,6 @@
 /* eslint-disable no-lone-blocks */
 import actionTypes from "./actionTypes";
-import {
-  getSingleClinic,
-  getAllClinicHomePatient,
-  getSuggestClinicPatient,
-} from "../../services/clinicService";
-
-// CLINIC
-export const getSuggestClinicPatientAction = (id) => {
-  return async (dispatch, getState) => {
-    try {
-      {
-        // dispatch(loadingToggleAction(true));
-        const res = await getSuggestClinicPatient(id);
-        if (res && res.success) {
-          dispatch({
-            type: actionTypes.PATIENT_GET_LIST_CLINIC_SUCCEED,
-            data: res.nearestClinics,
-          });
-          // dispatch(loadingToggleAction(false));
-        } else {
-          dispatch({
-            type: actionTypes.PATIENT_GET_LIST_CLINIC_FAILED,
-          });
-          // dispatch(loadingToggleAction(false));
-        }
-      }
-    } catch (error) {
-      dispatch({
-        type: actionTypes.PATIENT_GET_LIST_CLINIC_FAILED,
-      });
-    }
-  };
-};
-
-export const getSingleClinicPatientAction = (id) => {
-  return async (dispatch, getState) => {
-    try {
-      {
-        // dispatch(loadingToggleAction(true));
-        const res = await getSingleClinic(id);
-        if (res && res.success) {
-          dispatch({
-            type: actionTypes.PATIENT_GET_CLINIC_SUCCEED,
-            data: res.clinic,
-          });
-          // dispatch(loadingToggleAction(false));
-        } else {
-          dispatch({
-            type: actionTypes.PATIENT_GET_CLINIC_FAILED,
-          });
-          // dispatch(loadingToggleAction(false));
-        }
-      }
-    } catch (error) {
-      dispatch({
-        type: actionTypes.PATIENT_GET_CLINIC_FAILED,
-      });
-    }
-  };
-};
+import { getAllClinicHomePatient } from "../../services/clinicService";
 
 export const getListClinicHomePatientAction = () => {
   return async (dispatch, getState) => {

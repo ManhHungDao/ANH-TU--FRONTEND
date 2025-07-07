@@ -37,7 +37,6 @@ const Addfile = ({
   listClinic,
   isSuccess,
   clearStatus,
-  deleteClincAction,
 }) => {
   const [list, setList] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -130,7 +129,7 @@ const Addfile = ({
   };
   const handleDeleteClinic = () => {
     const id = clinicDelete.id;
-    if (id) deleteClincAction(id);
+    // if (id) deleteClincAction(id);
   };
   const handelClickEmpty = () => {
     setSearch("");
@@ -326,7 +325,6 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getListClinicAction: (data) => dispatch(actions.getListClinicAction(data)),
     clearStatus: () => dispatch(actions.clearStatus()),
-    deleteClincAction: (id) => dispatch(actions.deleteClincAction(id)),
   };
 };
 
