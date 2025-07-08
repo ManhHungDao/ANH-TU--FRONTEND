@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import CKEditorFieldBasic from "../Ckeditor/CKEditorFieldBasic";
+import { Stack } from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -10,7 +11,7 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: "80%",
-  height: "90%",
+  height: "95%",
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
@@ -67,7 +68,7 @@ export default function ModalEditFile({ id, open, setOpen }) {
             title="Chỉnh sửa nội dung"
           />
           <Button
-            sx={{ marginTop: "10px", display: "flex", alignSelf: "flex-end" }}
+            sx={{ marginTop: "10px" }}
             variant="contained"
             color="primary"
             onClick={handleSave}

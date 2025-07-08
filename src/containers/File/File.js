@@ -47,12 +47,12 @@ const Addfile = ({
   const [search, setSearch] = useState("");
   const [openViewModal, setOpenViewModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
-  const [age, setAge] = useState("");
+  const [type, setType] = useState("");
   const [idFile, setIdFile] = useState(null);
   const [content, setContent] = useState("");
 
   const handleChange = (event) => {
-    setAge(event.target.value);
+    setType(event.target.value);
   };
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -134,7 +134,7 @@ const Addfile = ({
   const handelClickEmpty = () => {
     setSearch("");
     setPage(0);
-    setAge("");
+    setType("");
     setRowsPerPage(10);
     fetchDataAPI(1, 10);
   };
@@ -235,7 +235,7 @@ const Addfile = ({
                   <Select
                     labelId="demo-simple-select-autowidth-label"
                     id="demo-simple-select-autowidth"
-                    value={age}
+                    value={type}
                     onChange={handleChange}
                     autoWidth
                     label="Loại án"
