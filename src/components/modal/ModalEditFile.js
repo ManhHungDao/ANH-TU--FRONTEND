@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
+import { Box, Button, Modal, Stack } from "@mui/material";
 import CKEditorFieldBasic from "../Ckeditor/CKEditorFieldBasic";
-import { Stack } from "@mui/material";
 
-const style = {
+const modalStyle = {
   position: "absolute",
   top: "50%",
   left: "50%",
@@ -21,25 +18,22 @@ const style = {
 export default function ModalEditFile({ id, open, setOpen }) {
   const [content, setContent] = useState("");
 
+  // Uncomment this useEffect if you want to fetch content when the modal opens
   // useEffect(() => {
   //   if (id) {
   //     fetch(`http://localhost:8080/api/file/edit/${id}`)
   //       .then((response) => response.json())
-  //       .then((data) => {
-  //         setContent(data.content);
-  //       })
+  //       .then((data) => setContent(data.content))
   //       .catch((error) => console.error("Error fetching file content:", error));
   //   }
   // }, [id]);
 
-  const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const handleSave = (e) => {
+
+  const handleSave = () => {
     fetch(`http://localhost:8080/api/file/edit/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content }),
     })
       .then((response) => response.json())
@@ -52,29 +46,25 @@ export default function ModalEditFile({ id, open, setOpen }) {
 
   return (
     <div>
-      <Button onClick={handleOpen}>Open modal</Button>
+      <Button onClick={() => setOpen(true)}>Open Modal</Button>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box sx={modalStyle}>
           <CKEditorFieldBasic
-            value={content ? content : ""}
+            value={content}
             onChange={setContent}
-            // isError={errors.content ? true : false}
-            // errorText={errors.content}
             title="Chỉnh sửa nội dung"
           />
-          <Button
-            sx={{ marginTop: "10px" }}
-            variant="contained"
-            color="primary"
-            onClick={handleSave}
-          >
-            Lưu nội dung
-          </Button>
+
+          <Stack direction="row" justifyContent="flex-end" mt={2}>
+            <Button variant="contained" color="primary" onClick={handleSave}>
+              Lưu nội dung
+            </Button>
+          </Stack>
         </Box>
       </Modal>
     </div>

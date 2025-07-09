@@ -1,301 +1,293 @@
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
-import * as actions from "../../store/actions";
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
 import Header from "../../components/Header";
-import _ from "lodash";
-import "./style.scss";
 import ConfirmModal from "../../components/confirmModal/ConfirmModal";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import DeleteIcon from "@mui/icons-material/Delete";
-import RemoveRedEyeRoundedIcon from "@mui/icons-material/RemoveRedEyeRounded";
-import InputAdornment from "@mui/material/InputAdornment";
-import EditIcon from "@mui/icons-material/Edit";
-import FormControl from "@mui/material/FormControl";
-import SearchIcon from "@mui/icons-material/Search";
-import CachedIcon from "@mui/icons-material/Cached";
-import { styled } from "@mui/material/styles";
-import { tableCellClasses } from "@mui/material/TableCell";
-import { Typography, Box, Grid, Paper, OutlinedInput } from "@mui/material";
-import Image from "../../assets/word.png";
-// select
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
 import ModalEditFile from "../../components/modal/ModalEditFile";
 import ModalViewFile from "../../components/modal/ModalViewFile";
+import Image from "../../assets/word.png";
 
-const Addfile = ({
-  getListClinicAction,
-  listClinic,
-  isSuccess,
-  clearStatus,
-}) => {
-  const [list, setList] = useState([]);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [page, setPage] = useState(0);
-  const [openConfirmModal, setOpenConfirmModal] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [clinicDelete, setClinicDelete] = useState({});
+import {
+  Box,
+  Grid,
+  Paper,
+  Typography,
+  FormControl,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tooltip,
+  TablePagination,
+} from "@mui/material";
+
+import {
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+  Search as SearchIcon,
+  Cached as CachedIcon,
+  RemoveRedEyeRounded as ViewIcon,
+} from "@mui/icons-material";
+
+import { styled } from "@mui/material/styles";
+import { tableCellClasses } from "@mui/material/TableCell";
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: "#ddd",
+    color: "#000",
+    fontWeight: "bold",
+    fontSize: "14px",
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: "13px",
+  },
+}));
+
+const TableHeader = () => (
+  <TableRow>
+    <StyledTableCell>Tên file</StyledTableCell>
+    <StyledTableCell>Loại án</StyledTableCell>
+    <StyledTableCell align="center">Hành động</StyledTableCell>
+  </TableRow>
+);
+
+const TableRowItem = ({ file, onAction }) => (
+  <TableRow>
+    <TableCell>
+      <Box display="flex" alignItems="center" gap={1}>
+        <img
+          src={file.logo}
+          alt={file.name}
+          style={{ width: 20, height: 20 }}
+        />
+        {file.name}
+      </Box>
+    </TableCell>
+    <TableCell>{file.address?.detail || ""}</TableCell>
+    <TableCell align="center">
+      <Tooltip title="Xem">
+        <IconButton onClick={() => onAction(file, "View")}>
+          <ViewIcon />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Sửa">
+        <IconButton onClick={() => onAction(file, "Edit")}>
+          <EditIcon />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Xóa">
+        <IconButton onClick={() => onAction(file, "Delete")}>
+          <DeleteIcon />
+        </IconButton>
+      </Tooltip>
+    </TableCell>
+  </TableRow>
+);
+
+const Addfile = ({ isSuccess, clearStatus }) => {
+  const [files, setFiles] = useState([]);
   const [search, setSearch] = useState("");
-  const [openViewModal, setOpenViewModal] = useState(false);
-  const [openEditModal, setOpenEditModal] = useState(false);
   const [type, setType] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalFiles, setTotalFiles] = useState(0);
   const [idFile, setIdFile] = useState(null);
-  const [content, setContent] = useState("");
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [openViewModal, setOpenViewModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
 
-  const handleChange = (event) => {
-    setType(event.target.value);
-  };
-
-  const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: "#ddd",
-      color: "black",
-      // minWidth: 170,
-    },
-  }));
-  useEffect(() => {
-    fetchDataAPI(1, rowsPerPage);
-  }, []);
-  useEffect(() => {
-    if (listClinic.list && listClinic.list.length > 0) {
-      let data = listClinic.list.map((e) => {
-        return {
-          id: e._id,
-          logo: Image,
-          name: e.name,
-          address: e.address,
-          introduce: e.introduce,
-          detail: e.detail,
-        };
-      });
-      setList(data);
-    } else {
-      setList([]);
-    }
-  }, [listClinic]);
-
-  useEffect(() => {
-    if (isSuccess !== null) {
-      if (isSuccess === true) {
-        setOpen(false);
-        setOpenEditModal(false);
-        setOpenViewModal(false);
-        const searchValue = search ? search : "";
-        fetchDataAPI(page + 1, rowsPerPage, searchValue);
+  const fetchFiles = useCallback(
+    async (pageNum = page, size = rowsPerPage, filter = search) => {
+      try {
+        const response = await axios.get(`http://localhost:8080/api/files`, {
+          params: { page: pageNum, size, filter },
+        });
+        const mappedFiles =
+          response.data?.data?.map((file) => ({
+            id: file._id,
+            name: file.filename,
+            logo: Image,
+            content: file.content,
+          })) || [];
+        setFiles(mappedFiles);
+        setTotalFiles(response.data?.pagination?.totalItems || 0);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách file:", error);
+        setFiles([]);
       }
-      setOpenConfirmModal(false);
-      clearStatus();
-    }
-  }, [isSuccess]);
+    },
+    [page, rowsPerPage, search] // 👉 thêm dependencies
+  );
 
-  const fetchDataAPI = (page, size, filter = "") => {
-    const data = {
-      page,
-      size,
-      filter,
-    };
-    getListClinicAction(data);
+  useEffect(() => {
+    fetchFiles(1, rowsPerPage);
+  }, [fetchFiles, rowsPerPage]);
+
+  const handleSearchChange = (e) => setSearch(e.target.value);
+  const handleTypeChange = (e) => setType(e.target.value);
+
+  const handleSearch = () => {
+    setPage(0);
+    fetchFiles(1, rowsPerPage, search);
   };
 
+  const handleReset = () => {
+    const resetSearch = "";
+    const resetPage = 0;
+    const resetRows = 10;
+
+    setSearch(resetSearch);
+    setType("");
+    setPage(resetPage);
+    setRowsPerPage(resetRows);
+
+    fetchFiles(1, resetRows, resetSearch);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") handleSearch();
+  };
+
+  const handleActionClick = (file, actionType) => {
+    setIdFile(file.id);
+    if (actionType === "View") setOpenViewModal(true);
+    if (actionType === "Edit") setOpenEditModal(true);
+    if (actionType === "Delete") setOpenConfirmModal(true);
+  };
+
+  //   const handleDeleteFile = async () => {
+  //   try {
+  //     await axios.delete(`/api/files/${idFile}`);
+  //     fetchFiles(1, rowsPerPage, search);
+  //     setOpenConfirmModal(false);
+  //   } catch (error) {
+  //     console.error("Lỗi khi xóa file:", error);
+  //   }
+  // };
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    fetchDataAPI(newPage + 1, rowsPerPage, search);
   };
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    fetchDataAPI(page + 1, +event.target.value, search);
+    setRowsPerPage(parseInt(event.target.value, 10));
   };
 
-  const handleClickFile = (data, type) => {
-    setIdFile(data.id);
-    setContent(data);
-    if (type === "Edit") {
-      setOpenEditModal(true);
-    } else if (type === "View") {
-      setOpenViewModal(true);
-    } else if (type === "Delete") {
-      setOpenConfirmModal(true);
-      setClinicDelete(data);
-    }
-  };
-  const handleDeleteClinic = () => {
-    const id = clinicDelete.id;
-    // if (id) deleteClincAction(id);
-  };
-  const handelClickEmpty = () => {
-    setSearch("");
-    setPage(0);
-    setType("");
-    setRowsPerPage(10);
-    fetchDataAPI(1, 10);
-  };
-  const handleClickSearch = () => {
-    setPage(0);
-    fetchDataAPI(1, rowsPerPage, search);
-  };
-  const handleEnterSearch = (e) => {
-    if (e.which === 13) {
-      handleClickSearch();
-    }
-  };
-  const TableRowName = () => (
-    <TableRow className="table__clinic--header">
-      <StyledTableCell>Tên file</StyledTableCell>
-      <StyledTableCell>Loại án</StyledTableCell>
-      <StyledTableCell></StyledTableCell>
-    </TableRow>
-  );
-  const TableColumn = (props) => {
-    const { address, name, logo } = props;
-    return (
-      <>
-        <TableRow>
-          <TableCell>
-            <span className="d-flex justify-content-start align-items-center gap-2">
-              <div>
-                <img className="table__clinic--logo" src={logo} alt={name} />
-              </div>
-              <div> {name}</div>
-            </span>
-          </TableCell>
-          <TableCell>{address?.detail ? address.detail : ""}</TableCell>
-          <TableCell>
-            <Tooltip title="Xem">
-              <IconButton onClick={() => handleClickFile(props, "View")}>
-                <RemoveRedEyeRoundedIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Sửa">
-              <IconButton onClick={() => handleClickFile(props, "Edit")}>
-                <EditIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Xóa">
-              <IconButton onClick={() => handleClickFile(props, "Delete")}>
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
-          </TableCell>
-        </TableRow>
-      </>
-    );
-  };
   return (
-    <>
-      <Box m="20px">
-        <Header
-          title="Quản lý danh sách tập tin"
-          subtitle="Quản lý tệp tin"
-          titleBtn="Thêm file"
-          isShowBtn={true}
-          // link="/add"
-          activeMenu="Thêm phòng khám"
-        />
-        <Typography
-          variant="h4"
-          color="#141414"
-          fontWeight="bold"
-          sx={{ m: "0 0 5px 0", textTransform: "capitalize" }}
-        ></Typography>
-        <Box m="20px 0 0 0">
-          <Box m="0 0 7px 0">
-            <Grid container spacing={2} display="flex" alignItems="center">
-              <Grid item xs={12} md={3}>
-                <FormControl sx={{ width: "100%" }} variant="outlined">
-                  <OutlinedInput
-                    placeholder="Lọc theo tên"
-                    id="outlined-adornment-weight"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    onKeyPress={(e) => handleEnterSearch(e)}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton onClick={handleClickSearch}>
-                          <SearchIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item>
-                <FormControl sx={{ minWidth: 120 }}>
-                  <InputLabel id="demo-simple-select-autowidth-label">
-                    Loại án
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-autowidth-label"
-                    id="demo-simple-select-autowidth"
-                    value={type}
-                    onChange={handleChange}
-                    autoWidth
-                    label="Loại án"
-                  >
-                    <MenuItem value="">
-                      <em>None</em>
-                    </MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={21}>Twenty one</MenuItem>
-                    <MenuItem value={22}>Twenty one and a half</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item>
-                <Tooltip title="Làm trống">
-                  <IconButton onClick={() => handelClickEmpty()}>
-                    <CachedIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-            </Grid>
-          </Box>
-          <TableContainer component={Paper} sx={{ maxHeight: 550 }}>
-            <Table
-              sx={{ minWidth: 650 }}
-              size="small"
-              aria-label="simple table"
-              stickyHeader
-            >
-              <TableHead>
-                <TableRowName />
-              </TableHead>
-              <TableBody>
-                {list &&
-                  list.length > 0 &&
-                  list.map((e) => <TableColumn key={e.id} {...e} />)}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 50]}
-            component="div"
-            count={parseInt(listClinic?.count ? listClinic.count : 0)}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            className="table__clinic--pagination"
-          />
-        </Box>
-      </Box>
-
-      <ConfirmModal
-        open={openConfirmModal}
-        setOpen={setOpenConfirmModal}
-        title="XÓA TẬP TIN"
-        content={`${clinicDelete?.name ? clinicDelete.name : ""}`}
-        type="DELETE"
-        confirmFunc={handleDeleteClinic}
+    <Box m={3}>
+      <Header
+        title="Quản lý danh sách tập tin"
+        subtitle="Quản lý tệp tin"
+        titleBtn="Thêm file"
+        open={openAddModal}
+        setOpen={setOpenAddModal}
       />
+
+      <Grid container spacing={2} alignItems="center" my={2}>
+        <Grid item xs={12} md={3}>
+          <FormControl fullWidth variant="outlined">
+            <OutlinedInput
+              placeholder="Lọc theo tên"
+              value={search}
+              onChange={handleSearchChange}
+              onKeyPress={handleKeyPress}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton onClick={handleSearch}>
+                    <SearchIcon />
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <FormControl sx={{ minWidth: 120 }}>
+            <InputLabel>Loại án</InputLabel>
+            <Select value={type} onChange={handleTypeChange} label="Loại án">
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={21}>Twenty one</MenuItem>
+              <MenuItem value={22}>Twenty one and a half</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item>
+          <Tooltip title="Làm trống">
+            <IconButton onClick={handleReset}>
+              <CachedIcon />
+            </IconButton>
+          </Tooltip>
+        </Grid>
+      </Grid>
+
+      <TableContainer component={Paper} sx={{ maxHeight: 550 }}>
+        <Table stickyHeader size="small">
+          <TableHead>
+            <TableHeader />
+          </TableHead>
+          <TableBody>
+            {files.length > 0 ? (
+              files.map((file) => (
+                <TableRowItem
+                  key={file.id}
+                  file={file}
+                  onAction={handleActionClick}
+                />
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={3} align="center">
+                  Không có dữ liệu
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <TablePagination
+        rowsPerPageOptions={[10, 25, 50]}
+        component="div"
+        count={totalFiles > 0 ? totalFiles : files.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        className="table__clinic--pagination"
+        labelRowsPerPage="Cột trong trang:"
+        sx={{
+          "& .MuiTablePagination-toolbar": {
+            minHeight: "40px",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+          },
+          "& .MuiTablePagination-selectLabel": {
+            margin: 0, // Xoá khoảng cách dư
+          },
+          "& .MuiTablePagination-select": {
+            marginRight: "8px", // Khoảng cách dropdown
+          },
+          "& .MuiTablePagination-displayedRows": {
+            margin: 0,
+          },
+          "& .MuiTablePagination-actions": {
+            marginLeft: "8px",
+          },
+        }}
+      />
+
       {openEditModal && (
         <ModalEditFile
           open={openEditModal}
@@ -310,22 +302,9 @@ const Addfile = ({
           id={idFile}
         />
       )}
-    </>
+      {/* ConfirmModal có thể mở lại nếu cần */}
+    </Box>
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    listClinic: state.admin.listClinic,
-    isSuccess: state.app.isSuccess,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getListClinicAction: (data) => dispatch(actions.getListClinicAction(data)),
-    clearStatus: () => dispatch(actions.clearStatus()),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Addfile);
+export default Addfile;

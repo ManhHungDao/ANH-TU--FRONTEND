@@ -4,19 +4,13 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ModalAddFiles from "./modal/ModalAddFiles";
 
-const Header = ({ title, titleBtn, setChecked }) => {
-  const [open, setOpen] = useState(false);
+const Header = ({ title, titleBtn, setChecked, open, setOpen }) => {
+  // const [open, setOpen] = useState(false);
   const onClick = () => {
-    setOpen(true);
-    // Optionally, you can dispatch an action or perform other logic here
-    // For example, if you want to reset the checked state when opening the modal:
-    // setChecked(false);
+    setOpen(!open);
   };
   const handleOnClose = () => {
     setOpen(!open);
-  };
-  const handleChange = (event) => {
-    setChecked(event.target.checked);
   };
   return (
     <>
