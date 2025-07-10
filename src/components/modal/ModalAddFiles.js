@@ -64,7 +64,6 @@ const ModalAddFiles = ({ open, onClose }) => {
       alert("Thêm loại án thất bại.");
     }
   };
-  console.log("🚀 ~ ModalAddFiles ~ types:", types);
 
   const handleDeleteType = async () => {
     if (!selectedTypeToDelete) return;
@@ -78,7 +77,6 @@ const ModalAddFiles = ({ open, onClose }) => {
       setShowDeleteTypeModal(false);
       setSelectedTypeToDelete(null);
     } catch (err) {
-      console.error("Lỗi khi xóa loại án:", err);
       alert("Xóa loại án thất bại.");
     }
   };
@@ -103,8 +101,8 @@ const ModalAddFiles = ({ open, onClose }) => {
   };
 
   const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    selectedFiles = selectedFiles.map((file) => ({ ...file, type: type }));
+    let selectedFiles = Array.from(e.target.files);
+
     setFiles(selectedFiles);
   };
 
@@ -117,7 +115,7 @@ const ModalAddFiles = ({ open, onClose }) => {
       alert("Vui lòng chọn loại án và tệp tin.");
       return;
     }
-
+    const fileAddType = files.map((file) => ({ ...file, type: type }));
     const renamedFiles = files.map((file) => {
       const originalName = file.name;
       const extension = originalName.substring(originalName.lastIndexOf("."));
@@ -128,7 +126,7 @@ const ModalAddFiles = ({ open, onClose }) => {
 
     const formData = new FormData();
     renamedFiles.forEach((file) => formData.append("files", file));
-
+    formData.append("type", type);
     try {
       await axios.post(
         "http://localhost:8080/api/files/upload-multiple",
@@ -204,9 +202,6 @@ const ModalAddFiles = ({ open, onClose }) => {
               onChange={(e) => setType(e.target.value)}
               label="Loại án"
             >
-              <MenuItem value="">
-                <em>Chọn loại án</em>
-              </MenuItem>
               {types.map((t) => (
                 <MenuItem key={t._id} value={t._id}>
                   <Box

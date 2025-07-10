@@ -24,7 +24,7 @@ const modalStyle = {
   overflow: "auto",
 };
 
-export default function ModalEditFile({ id, open, setOpen }) {
+export default function ModalEditFile({ id, open, setOpen, onUpdate }) {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -54,18 +54,24 @@ export default function ModalEditFile({ id, open, setOpen }) {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/file/edit/${id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content }),
-        }
-      );
+      const response = await fetch(`http://localhost:8080/api/file/edit`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, content }),
+      });
 
       const data = await response.json();
-      console.log("Cập nhật thành công:", data);
-      setOpen(false);
+
+      if (response.ok) {
+        console.log("Cập nhật thành công:", data);
+        setOpen(false);
+        if (onUpdate) onUpdate(); // Gọi callback nếu có để refresh danh sách file
+      } else {
+        console.error(
+          "Lỗi khi cập nhật:",
+          data.message || "Lỗi không xác định"
+        );
+      }
     } catch (error) {
       console.error("Lỗi khi cập nhật:", error);
     }
@@ -93,11 +99,7 @@ export default function ModalEditFile({ id, open, setOpen }) {
             <CircularProgress />
           </Box>
         ) : (
-          <CKEditorFieldBasic
-            value={content}
-            onChange={setContent}
-            // title="Chỉnh sửa nội dung"
-          />
+          <CKEditorFieldBasic value={content} onChange={setContent} />
         )}
 
         <Stack direction="row" justifyContent="flex-end" mt={3}>

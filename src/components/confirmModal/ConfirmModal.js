@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Typography,
   Modal,
@@ -7,19 +7,19 @@ import {
   Button,
   CardActions,
   CardHeader,
+  CircularProgress,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CheckIcon from "@mui/icons-material/Check";
 
 const ConfirmModal = ({
   open,
   setOpen,
-  title = "Xác nhận hành động",
-  content = "Bạn có chắc chắn muốn thực hiện thao tác này?",
+  title = "Xác nhận xoá",
+  content = "Bạn có chắc chắn muốn xoá tập tin này?",
   confirmFunc,
-  type = "CONFIRM",
-  isShowTitle = true,
 }) => {
+  const [loading, setLoading] = useState(false);
+
   const style = {
     position: "absolute",
     top: "50%",
@@ -32,41 +32,47 @@ const ConfirmModal = ({
     borderRadius: "8px",
   };
 
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    if (!loading) setOpen(false);
+  };
+
+  const handleConfirm = async () => {
+    try {
+      setLoading(true);
+      await confirmFunc();
+      setOpen(false);
+    } catch (error) {
+      console.error("Lỗi khi xoá:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-    >
+    <Modal open={open} onClose={handleClose}>
       <Card sx={style}>
-        {isShowTitle && <CardHeader title={title} />}
+        <CardHeader title={title} />
         <CardContent>
-          <Typography
-            id="modal-description"
-            align={isShowTitle ? "center" : "left"}
-          >
-            {content}
-          </Typography>
+          <Typography align="center">{content}</Typography>
         </CardContent>
-        <CardActions
-          sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}
-        >
-          <Button variant="outlined" onClick={handleClose}>
+        <CardActions sx={{ justifyContent: "flex-end", gap: 1 }}>
+          <Button variant="outlined" onClick={handleClose} disabled={loading}>
             Hủy
           </Button>
           <Button
-            color={type === "DELETE" ? "error" : "primary"}
+            color="error"
             variant="contained"
-            startIcon={type === "DELETE" ? <DeleteIcon /> : <CheckIcon />}
-            onClick={() => {
-              confirmFunc();
-              handleClose();
-            }}
+            startIcon={
+              loading ? (
+                <CircularProgress size={18} color="inherit" />
+              ) : (
+                <DeleteIcon />
+              )
+            }
+            onClick={handleConfirm}
+            disabled={loading}
           >
-            {type === "DELETE" ? "Xóa" : "Xác nhận"}
+            {loading ? "Đang xoá..." : "Xóa"}
           </Button>
         </CardActions>
       </Card>

@@ -71,7 +71,7 @@ const TableRowItem = ({ file, onAction }) => (
         {file.name}
       </Box>
     </TableCell>
-    <TableCell>{file.address?.detail || ""}</TableCell>
+    <TableCell>{file.type?.type || ""}</TableCell>
     <TableCell align="center">
       <Tooltip title="Tải xuống">
         <IconButton onClick={() => onAction(file, "Download")}>
@@ -92,7 +92,7 @@ const TableRowItem = ({ file, onAction }) => (
   </TableRow>
 );
 
-const Addfile = ({ isSuccess, clearStatus }) => {
+const File = ({ isSuccess, clearStatus }) => {
   const [files, setFiles] = useState([]);
   const [search, setSearch] = useState("");
   const [type, setType] = useState("");
@@ -177,7 +177,7 @@ const Addfile = ({ isSuccess, clearStatus }) => {
     setType("");
     setPage(resetPage);
     setRowsPerPage(resetRows);
-
+    fetchTypes();
     fetchFiles(1, resetRows, resetSearch);
   };
 
@@ -190,11 +190,12 @@ const Addfile = ({ isSuccess, clearStatus }) => {
     if (actionType === "View") setOpenViewModal(true);
     if (actionType === "Edit") setOpenEditModal(true);
     if (actionType === "Delete") setOpenConfirmModal(true);
+    if (actionType === "Download") handleDownload(file.id, file.name);
   };
 
   const handleDeleteFile = async () => {
     try {
-      await axios.delete(`http://localhost:8080/api/files/${idFile}`); // 👉 Gọi API xóa
+      await axios.delete(`http://localhost:8080/api/file/${idFile}`); // 👉 Gọi API xóa
       fetchFiles(page, rowsPerPage, search); // 👉 Refresh danh sách sau khi xóa
       setOpenConfirmModal(false); // 👉 Đóng modal xác nhận
     } catch (error) {
@@ -208,6 +209,27 @@ const Addfile = ({ isSuccess, clearStatus }) => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+  };
+
+  const handleDownload = async (id, filename) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/file/download/${id}`,
+        {
+          responseType: "blob",
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${filename || "download"}.docx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Lỗi khi tải file:", error);
+    }
   };
 
   return (
@@ -251,7 +273,7 @@ const Addfile = ({ isSuccess, clearStatus }) => {
           </FormControl>
         </Grid>
         <Grid item>
-          <Tooltip title="Làm trống">
+          <Tooltip title="Tải lại">
             <IconButton onClick={handleReset}>
               <CachedIcon />
             </IconButton>
@@ -337,7 +359,6 @@ const Addfile = ({ isSuccess, clearStatus }) => {
           title="Xác nhận xoá tập tin"
           content="Bạn có chắc chắn muốn xoá tập tin này không?"
           confirmFunc={handleDeleteFile}
-          type="DELETE"
         />
       )}
       {/* ConfirmModal có thể mở lại nếu cần */}
@@ -345,4 +366,4 @@ const Addfile = ({ isSuccess, clearStatus }) => {
   );
 };
 
-export default Addfile;
+export default File;
