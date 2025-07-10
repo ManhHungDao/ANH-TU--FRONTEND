@@ -96,7 +96,7 @@ export default function ModalEditFile({ id, open, setOpen }) {
           <CKEditorFieldBasic
             value={content}
             onChange={setContent}
-            title="Chỉnh sửa nội dung"
+            // title="Chỉnh sửa nội dung"
           />
         )}
 

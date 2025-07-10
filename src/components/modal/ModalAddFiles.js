@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Modal,
   Box,
@@ -12,31 +12,75 @@ import {
   Select,
   FormControl,
   TextField,
+  IconButton,
+  Tooltip,
+  Stack,
 } from "@mui/material";
-import { UploadCloud, X } from "lucide-react";
+import { UploadCloud, X, Trash2 } from "lucide-react";
 import axios from "axios";
 
 const ModalAddFiles = ({ open, onClose }) => {
   const [files, setFiles] = useState([]);
   const [type, setType] = useState("");
+  const [types, setTypes] = useState([]);
   const [showAddTypeModal, setShowAddTypeModal] = useState(false);
-  const [newType, setNewType] = useState("");
+  const [newTypeName, setNewTypeName] = useState("");
+  const [showDeleteTypeModal, setShowDeleteTypeModal] = useState(false);
+  const [selectedTypeToDelete, setSelectedTypeToDelete] = useState(null);
 
-  const handleChange = (event) => {
-    if (event.target.value === "add-new") {
-      setShowAddTypeModal(true);
-    } else {
-      setType(event.target.value);
+  useEffect(() => {
+    if (open) {
+      fetchTypes();
+    }
+  }, [open]);
+
+  const fetchTypes = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/types");
+      setTypes(res.data.data || []);
+    } catch (err) {
+      console.error("Lỗi khi lấy loại án:", err);
     }
   };
 
-  const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    setFiles(selectedFiles);
-  };
+  const handleAddNewType = async () => {
+    if (!newTypeName.trim()) {
+      alert("Tên loại án không được để trống.");
+      return;
+    }
 
-  const handleRemoveFile = (index) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
+    try {
+      const res = await axios.post("http://localhost:8080/api/type/add", {
+        name: newTypeName.trim(),
+      });
+
+      const newType = res.data.data;
+      setTypes([...types, newType]);
+      setType(newType._id);
+      setNewTypeName("");
+      setShowAddTypeModal(false);
+    } catch (err) {
+      console.error("Lỗi khi thêm loại án:", err);
+      alert("Thêm loại án thất bại.");
+    }
+  };
+  console.log("🚀 ~ ModalAddFiles ~ types:", types);
+
+  const handleDeleteType = async () => {
+    if (!selectedTypeToDelete) return;
+
+    try {
+      await axios.delete(
+        `http://localhost:8080/api/types/${selectedTypeToDelete}`
+      );
+      setTypes(types.filter((t) => t._id !== selectedTypeToDelete));
+      if (type === selectedTypeToDelete) setType("");
+      setShowDeleteTypeModal(false);
+      setSelectedTypeToDelete(null);
+    } catch (err) {
+      console.error("Lỗi khi xóa loại án:", err);
+      alert("Xóa loại án thất bại.");
+    }
   };
 
   const removeVietnameseTones = (str) => {
@@ -58,9 +102,19 @@ const ModalAddFiles = ({ open, onClose }) => {
       .replace(/[^a-z0-9.-]/g, "");
   };
 
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    selectedFiles = selectedFiles.map((file) => ({ ...file, type: type }));
+    setFiles(selectedFiles);
+  };
+
+  const handleRemoveFile = (index) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async () => {
-    if (!files.length || (!type && !newType)) {
-      alert("Phải có đầy đủ tập tin và phân loại");
+    if (!files.length || !type) {
+      alert("Vui lòng chọn loại án và tệp tin.");
       return;
     }
 
@@ -69,17 +123,11 @@ const ModalAddFiles = ({ open, onClose }) => {
       const extension = originalName.substring(originalName.lastIndexOf("."));
       const baseName = originalName.substring(0, originalName.lastIndexOf("."));
       const safeName = toSlug(baseName) + extension;
-
       return new File([file], safeName, { type: file.type });
     });
 
     const formData = new FormData();
-    renamedFiles.forEach((file) => {
-      formData.append("files", file);
-    });
-
-    const finalType = newType || type;
-    formData.append("type", finalType);
+    renamedFiles.forEach((file) => formData.append("files", file));
 
     try {
       await axios.post(
@@ -89,25 +137,14 @@ const ModalAddFiles = ({ open, onClose }) => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-
-      alert("Upload thành công!");
+      alert("Tải lên thành công!");
       setFiles([]);
       setType("");
-      setNewType("");
-      setShowAddTypeModal(false);
       onClose();
     } catch (err) {
-      console.error(err);
-      alert("Lỗi khi upload file");
+      console.error("Lỗi khi upload:", err);
+      alert("Đã xảy ra lỗi khi tải lên.");
     }
-  };
-
-  const handleCloseModal = () => {
-    setFiles([]);
-    setType("");
-    setNewType("");
-    setShowAddTypeModal(false);
-    onClose();
   };
 
   const style = {
@@ -126,7 +163,7 @@ const ModalAddFiles = ({ open, onClose }) => {
 
   return (
     <>
-      <Modal open={open} onClose={handleCloseModal}>
+      <Modal open={open} onClose={onClose}>
         <Box sx={style}>
           <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
             <UploadCloud style={{ verticalAlign: "middle", marginRight: 8 }} />
@@ -164,16 +201,42 @@ const ModalAddFiles = ({ open, onClose }) => {
             <Select
               labelId="select-type-label"
               value={type}
-              onChange={handleChange}
+              onChange={(e) => setType(e.target.value)}
               label="Loại án"
             >
               <MenuItem value="">
-                <em>None</em>
+                <em>Chọn loại án</em>
               </MenuItem>
-              <MenuItem value="Twenty">Twenty</MenuItem>
-              <MenuItem value="TwentyOne">Twenty one</MenuItem>
-              <MenuItem value="TwentyOneHalf">Twenty one and a half</MenuItem>
-              <MenuItem value="add-new">+ Thêm loại án mới</MenuItem>
+              {types.map((t) => (
+                <MenuItem key={t._id} value={t._id}>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    width="100%"
+                  >
+                    <span>{t.type}</span>
+                    <Tooltip title="Xóa">
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedTypeToDelete(t._id);
+                          setShowDeleteTypeModal(true);
+                        }}
+                      >
+                        <Trash2 size={14} />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </MenuItem>
+              ))}
+              <MenuItem
+                value="add-new"
+                onClick={() => setShowAddTypeModal(true)}
+              >
+                + Thêm loại án mới
+              </MenuItem>
             </Select>
           </FormControl>
 
@@ -194,8 +257,8 @@ const ModalAddFiles = ({ open, onClose }) => {
             label="Tên loại án"
             variant="outlined"
             fullWidth
-            value={newType}
-            onChange={(e) => setNewType(e.target.value)}
+            value={newTypeName}
+            onChange={(e) => setNewTypeName(e.target.value)}
             sx={{ mb: 3 }}
           />
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
@@ -205,16 +268,37 @@ const ModalAddFiles = ({ open, onClose }) => {
             >
               Hủy
             </Button>
+            <Button variant="contained" onClick={handleAddNewType}>
+              Lưu
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+
+      <Modal
+        open={showDeleteTypeModal}
+        onClose={() => setShowDeleteTypeModal(false)}
+      >
+        <Box sx={{ ...style, width: 300 }}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+            Xác nhận xóa loại án
+          </Typography>
+          <Typography sx={{ mb: 3 }}>
+            Bạn có chắc chắn muốn xóa loại án này không?
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
+            <Button
+              variant="outlined"
+              onClick={() => setShowDeleteTypeModal(false)}
+            >
+              Hủy
+            </Button>
             <Button
               variant="contained"
-              onClick={() => {
-                if (newType) {
-                  setType(newType);
-                  setShowAddTypeModal(false);
-                }
-              }}
+              color="error"
+              onClick={handleDeleteType}
             >
-              Lưu
+              Xóa
             </Button>
           </Box>
         </Box>

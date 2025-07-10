@@ -187,8 +187,6 @@ const CKEditorFieldBasic = ({
       <div
         className={`ckeditor-basic ${isError ? "ckeditor-basic--error" : ""}`}
       >
-        <span> {title}</span>
-
         <CKEditor
           onReady={(editor) => {
             editor.ui

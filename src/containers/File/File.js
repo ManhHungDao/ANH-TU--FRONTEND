@@ -105,40 +105,67 @@ const Addfile = ({ isSuccess, clearStatus }) => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
+  const [types, setTypes] = useState([]);
 
-  const fetchFiles = useCallback(
-    async (pageNum = page, size = rowsPerPage, filter = search) => {
-      try {
-        const response = await axios.get(`http://localhost:8080/api/files`, {
-          params: { page: pageNum, size, filter },
-        });
-        const mappedFiles =
-          response.data?.data?.map((file) => ({
-            id: file._id,
-            name: file.filename,
-            logo: Image,
-            content: file.content,
-          })) || [];
-        setFiles(mappedFiles);
-        setTotalFiles(response.data?.pagination?.totalItems || 0);
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách file:", error);
-        setFiles([]);
+  const fetchTypes = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/types");
+      setTypes(res.data.data || []);
+    } catch (err) {
+      console.error("Lỗi khi lấy loại án:", err);
+    }
+  };
+
+  const fetchFiles = useCallback(async () => {
+    try {
+      const params = {
+        page: page + 1, // Backend thường bắt đầu từ trang 1
+        size: rowsPerPage,
+      };
+
+      if (search.trim() !== "") {
+        params.filter = search.trim();
       }
-    },
-    [page, rowsPerPage, search] // 👉 thêm dependencies
-  );
+
+      if (type !== "") {
+        params.type = type;
+      }
+
+      const response = await axios.get(`http://localhost:8080/api/files`, {
+        params,
+      });
+
+      const mappedFiles =
+        response.data?.data?.map((file) => ({
+          id: file._id,
+          name: file.filename,
+          type: file.type,
+          logo: Image,
+          content: file.content,
+          address: file.address,
+        })) || [];
+
+      setFiles(mappedFiles);
+      setTotalFiles(response.data?.pagination?.totalItems || 0);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách file:", error);
+      setFiles([]);
+    }
+  }, [page, rowsPerPage, search, type]); // 👉 Bổ sung type vào dependencies
 
   useEffect(() => {
-    fetchFiles(1, rowsPerPage);
-  }, [fetchFiles, rowsPerPage]);
+    fetchFiles();
+    fetchTypes();
+  }, [fetchFiles]);
 
   const handleSearchChange = (e) => setSearch(e.target.value);
-  const handleTypeChange = (e) => setType(e.target.value);
+  const handleTypeChange = (e) => {
+    setType(e.target.value);
+    setPage(0);
+  };
 
   const handleSearch = () => {
     setPage(0);
-    fetchFiles(1, rowsPerPage, search);
   };
 
   const handleReset = () => {
@@ -177,8 +204,10 @@ const Addfile = ({ isSuccess, clearStatus }) => {
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
+
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   return (
@@ -213,12 +242,11 @@ const Addfile = ({ isSuccess, clearStatus }) => {
           <FormControl sx={{ minWidth: 120 }}>
             <InputLabel>Loại án</InputLabel>
             <Select value={type} onChange={handleTypeChange} label="Loại án">
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={21}>Twenty one</MenuItem>
-              <MenuItem value={22}>Twenty one and a half</MenuItem>
+              {types.map((t) => (
+                <MenuItem key={t._id} value={t._id}>
+                  <span>{t.type}</span>
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Grid>
