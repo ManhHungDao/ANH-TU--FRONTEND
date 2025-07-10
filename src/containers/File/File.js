@@ -5,7 +5,7 @@ import ConfirmModal from "../../components/confirmModal/ConfirmModal";
 import ModalEditFile from "../../components/modal/ModalEditFile";
 import ModalViewFile from "../../components/modal/ModalViewFile";
 import Image from "../../assets/word.png";
-
+import ArrowCircleDownIcon from "@mui/icons-material/ArrowCircleDown";
 import {
   Box,
   Grid,
@@ -73,14 +73,14 @@ const TableRowItem = ({ file, onAction }) => (
     </TableCell>
     <TableCell>{file.address?.detail || ""}</TableCell>
     <TableCell align="center">
-      <Tooltip title="Xem">
-        <IconButton onClick={() => onAction(file, "View")}>
-          <ViewIcon />
+      <Tooltip title="Tải xuống">
+        <IconButton onClick={() => onAction(file, "Download")}>
+          <ArrowCircleDownIcon />
         </IconButton>
       </Tooltip>
       <Tooltip title="Sửa">
         <IconButton onClick={() => onAction(file, "Edit")}>
-          <EditIcon />
+          <ViewIcon />
         </IconButton>
       </Tooltip>
       <Tooltip title="Xóa">
@@ -165,15 +165,15 @@ const Addfile = ({ isSuccess, clearStatus }) => {
     if (actionType === "Delete") setOpenConfirmModal(true);
   };
 
-  //   const handleDeleteFile = async () => {
-  //   try {
-  //     await axios.delete(`/api/files/${idFile}`);
-  //     fetchFiles(1, rowsPerPage, search);
-  //     setOpenConfirmModal(false);
-  //   } catch (error) {
-  //     console.error("Lỗi khi xóa file:", error);
-  //   }
-  // };
+  const handleDeleteFile = async () => {
+    try {
+      await axios.delete(`http://localhost:8080/api/files/${idFile}`); // 👉 Gọi API xóa
+      fetchFiles(page, rowsPerPage, search); // 👉 Refresh danh sách sau khi xóa
+      setOpenConfirmModal(false); // 👉 Đóng modal xác nhận
+    } catch (error) {
+      console.error("Lỗi khi xóa file:", error);
+    }
+  };
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -300,6 +300,16 @@ const Addfile = ({ isSuccess, clearStatus }) => {
           open={openViewModal}
           setOpen={setOpenViewModal}
           id={idFile}
+        />
+      )}
+      {openConfirmModal && (
+        <ConfirmModal
+          open={openConfirmModal}
+          setOpen={setOpenConfirmModal}
+          title="Xác nhận xoá tập tin"
+          content="Bạn có chắc chắn muốn xoá tập tin này không?"
+          confirmFunc={handleDeleteFile}
+          type="DELETE"
         />
       )}
       {/* ConfirmModal có thể mở lại nếu cần */}

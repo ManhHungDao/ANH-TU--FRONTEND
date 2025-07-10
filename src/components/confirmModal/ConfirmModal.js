@@ -1,26 +1,24 @@
 import React from "react";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import DeleteIcon from "@mui/icons-material/Delete";
-import CheckIcon from "@mui/icons-material/Check";
 import {
+  Typography,
+  Modal,
+  Card,
+  CardContent,
   Button,
-  CardActionArea,
   CardActions,
-  Box,
   CardHeader,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CheckIcon from "@mui/icons-material/Check";
+
 const ConfirmModal = ({
   open,
   setOpen,
-  title,
-  content,
+  title = "Xác nhận hành động",
+  content = "Bạn có chắc chắn muốn thực hiện thao tác này?",
   confirmFunc,
-  cancelFunc,
-  type,
-  isShowTitle,
+  type = "CONFIRM",
+  isShowTitle = true,
 }) => {
   const style = {
     position: "absolute",
@@ -30,40 +28,49 @@ const ConfirmModal = ({
     width: 400,
     bgcolor: "background.paper",
     boxShadow: 24,
-    p: 4,
-    borderRadius: "5px",
+    p: 3,
+    borderRadius: "8px",
   };
+
+  const handleClose = () => setOpen(false);
+
   return (
-    <>
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Card sx={style}>
-          {isShowTitle === false ? <></> : <CardHeader title={title} />}
-          <CardContent>
-            <Typography
-              id="modal-modal-description"
-              align={isShowTitle === false ? "none" : "center"}
-            >
-              {content}
-            </Typography>
-          </CardContent>
-          <CardActions sx={{ display: "felx", justifyContent: "flex-end" }}>
-            <Button
-              color={type === "DELETE" ? "error" : "success"}
-              variant="outlined"
-              startIcon={type === "DELETE" ? <DeleteIcon /> : <CheckIcon />}
-              onClick={confirmFunc}
-            >
-              {type === "DELETE" ? "Xóa" : "Xác nhận"}
-            </Button>
-          </CardActions>
-        </Card>
-      </Modal>
-    </>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="modal-title"
+      aria-describedby="modal-description"
+    >
+      <Card sx={style}>
+        {isShowTitle && <CardHeader title={title} />}
+        <CardContent>
+          <Typography
+            id="modal-description"
+            align={isShowTitle ? "center" : "left"}
+          >
+            {content}
+          </Typography>
+        </CardContent>
+        <CardActions
+          sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}
+        >
+          <Button variant="outlined" onClick={handleClose}>
+            Hủy
+          </Button>
+          <Button
+            color={type === "DELETE" ? "error" : "primary"}
+            variant="contained"
+            startIcon={type === "DELETE" ? <DeleteIcon /> : <CheckIcon />}
+            onClick={() => {
+              confirmFunc();
+              handleClose();
+            }}
+          >
+            {type === "DELETE" ? "Xóa" : "Xác nhận"}
+          </Button>
+        </CardActions>
+      </Card>
+    </Modal>
   );
 };
 

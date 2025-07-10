@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
+import {
+  Box,
+  Button,
+  Modal,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -14,47 +18,55 @@ const style = {
   boxShadow: 24,
   p: 4,
   overflow: "auto",
+  borderRadius: 2,
 };
 
 export default function ModalViewFile({ id, open, setOpen }) {
   const [content, setContent] = useState("");
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
-    if (id) {
-      fetch(`http://localhost:8080/api/file/view/${id}`)
+    if (id && open) {
+      setLoading(true);
+      fetch(`http://localhost:8080/api/file/${id}`)
         .then((response) => response.json())
         .then((data) => {
-          setContent(data.content);
+          console.log("🚀 ~ .then ~ data:", data.data.content);
+          setContent(data?.data?.content || "<p>Không có nội dung</p>");
         })
-        .catch((error) => console.error("Error fetching file content:", error));
+        .catch(() => {
+          setContent("<p>Lỗi khi tải dữ liệu</p>");
+        })
+        .finally(() => setLoading(false));
     }
-  }, [id]);
+  }, [id, open]);
 
-  const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   return (
-    <div>
-      <Button onClick={handleOpen}>Open modal</Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          {content && (
-            <>
-              <span
-                className="detail"
-                dangerouslySetInnerHTML={{
-                  __html: content ? content : "Tải thông tin lỗi",
-                }}
-              ></span>
-            </>
-          )}
-        </Box>
-      </Modal>
-    </div>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="modal-view-file-title"
+      aria-describedby="modal-view-file-description"
+    >
+      <Box sx={style}>
+        {loading ? (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="100%"
+          >
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Box
+            className="detail"
+            dangerouslySetInnerHTML={{ __html: content }}
+            sx={{ lineHeight: 1.8 }}
+          />
+        )}
+      </Box>
+    </Modal>
   );
 }
