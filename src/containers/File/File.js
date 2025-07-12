@@ -106,6 +106,7 @@ const File = ({ isSuccess, clearStatus }) => {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [types, setTypes] = useState([]);
+  const [menuItems, setMenuItems] = useState(["Trang chủ"]);
 
   const fetchTypes = async () => {
     try {
@@ -234,14 +235,7 @@ const File = ({ isSuccess, clearStatus }) => {
 
   return (
     <Box m={3}>
-      <Header
-        title="Quản lý danh sách tập tin"
-        subtitle="Quản lý tệp tin"
-        titleBtn="Thêm file"
-        open={openAddModal}
-        setOpen={setOpenAddModal}
-      />
-
+      <Header menuItems={menuItems} setMenuItems={setMenuItems} />
       <Grid container spacing={2} alignItems="center" my={2}>
         <Grid item xs={12} md={3}>
           <FormControl fullWidth variant="outlined">

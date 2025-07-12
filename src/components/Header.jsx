@@ -1,64 +1,86 @@
 import { useState } from "react";
-import { Typography, Box, Button, Grid } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import ModalAddFiles from "./modal/ModalAddFiles";
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  Button,
+  Container,
+  IconButton,
+  Typography,
+  Stack,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
 
-const Header = ({ title, titleBtn, setChecked, open, setOpen }) => {
-  // const [open, setOpen] = useState(false);
-  const onClick = () => {
-    setOpen(!open);
+function Header({ menuItems, setMenuItems }) {
+  const handleAddMenu = () => {
+    const newItem = prompt("Nhập tên menu:");
+    if (newItem) setMenuItems([...menuItems, newItem]);
   };
-  const handleOnClose = () => {
-    setOpen(!open);
+
+  const handleDeleteMenu = (index) => {
+    const newItems = menuItems.filter((_, i) => i !== index);
+    setMenuItems(newItems);
   };
+
   return (
-    <>
-      <Box mb="30px">
-        <Grid container>
-          <Grid item xs={12} md={6} direction="column">
-            <Typography
-              variant="h4"
-              color="#141414"
-              fontWeight="bold"
-              sx={{ m: "0 0 5px 0", textTransform: "capitalize" }}
-            >
-              {title}
-            </Typography>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={6}
-            display="flex"
-            justifyContent="flex-end"
-            alignItems="flex-end"
-            sx={{ height: "fit-content" }}
+    <AppBar position="static" sx={{ bgcolor: "#eeeeee", boxShadow: 1 }}>
+      <Container maxWidth="xl">
+        <Toolbar disableGutters>
+          <Box sx={{ flexGrow: 1 }} />
+          <Button
+            variant="outlined"
+            sx={{ color: "black", borderColor: "black" }}
+            onClick={handleAddMenu}
+            startIcon={<AddIcon />}
           >
-            <Button
+            Thêm Menu
+          </Button>
+        </Toolbar>
+
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1.5,
+            px: 2,
+            py: 1,
+            bgcolor: "#eeeeee",
+            borderRadius: 1,
+            mt: 1,
+            flexWrap: "wrap",
+          }}
+        >
+          {menuItems.map((item, i) => (
+            <Box
+              key={i}
               sx={{
-                backgroundColor: "rgb(33, 150, 243)",
-                color: "#fff",
-                fontSize: "14px",
-                fontWeight: "light",
-                padding: "5px 10px",
-                ":hover": {
-                  bgcolor: "rgb(151, 200, 240)",
-                },
-                fontWeight: "bold",
+                display: "flex",
+                alignItems: "center",
+                bgcolor: "white",
+                px: 2,
+                py: 1,
+                borderRadius: 2,
+                boxShadow: 1,
+                color: "black",
+                borderColor: "black",
               }}
-              variant="contained"
-              // startIcon={<AddIcon />}
-              onClick={onClick}
             >
-              {titleBtn}
-            </Button>
-          </Grid>
-        </Grid>
-      </Box>
-      {open && <ModalAddFiles open={open} onClose={handleOnClose} />}
-    </>
+              <Typography variant="body1" sx={{ mr: 1 }}>
+                {item}
+              </Typography>
+              <IconButton
+                size="small"
+                onClick={() => handleDeleteMenu(i)}
+                sx={{ p: 0.5 }}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          ))}
+        </Box>
+      </Container>
+    </AppBar>
   );
-};
+}
 
 export default Header;
