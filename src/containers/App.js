@@ -2,9 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Route, Routes, BrowserRouter } from "react-router-dom";
 import { ConnectedRouter as Router } from "connected-react-router";
-import { history } from "../redux";
 import { ToastContainer } from "react-toastify";
-import { path } from "../utils";
 import Loading from "../components/Loading";
 //
 import File from "./File/File";
@@ -33,9 +31,9 @@ class App extends Component {
       <>
         <Loading />
         <BrowserRouter>
-          <Router history={history}>
+          <Router history={this.props.history}>
             <Routes>
-              <Route path={path.HOME} element={<File />} />
+              <Route path="/" element={<File />} />
             </Routes>
             <ToastContainer
               position="top-right"
