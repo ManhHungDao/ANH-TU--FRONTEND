@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
-  Chip,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MenuItemChip from "./MenuItemChip";
@@ -35,7 +34,7 @@ const Header = () => {
   const [menuData, setMenuData] = useState(initialMenu);
   const [selectedLevel1, setSelectedLevel1] = useState(null);
   const [selectedLevel2, setSelectedLevel2] = useState(null);
-  const [selectedItemLevel3, setSelectedItemLevel3] = useState(null);
+  const [selectedLevel3, setSelectedLevel3] = useState(null);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogLevel, setDialogLevel] = useState(null);
@@ -51,77 +50,80 @@ const Header = () => {
     setDialogOpen(true);
   };
 
+  const closeDialog = () => {
+    setDialogOpen(false);
+    setDialogValue("");
+    setEditTarget(null);
+  };
+
   const handleDialogSubmit = () => {
     const value = dialogValue.trim();
     if (!value) return;
-
-    const newData = { ...menuData };
+    const updated = { ...menuData };
 
     if (dialogLevel === "level1") {
       if (dialogType === "add") {
-        newData[value] = { __steps__: [] };
-      } else if (dialogType === "edit") {
-        newData[value] = newData[editTarget];
-        delete newData[editTarget];
+        updated[value] = { __steps__: [] };
+      } else {
+        updated[value] = updated[editTarget];
+        delete updated[editTarget];
         if (selectedLevel1 === editTarget) setSelectedLevel1(value);
       }
     }
 
-    if (dialogLevel === "level2") {
-      if (!selectedLevel1) return;
+    if (dialogLevel === "level2" && selectedLevel1) {
       if (dialogType === "add") {
-        newData[selectedLevel1][value] = { __steps__: [] };
-      } else if (dialogType === "edit") {
-        newData[selectedLevel1][value] = newData[selectedLevel1][editTarget];
-        delete newData[selectedLevel1][editTarget];
+        updated[selectedLevel1][value] = { __steps__: [] };
+      } else {
+        updated[selectedLevel1][value] = updated[selectedLevel1][editTarget];
+        delete updated[selectedLevel1][editTarget];
         if (selectedLevel2 === editTarget) setSelectedLevel2(value);
       }
     }
 
-    if (dialogLevel === "level3") {
-      if (!selectedLevel1 || !selectedLevel2) return;
+    if (dialogLevel === "level3" && selectedLevel1 && selectedLevel2) {
       if (dialogType === "add") {
-        newData[selectedLevel1][selectedLevel2][value] = { __steps__: [] };
-      } else if (dialogType === "edit") {
-        newData[selectedLevel1][selectedLevel2][value] =
-          newData[selectedLevel1][selectedLevel2][editTarget];
-        delete newData[selectedLevel1][selectedLevel2][editTarget];
-        if (selectedItemLevel3 === editTarget) setSelectedItemLevel3(value);
+        updated[selectedLevel1][selectedLevel2][value] = { __steps__: [] };
+      } else {
+        updated[selectedLevel1][selectedLevel2][value] =
+          updated[selectedLevel1][selectedLevel2][editTarget];
+        delete updated[selectedLevel1][selectedLevel2][editTarget];
+        if (selectedLevel3 === editTarget) setSelectedLevel3(value);
       }
     }
 
-    setMenuData(newData);
-    setDialogOpen(false);
-    setDialogValue("");
+    setMenuData(updated);
+    closeDialog();
   };
 
-  const handleDelete = (level, target) => {
-    const newData = { ...menuData };
+  const handleDelete = (level, key) => {
+    const updated = { ...menuData };
 
     if (level === "level1") {
-      delete newData[target];
+      delete updated[key];
       setSelectedLevel1(null);
       setSelectedLevel2(null);
-      setSelectedItemLevel3(null);
+      setSelectedLevel3(null);
     }
 
-    if (level === "level2" && selectedLevel1) {
-      delete newData[selectedLevel1][target];
+    if (level === "level2") {
+      delete updated[selectedLevel1][key];
       setSelectedLevel2(null);
-      setSelectedItemLevel3(null);
+      setSelectedLevel3(null);
     }
 
-    if (level === "level3" && selectedLevel1 && selectedLevel2) {
-      delete newData[selectedLevel1][selectedLevel2][target];
-      setSelectedItemLevel3(null);
+    if (level === "level3") {
+      delete updated[selectedLevel1][selectedLevel2][key];
+      setSelectedLevel3(null);
     }
 
-    setMenuData(newData);
+    setMenuData(updated);
   };
 
   const level2 = selectedLevel1
     ? Object.keys(menuData[selectedLevel1]).filter((k) => k !== "__steps__")
     : [];
+
   const level3 =
     selectedLevel1 && selectedLevel2
       ? Object.keys(menuData[selectedLevel1][selectedLevel2]).filter(
@@ -129,29 +131,44 @@ const Header = () => {
         )
       : [];
 
-  const getCurrentSteps = () => {
-    if (selectedLevel1 && selectedLevel2 && selectedItemLevel3)
-      return (
-        menuData[selectedLevel1][selectedLevel2][selectedItemLevel3]
-          .__steps__ || []
-      );
+  const getCurrentStepContext = () => {
+    if (selectedLevel1 && selectedLevel2 && selectedLevel3)
+      return {
+        steps:
+          menuData[selectedLevel1][selectedLevel2][selectedLevel3].__steps__ ||
+          [],
+        setSteps: (newSteps) => {
+          const updated = { ...menuData };
+          updated[selectedLevel1][selectedLevel2][selectedLevel3].__steps__ =
+            newSteps;
+          setMenuData(updated);
+        },
+      };
+
     if (selectedLevel1 && selectedLevel2)
-      return menuData[selectedLevel1][selectedLevel2].__steps__ || [];
-    if (selectedLevel1) return menuData[selectedLevel1].__steps__ || [];
-    return [];
+      return {
+        steps: menuData[selectedLevel1][selectedLevel2].__steps__ || [],
+        setSteps: (newSteps) => {
+          const updated = { ...menuData };
+          updated[selectedLevel1][selectedLevel2].__steps__ = newSteps;
+          setMenuData(updated);
+        },
+      };
+
+    if (selectedLevel1)
+      return {
+        steps: menuData[selectedLevel1].__steps__ || [],
+        setSteps: (newSteps) => {
+          const updated = { ...menuData };
+          updated[selectedLevel1].__steps__ = newSteps;
+          setMenuData(updated);
+        },
+      };
+
+    return null;
   };
 
-  const updateCurrentSteps = (newSteps) => {
-    const updated = { ...menuData };
-    if (selectedLevel1 && selectedLevel2 && selectedItemLevel3)
-      updated[selectedLevel1][selectedLevel2][selectedItemLevel3].__steps__ =
-        newSteps;
-    else if (selectedLevel1 && selectedLevel2)
-      updated[selectedLevel1][selectedLevel2].__steps__ = newSteps;
-    else if (selectedLevel1) updated[selectedLevel1].__steps__ = newSteps;
-
-    setMenuData(updated);
-  };
+  const current = getCurrentStepContext();
 
   return (
     <Box p={2}>
@@ -159,7 +176,7 @@ const Header = () => {
         Quản lý Menu
       </Typography>
 
-      {/* ======= Menu cấp 1 ======= */}
+      {/* ===== Menu cấp 1 ===== */}
       <Box mb={2}>
         <Typography variant="h6">Menu cấp 1</Typography>
         <Button
@@ -177,7 +194,7 @@ const Header = () => {
               onClick={() => {
                 setSelectedLevel1(key);
                 setSelectedLevel2(null);
-                setSelectedItemLevel3(null);
+                setSelectedLevel3(null);
               }}
               onDelete={() => handleDelete("level1", key)}
               onEdit={() => openDialog("level1", "edit", key, key)}
@@ -186,7 +203,7 @@ const Header = () => {
         </Stack>
       </Box>
 
-      {/* ======= Menu cấp 2 ======= */}
+      {/* ===== Menu cấp 2 ===== */}
       {selectedLevel1 && (
         <Box mb={2}>
           <Typography variant="subtitle1">Menu cấp 2</Typography>
@@ -204,7 +221,7 @@ const Header = () => {
                 selected={selectedLevel2 === key}
                 onClick={() => {
                   setSelectedLevel2(key);
-                  setSelectedItemLevel3(null);
+                  setSelectedLevel3(null);
                 }}
                 onDelete={() => handleDelete("level2", key)}
                 onEdit={() => openDialog("level2", "edit", key, key)}
@@ -214,7 +231,7 @@ const Header = () => {
         </Box>
       )}
 
-      {/* ======= Menu cấp 3 ======= */}
+      {/* ===== Menu cấp 3 ===== */}
       {selectedLevel2 && (
         <Box mb={2}>
           <Typography variant="subtitle1">Menu cấp 3</Typography>
@@ -229,8 +246,8 @@ const Header = () => {
               <MenuItemChip
                 key={key}
                 label={key}
-                selected={selectedItemLevel3 === key}
-                onClick={() => setSelectedItemLevel3(key)}
+                selected={selectedLevel3 === key}
+                onClick={() => setSelectedLevel3(key)}
                 onDelete={() => handleDelete("level3", key)}
                 onEdit={() => openDialog("level3", "edit", key, key)}
               />
@@ -239,33 +256,30 @@ const Header = () => {
         </Box>
       )}
 
-      {/* ======= StepManager hiển thị bước ======= */}
-      {(selectedLevel1 || selectedLevel2 || selectedItemLevel3) && (
+      {/* ===== StepManager chỉ render một lần ===== */}
+      {current && (
         <Box mt={4}>
-          <StepManager
-            steps={getCurrentSteps()}
-            onStepsChange={updateCurrentSteps}
-          />
+          <StepManager steps={current.steps} onStepsChange={current.setSteps} />
         </Box>
       )}
 
-      {/* ======= Dialog ======= */}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth>
+      {/* ===== Dialog ===== */}
+      <Dialog open={dialogOpen} onClose={closeDialog} fullWidth>
         <DialogTitle>
           {dialogType === "add" ? "Thêm" : "Sửa"} {dialogLevel}
         </DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
-            label="Tên menu"
             fullWidth
+            label="Tên menu"
             value={dialogValue}
             onChange={(e) => setDialogValue(e.target.value)}
             sx={{ mt: 1 }}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Hủy</Button>
+          <Button onClick={closeDialog}>Hủy</Button>
           <Button onClick={handleDialogSubmit}>Lưu</Button>
         </DialogActions>
       </Dialog>
