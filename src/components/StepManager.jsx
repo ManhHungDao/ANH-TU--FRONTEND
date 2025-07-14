@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -17,23 +17,27 @@ import {
 import { Add, Edit, Delete, Save } from "@mui/icons-material";
 import ReactMarkdown from "react-markdown";
 
-const StepManager = () => {
-  const [steps, setSteps] = useState([
-    {
-      id: 1,
-      title: "Bước 1",
-      content: "## Nội dung Markdown\n- Ví dụ 1\n- Ví dụ 2",
-    },
-  ]);
-  const [selectedStepId, setSelectedStepId] = useState(1);
+const StepManager = ({ steps = [], onStepsChange = () => {} }) => {
+  const [stepList, setStepList] = useState([]);
+  const [selectedStepId, setSelectedStepId] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [editStepTitle, setEditStepTitle] = useState("");
   const [editStepId, setEditStepId] = useState(null);
   const [contentDraft, setContentDraft] = useState("");
 
-  const selectedStep = steps.find((s) => s.id === selectedStepId);
+  useEffect(() => {
+    setStepList(steps);
+    if (steps.length > 0) {
+      setSelectedStepId(steps[0].id);
+      setContentDraft(steps[0].content);
+    } else {
+      setSelectedStepId(null);
+      setContentDraft("");
+    }
+  }, [steps]);
 
-  // ====== Dialog xử lý tiêu đề bước ======
+  const selectedStep = stepList.find((s) => s.id === selectedStepId);
+
   const handleAddStep = () => {
     setEditStepTitle("");
     setEditStepId(null);
@@ -47,8 +51,9 @@ const StepManager = () => {
   };
 
   const handleDeleteStep = (id) => {
-    const filtered = steps.filter((s) => s.id !== id);
-    setSteps(filtered);
+    const filtered = stepList.filter((s) => s.id !== id);
+    setStepList(filtered);
+    onStepsChange(filtered);
     if (selectedStepId === id && filtered.length > 0) {
       setSelectedStepId(filtered[0].id);
       setContentDraft(filtered[0].content);
@@ -61,11 +66,10 @@ const StepManager = () => {
   const handleDialogSave = () => {
     if (!editStepTitle.trim()) return;
 
+    let updated;
     if (editStepId) {
-      setSteps((prev) =>
-        prev.map((s) =>
-          s.id === editStepId ? { ...s, title: editStepTitle } : s
-        )
+      updated = stepList.map((s) =>
+        s.id === editStepId ? { ...s, title: editStepTitle } : s
       );
     } else {
       const newStep = {
@@ -73,11 +77,13 @@ const StepManager = () => {
         title: editStepTitle,
         content: "",
       };
-      setSteps((prev) => [...prev, newStep]);
+      updated = [...stepList, newStep];
       setSelectedStepId(newStep.id);
       setContentDraft("");
     }
 
+    setStepList(updated);
+    onStepsChange(updated);
     setOpenDialog(false);
   };
 
@@ -87,17 +93,25 @@ const StepManager = () => {
   };
 
   const handleSaveContent = () => {
-    setSteps((prev) =>
-      prev.map((s) =>
-        s.id === selectedStepId ? { ...s, content: contentDraft } : s
-      )
+    const updated = stepList.map((s) =>
+      s.id === selectedStepId ? { ...s, content: contentDraft } : s
     );
+    setStepList(updated);
+    onStepsChange(updated);
   };
 
   return (
-    <Box sx={{ display: "flex", height: "100vh", p: 2 }}>
-      {/* ======= Left Menu: Danh sách bước ======= */}
-      <Box sx={{ width: 300, borderRight: "1px solid #ccc", pr: 2 }}>
+    <Box
+      sx={{
+        display: "flex",
+        height: 500,
+        p: 2,
+        border: "1px solid #ddd",
+        borderRadius: 2,
+      }}
+    >
+      {/* Danh sách bước */}
+      <Box sx={{ width: 300, pr: 2, borderRight: "1px solid #ccc" }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
           <Typography variant="h6">Danh sách bước</Typography>
           <IconButton onClick={handleAddStep} color="primary">
@@ -105,7 +119,7 @@ const StepManager = () => {
           </IconButton>
         </Box>
         <List>
-          {steps.map((step) => (
+          {stepList.map((step) => (
             <ListItem
               key={step.id}
               selected={step.id === selectedStepId}
@@ -113,7 +127,6 @@ const StepManager = () => {
               secondaryAction={
                 <>
                   <IconButton
-                    edge="end"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleEditStep(step);
@@ -122,7 +135,6 @@ const StepManager = () => {
                     <Edit fontSize="small" />
                   </IconButton>
                   <IconButton
-                    edge="end"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDeleteStep(step.id);
@@ -139,40 +151,38 @@ const StepManager = () => {
         </List>
       </Box>
 
-      {/* ======= Right Panel: Soạn nội dung Markdown ======= */}
-      <Box sx={{ flex: 1, pl: 4, display: "flex", flexDirection: "column" }}>
+      {/* Nội dung markdown */}
+      <Box sx={{ flex: 1, pl: 2, display: "flex", flexDirection: "column" }}>
         {selectedStep ? (
           <>
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h6" gutterBottom>
               {selectedStep.title}
             </Typography>
             <TextField
-              label="Nội dung Markdown"
               multiline
-              rows={8}
+              label="Nội dung Markdown"
+              rows={6}
               value={contentDraft}
               onChange={(e) => setContentDraft(e.target.value)}
               sx={{ mb: 2 }}
             />
             <Button
               variant="contained"
-              color="primary"
-              startIcon={<Save />}
               onClick={handleSaveContent}
-              sx={{ mb: 3, width: "fit-content" }}
+              startIcon={<Save />}
+              sx={{ mb: 2 }}
             >
               Lưu nội dung
             </Button>
             <Divider sx={{ mb: 2 }} />
             <Typography variant="subtitle1" gutterBottom>
-              🔍 Xem trước Markdown:
+              Xem trước:
             </Typography>
             <Box
               sx={{
                 p: 2,
                 border: "1px solid #ccc",
                 borderRadius: 1,
-                overflowY: "auto",
                 backgroundColor: "#fafafa",
               }}
             >
@@ -180,28 +190,25 @@ const StepManager = () => {
             </Box>
           </>
         ) : (
-          <Typography variant="h6">Chưa chọn bước nào</Typography>
+          <Typography>Chưa chọn bước nào</Typography>
         )}
       </Box>
 
-      {/* ======= Dialog thêm/sửa bước ======= */}
+      {/* Dialog */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
         <DialogTitle>{editStepId ? "Sửa bước" : "Thêm bước"}</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
-            margin="dense"
-            label="Tên bước"
             fullWidth
+            label="Tên bước"
             value={editStepTitle}
             onChange={(e) => setEditStepTitle(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)}>Hủy</Button>
-          <Button onClick={handleDialogSave} variant="contained">
-            Lưu
-          </Button>
+          <Button onClick={handleDialogSave}>Lưu</Button>
         </DialogActions>
       </Dialog>
     </Box>
