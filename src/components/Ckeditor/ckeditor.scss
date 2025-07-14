@@ -2,11 +2,11 @@
   .ck-rounded-corners .ck.ck-editor__editable:not(.ck-editor__nested-editable),
   .ck.ck-editor__editable.ck-rounded-corners:not(.ck-editor__nested-editable) {
     border: 1px solid #ddd;
-    min-height: 500px;
-    max-height: 800px;
+    height: 400px;
     overflow-y: scroll;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
+    background-color: #fff;
   }
 
   .ck-rounded-corners .ck.ck-toolbar,
@@ -17,9 +17,6 @@
   .ck-reset_all :not(.ck-reset_all-excluded *),
   .ck.ck-reset_all {
     color: #6c6262 !important;
-  }
-  .ck.ck-toolbar > .ck-toolbar__items {
-    /* background-color: #ddd; */
   }
   span {
     color: rgba(0, 0, 0, 0.6);
@@ -36,8 +33,8 @@
   .ck.ck-toolbar.ck-rounded-corners {
     border: 1px solid #dc3545;
   }
-  span{
-    color: #dc3545 ;
+  span {
+    color: #dc3545;
   }
 }
 

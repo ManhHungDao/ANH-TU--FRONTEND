@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box } from "@mui/material";
 import StepList from "./StepList";
-import StepContent from "./StepEditor";
+import StepEditor from "./StepEditor";
 import StepDialog from "./StepDialog";
 
 const StepManager = ({ steps, onStepsChange }) => {
@@ -39,7 +39,7 @@ const StepManager = ({ steps, onStepsChange }) => {
     if (id) {
       onStepsChange(steps.map((s) => (s.id === id ? { ...s, title } : s)));
     } else {
-      const newStep = { id: Date.now(), title, content: "" };
+      const newStep = { id: Date.now(), title, content: "", files: [] };
       onStepsChange([...steps, newStep]);
       setSelectedStepId(newStep.id);
       setContentDraft("");
@@ -51,6 +51,17 @@ const StepManager = ({ steps, onStepsChange }) => {
     onStepsChange(
       steps.map((s) =>
         s.id === selectedStepId ? { ...s, content: contentDraft } : s
+      )
+    );
+  };
+
+  const handleFileUpload = (e) => {
+    const newFiles = Array.from(e.target.files);
+    onStepsChange(
+      steps.map((s) =>
+        s.id === selectedStepId
+          ? { ...s, files: [...(s.files || []), ...newFiles] }
+          : s
       )
     );
   };
@@ -70,11 +81,12 @@ const StepManager = ({ steps, onStepsChange }) => {
         onDelete={handleDeleteStep}
         onReorder={handleReorder}
       />
-      <StepContent
+      <StepEditor
         step={steps.find((s) => s.id === selectedStepId)}
         content={contentDraft}
         onChangeContent={setContentDraft}
         onSaveContent={handleContentSave}
+        onUploadFiles={handleFileUpload}
       />
       <StepDialog
         open={dialogOpen}

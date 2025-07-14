@@ -175,10 +175,6 @@ const Header = () => {
 
   return (
     <Box sx={{ bgcolor: "#f5f7fa", p: 3, minHeight: "100vh" }}>
-      <Typography variant="h5" fontWeight="bold" gutterBottom>
-        Quản lý Menu
-      </Typography>
-
       {/* ===== Toggle & Breadcrumb ===== */}
       <Button
         variant="outlined"
@@ -313,10 +309,10 @@ const Header = () => {
 
       {/* ===== Danh sách các bước ===== */}
       {current && (
-        <Box mt={4}>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
+        <Box mt={1}>
+          {/* <Typography variant="h6" fontWeight="bold" gutterBottom>
             Danh sách các bước
-          </Typography>
+          </Typography> */}
           <StepManager steps={current.steps} onStepsChange={current.setSteps} />
         </Box>
       )}

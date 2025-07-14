@@ -1,9 +1,22 @@
 import React from "react";
-import { Box, Typography, TextField, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
 import { Save } from "@mui/icons-material";
-import ReactMarkdown from "react-markdown";
+import CKEditorFieldBasic from "../Ckeditor/CKEditorFieldBasic";
 
-const StepEditor = ({ step, content, onChangeContent, onSaveContent }) => {
+const StepEditor = ({
+  step,
+  content,
+  onChangeContent,
+  onSaveContent,
+  onUploadFiles,
+}) => {
   if (!step) return <Typography sx={{ pl: 4 }}>Chưa chọn bước nào</Typography>;
 
   return (
@@ -11,37 +24,40 @@ const StepEditor = ({ step, content, onChangeContent, onSaveContent }) => {
       <Typography variant="h6" gutterBottom>
         {step.title}
       </Typography>
-      <TextField
-        label="Nội dung Markdown"
-        multiline
-        rows={8}
-        value={content}
-        onChange={(e) => onChangeContent(e.target.value)}
-        sx={{ mb: 2, backgroundColor: "#fff" }}
-      />
+
+      {/* CKEditor */}
+
+      <CKEditorFieldBasic value={content} onChange={onChangeContent} />
       <Button
         variant="contained"
         startIcon={<Save />}
         onClick={onSaveContent}
-        sx={{ width: "fit-content", mb: 3 }}
+        sx={{ mt: 2, mb: 2, width: "fit-content" }}
       >
         Lưu nội dung
       </Button>
-      <Typography variant="subtitle2" gutterBottom>
-        Xem trước:
+
+      {/* Upload file */}
+      <Typography fontWeight="bold" gutterBottom>
+        Đính kèm file
       </Typography>
-      <Box
-        sx={{
-          p: 2,
-          border: "1px solid #ccc",
-          borderRadius: 1,
-          backgroundColor: "#fff",
-          flex: 1,
-          overflowY: "auto",
-        }}
-      >
-        <ReactMarkdown>{content}</ReactMarkdown>
-      </Box>
+      <input type="file" multiple onChange={onUploadFiles} />
+
+      {/* Danh sách file đính kèm */}
+      {step.files && step.files.length > 0 && (
+        <Box mt={2}>
+          <Typography variant="subtitle2">
+            Danh sách file đã đính kèm:
+          </Typography>
+          <List dense>
+            {step.files.map((file, index) => (
+              <ListItem key={index}>
+                <ListItemText primary={file.name} />
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      )}
     </Box>
   );
 };
