@@ -9,10 +9,12 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
+  Breadcrumbs,
+  Link,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MenuItemChip from "./MenuItemChip";
-import StepManager from "./StepManager";
+import StepManager from "./TableEdit/StepManager";
 
 const initialMenu = {
   "Trang chủ": {
@@ -35,6 +37,7 @@ const Header = () => {
   const [selectedLevel1, setSelectedLevel1] = useState(null);
   const [selectedLevel2, setSelectedLevel2] = useState(null);
   const [selectedLevel3, setSelectedLevel3] = useState(null);
+  const [showMenu, setShowMenu] = useState(true);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogLevel, setDialogLevel] = useState(null);
@@ -171,94 +174,149 @@ const Header = () => {
   const current = getCurrentStepContext();
 
   return (
-    <Box p={2}>
-      <Typography variant="h5" gutterBottom>
+    <Box sx={{ bgcolor: "#f5f7fa", p: 3, minHeight: "100vh" }}>
+      <Typography variant="h5" fontWeight="bold" gutterBottom>
         Quản lý Menu
       </Typography>
 
-      {/* ===== Menu cấp 1 ===== */}
-      <Box mb={2}>
-        <Typography variant="h6">Menu cấp 1</Typography>
-        <Button
-          onClick={() => openDialog("level1", "add")}
-          startIcon={<AddIcon />}
+      {/* ===== Toggle & Breadcrumb ===== */}
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => setShowMenu((prev) => !prev)}
+        sx={{ mb: 2 }}
+      >
+        {showMenu ? "Ẩn quản lý menu" : "Hiện quản lý menu"}
+      </Button>
+
+      <Breadcrumbs sx={{ mb: 2 }}>
+        <Link
+          underline="hover"
+          color="inherit"
+          onClick={() => {
+            setShowMenu(true);
+            setSelectedLevel2(null);
+            setSelectedLevel3(null);
+          }}
+          sx={{ cursor: "pointer" }}
         >
-          Thêm
-        </Button>
-        <Stack direction="row" spacing={1} mt={1} flexWrap="wrap">
-          {Object.keys(menuData).map((key) => (
-            <MenuItemChip
-              key={key}
-              label={key}
-              selected={selectedLevel1 === key}
-              onClick={() => {
-                setSelectedLevel1(key);
-                setSelectedLevel2(null);
-                setSelectedLevel3(null);
-              }}
-              onDelete={() => handleDelete("level1", key)}
-              onEdit={() => openDialog("level1", "edit", key, key)}
-            />
-          ))}
-        </Stack>
-      </Box>
-
-      {/* ===== Menu cấp 2 ===== */}
-      {selectedLevel1 && (
-        <Box mb={2}>
-          <Typography variant="subtitle1">Menu cấp 2</Typography>
-          <Button
-            onClick={() => openDialog("level2", "add")}
-            startIcon={<AddIcon />}
+          {selectedLevel1 || "Chọn menu cấp 1"}
+        </Link>
+        {selectedLevel2 && (
+          <Link
+            underline="hover"
+            color="inherit"
+            onClick={() => {
+              setShowMenu(true);
+              setSelectedLevel3(null);
+            }}
+            sx={{ cursor: "pointer" }}
           >
-            Thêm
-          </Button>
-          <Stack direction="row" spacing={1} mt={1} flexWrap="wrap">
-            {level2.map((key) => (
-              <MenuItemChip
-                key={key}
-                label={key}
-                selected={selectedLevel2 === key}
-                onClick={() => {
-                  setSelectedLevel2(key);
-                  setSelectedLevel3(null);
-                }}
-                onDelete={() => handleDelete("level2", key)}
-                onEdit={() => openDialog("level2", "edit", key, key)}
-              />
-            ))}
-          </Stack>
+            {selectedLevel2}
+          </Link>
+        )}
+        {selectedLevel3 && (
+          <Typography color="text.primary">{selectedLevel3}</Typography>
+        )}
+      </Breadcrumbs>
+
+      {/* ===== QUẢN LÝ MENU ẨN/HIỆN ===== */}
+      {showMenu && (
+        <Box>
+          {/* ===== Menu cấp 1 ===== */}
+          <Box mb={2}>
+            <Stack direction="row" justifyContent="space-between">
+              <Typography fontWeight="bold">Menu cấp 1</Typography>
+              <Button
+                onClick={() => openDialog("level1", "add")}
+                startIcon={<AddIcon />}
+              >
+                Thêm
+              </Button>
+            </Stack>
+            <Stack direction="row" spacing={1} mt={1} flexWrap="wrap">
+              {Object.keys(menuData).map((key) => (
+                <MenuItemChip
+                  key={key}
+                  label={key}
+                  selected={selectedLevel1 === key}
+                  onClick={() => {
+                    setSelectedLevel1(key);
+                    setSelectedLevel2(null);
+                    setSelectedLevel3(null);
+                  }}
+                  onDelete={() => handleDelete("level1", key)}
+                  onEdit={() => openDialog("level1", "edit", key, key)}
+                />
+              ))}
+            </Stack>
+          </Box>
+
+          {/* ===== Menu cấp 2 ===== */}
+          {selectedLevel1 && (
+            <Box mb={2}>
+              <Stack direction="row" justifyContent="space-between">
+                <Typography fontWeight="bold">Menu cấp 2</Typography>
+                <Button
+                  onClick={() => openDialog("level2", "add")}
+                  startIcon={<AddIcon />}
+                >
+                  Thêm
+                </Button>
+              </Stack>
+              <Stack direction="row" spacing={1} mt={1} flexWrap="wrap">
+                {level2.map((key) => (
+                  <MenuItemChip
+                    key={key}
+                    label={key}
+                    selected={selectedLevel2 === key}
+                    onClick={() => {
+                      setSelectedLevel2(key);
+                      setSelectedLevel3(null);
+                    }}
+                    onDelete={() => handleDelete("level2", key)}
+                    onEdit={() => openDialog("level2", "edit", key, key)}
+                  />
+                ))}
+              </Stack>
+            </Box>
+          )}
+
+          {/* ===== Menu cấp 3 ===== */}
+          {selectedLevel2 && (
+            <Box mb={3}>
+              <Stack direction="row" justifyContent="space-between">
+                <Typography fontWeight="bold">Menu cấp 3</Typography>
+                <Button
+                  onClick={() => openDialog("level3", "add")}
+                  startIcon={<AddIcon />}
+                >
+                  Thêm
+                </Button>
+              </Stack>
+              <Stack direction="row" spacing={1} mt={1} flexWrap="wrap">
+                {level3.map((key) => (
+                  <MenuItemChip
+                    key={key}
+                    label={key}
+                    selected={selectedLevel3 === key}
+                    onClick={() => setSelectedLevel3(key)}
+                    onDelete={() => handleDelete("level3", key)}
+                    onEdit={() => openDialog("level3", "edit", key, key)}
+                  />
+                ))}
+              </Stack>
+            </Box>
+          )}
         </Box>
       )}
 
-      {/* ===== Menu cấp 3 ===== */}
-      {selectedLevel2 && (
-        <Box mb={2}>
-          <Typography variant="subtitle1">Menu cấp 3</Typography>
-          <Button
-            onClick={() => openDialog("level3", "add")}
-            startIcon={<AddIcon />}
-          >
-            Thêm
-          </Button>
-          <Stack direction="row" spacing={1} mt={1} flexWrap="wrap">
-            {level3.map((key) => (
-              <MenuItemChip
-                key={key}
-                label={key}
-                selected={selectedLevel3 === key}
-                onClick={() => setSelectedLevel3(key)}
-                onDelete={() => handleDelete("level3", key)}
-                onEdit={() => openDialog("level3", "edit", key, key)}
-              />
-            ))}
-          </Stack>
-        </Box>
-      )}
-
-      {/* ===== StepManager chỉ render một lần ===== */}
+      {/* ===== Danh sách các bước ===== */}
       {current && (
         <Box mt={4}>
+          <Typography variant="h6" fontWeight="bold" gutterBottom>
+            Danh sách các bước
+          </Typography>
           <StepManager steps={current.steps} onStepsChange={current.setSteps} />
         </Box>
       )}
