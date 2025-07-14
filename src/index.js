@@ -1,16 +1,24 @@
+// src/index.js
+import React from "react";
 import ReactDOM from "react-dom";
 import "./styles/styles.scss";
 import App from "./containers/App";
 
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import theme from "./theme/theme"; // Đường dẫn đúng với theme bạn tạo
+
 const renderApp = () => {
   ReactDOM.render(
-    <App />,
-
+    <ThemeProvider theme={theme}>
+      <CssBaseline /> {/* Reset CSS của MUI */}
+      <App />
+    </ThemeProvider>,
     document.getElementById("root")
   );
 };
 
 renderApp();
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
+
+// Service Worker
+// Learn more: https://bit.ly/CRA-PWA

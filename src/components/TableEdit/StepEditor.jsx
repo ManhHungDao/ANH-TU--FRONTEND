@@ -17,7 +17,7 @@ const StepEditor = ({ step, content, onChangeContent, onSaveContent }) => {
         rows={8}
         value={content}
         onChange={(e) => onChangeContent(e.target.value)}
-        sx={{ mb: 2 }}
+        sx={{ mb: 2, backgroundColor: "#fff" }}
       />
       <Button
         variant="contained"
@@ -35,7 +35,7 @@ const StepEditor = ({ step, content, onChangeContent, onSaveContent }) => {
           p: 2,
           border: "1px solid #ccc",
           borderRadius: 1,
-          backgroundColor: "#fafafa",
+          backgroundColor: "#fff",
           flex: 1,
           overflowY: "auto",
         }}
