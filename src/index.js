@@ -1,8 +1,5 @@
-import React from "react";
 import ReactDOM from "react-dom";
 import "./styles/styles.scss";
-import { ThemeProvider, CssBaseline } from "@mui/material";
-import theme from "./theme/theme";
 import App from "./containers/App";
 
 const renderApp = () => {

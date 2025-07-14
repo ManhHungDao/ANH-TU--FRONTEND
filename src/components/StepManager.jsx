@@ -14,23 +14,35 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
-import { Add, Edit, Delete } from "@mui/icons-material";
+import { Add, Edit, Delete, Save } from "@mui/icons-material";
+import ReactMarkdown from "react-markdown";
 
 const StepManager = () => {
   const [steps, setSteps] = useState([
-    { id: 1, title: "Bước 1", content: "Nội dung bước 1" },
+    {
+      id: 1,
+      title: "Bước 1",
+      content: "## Nội dung Markdown\n- Ví dụ 1\n- Ví dụ 2",
+    },
   ]);
   const [selectedStepId, setSelectedStepId] = useState(1);
   const [openDialog, setOpenDialog] = useState(false);
-  const [editStep, setEditStep] = useState(null);
+  const [editStepTitle, setEditStepTitle] = useState("");
+  const [editStepId, setEditStepId] = useState(null);
+  const [contentDraft, setContentDraft] = useState("");
 
+  const selectedStep = steps.find((s) => s.id === selectedStepId);
+
+  // ====== Dialog xử lý tiêu đề bước ======
   const handleAddStep = () => {
-    setEditStep({ id: null, title: "", content: "" });
+    setEditStepTitle("");
+    setEditStepId(null);
     setOpenDialog(true);
   };
 
   const handleEditStep = (step) => {
-    setEditStep(step);
+    setEditStepTitle(step.title);
+    setEditStepId(step.id);
     setOpenDialog(true);
   };
 
@@ -39,36 +51,52 @@ const StepManager = () => {
     setSteps(filtered);
     if (selectedStepId === id && filtered.length > 0) {
       setSelectedStepId(filtered[0].id);
+      setContentDraft(filtered[0].content);
     } else if (filtered.length === 0) {
       setSelectedStepId(null);
+      setContentDraft("");
     }
   };
 
   const handleDialogSave = () => {
-    if (!editStep.title.trim()) return;
+    if (!editStepTitle.trim()) return;
 
-    if (editStep.id) {
-      // Update
+    if (editStepId) {
       setSteps((prev) =>
-        prev.map((s) => (s.id === editStep.id ? editStep : s))
+        prev.map((s) =>
+          s.id === editStepId ? { ...s, title: editStepTitle } : s
+        )
       );
     } else {
-      // Add new
       const newStep = {
-        ...editStep,
         id: Date.now(),
+        title: editStepTitle,
+        content: "",
       };
       setSteps((prev) => [...prev, newStep]);
       setSelectedStepId(newStep.id);
+      setContentDraft("");
     }
+
     setOpenDialog(false);
   };
 
-  const selectedStep = steps.find((s) => s.id === selectedStepId);
+  const handleSelectStep = (step) => {
+    setSelectedStepId(step.id);
+    setContentDraft(step.content);
+  };
+
+  const handleSaveContent = () => {
+    setSteps((prev) =>
+      prev.map((s) =>
+        s.id === selectedStepId ? { ...s, content: contentDraft } : s
+      )
+    );
+  };
 
   return (
     <Box sx={{ display: "flex", height: "100vh", p: 2 }}>
-      {/* Left: Menu */}
+      {/* ======= Left Menu: Danh sách bước ======= */}
       <Box sx={{ width: 300, borderRight: "1px solid #ccc", pr: 2 }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
           <Typography variant="h6">Danh sách bước</Typography>
@@ -81,7 +109,7 @@ const StepManager = () => {
             <ListItem
               key={step.id}
               selected={step.id === selectedStepId}
-              onClick={() => setSelectedStepId(step.id)}
+              onClick={() => handleSelectStep(step)}
               secondaryAction={
                 <>
                   <IconButton
@@ -111,45 +139,62 @@ const StepManager = () => {
         </List>
       </Box>
 
-      {/* Right: Step Content */}
-      <Box sx={{ flex: 1, pl: 4 }}>
+      {/* ======= Right Panel: Soạn nội dung Markdown ======= */}
+      <Box sx={{ flex: 1, pl: 4, display: "flex", flexDirection: "column" }}>
         {selectedStep ? (
           <>
             <Typography variant="h5" gutterBottom>
               {selectedStep.title}
             </Typography>
+            <TextField
+              label="Nội dung Markdown"
+              multiline
+              rows={8}
+              value={contentDraft}
+              onChange={(e) => setContentDraft(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Save />}
+              onClick={handleSaveContent}
+              sx={{ mb: 3, width: "fit-content" }}
+            >
+              Lưu nội dung
+            </Button>
             <Divider sx={{ mb: 2 }} />
-            <Typography>{selectedStep.content}</Typography>
+            <Typography variant="subtitle1" gutterBottom>
+              🔍 Xem trước Markdown:
+            </Typography>
+            <Box
+              sx={{
+                p: 2,
+                border: "1px solid #ccc",
+                borderRadius: 1,
+                overflowY: "auto",
+                backgroundColor: "#fafafa",
+              }}
+            >
+              <ReactMarkdown>{contentDraft}</ReactMarkdown>
+            </Box>
           </>
         ) : (
           <Typography variant="h6">Chưa chọn bước nào</Typography>
         )}
       </Box>
 
-      {/* Dialog: Add/Edit */}
+      {/* ======= Dialog thêm/sửa bước ======= */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
-        <DialogTitle>{editStep?.id ? "Sửa bước" : "Thêm bước"}</DialogTitle>
+        <DialogTitle>{editStepId ? "Sửa bước" : "Thêm bước"}</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
-            label="Tiêu đề bước"
+            label="Tên bước"
             fullWidth
-            value={editStep?.title || ""}
-            onChange={(e) =>
-              setEditStep({ ...editStep, title: e.target.value })
-            }
-          />
-          <TextField
-            margin="dense"
-            label="Nội dung"
-            fullWidth
-            multiline
-            rows={4}
-            value={editStep?.content || ""}
-            onChange={(e) =>
-              setEditStep({ ...editStep, content: e.target.value })
-            }
+            value={editStepTitle}
+            onChange={(e) => setEditStepTitle(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
