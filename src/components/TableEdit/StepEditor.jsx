@@ -1,14 +1,23 @@
-import React from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, Typography, Button, Stack } from "@mui/material";
 import { Save } from "@mui/icons-material";
 import CKEditorFieldBasic from "../Ckeditor/CKEditorFieldBasic";
+import FileAttachments from "./FileAttachments";
+
+const mockAttachments = [
+  {
+    name: "Tài liệu hướng dẫn.pdf",
+    size: 243000,
+    url: "#",
+    type: "application/pdf",
+  },
+  {
+    name: "bieu-mau.docx",
+    size: 98000,
+    url: "#",
+    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  },
+];
 
 const StepEditor = ({
   step,
@@ -17,6 +26,30 @@ const StepEditor = ({
   onSaveContent,
   onUploadFiles,
 }) => {
+  const [attachments, setAttachments] = useState([]);
+
+  useEffect(() => {
+    // Giả lập: nếu step có file thật thì dùng, không thì dùng mock
+    setAttachments(
+      step?.attachments?.length ? step.attachments : mockAttachments
+    );
+  }, [step]);
+
+  const handleUpload = (files) => {
+    // Giả lập thêm file vào danh sách
+    const newFiles = files.map((file) => ({
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      url: "#",
+    }));
+    setAttachments((prev) => [...prev, ...newFiles]);
+  };
+
+  const handleDelete = (fileToDelete) => {
+    setAttachments((prev) => prev.filter((f) => f.name !== fileToDelete.name));
+  };
+
   if (!step) return <Typography sx={{ pl: 4 }}>Chưa chọn bước nào</Typography>;
 
   return (
@@ -26,38 +59,41 @@ const StepEditor = ({
       </Typography>
 
       {/* CKEditor */}
-
       <CKEditorFieldBasic value={content} onChange={onChangeContent} />
-      <Button
-        variant="contained"
-        startIcon={<Save />}
-        onClick={onSaveContent}
-        sx={{ mt: 2, mb: 2, width: "fit-content" }}
-      >
-        Lưu nội dung
-      </Button>
 
-      {/* Upload file */}
-      <Typography fontWeight="bold" gutterBottom>
-        Đính kèm file
-      </Typography>
-      <input type="file" multiple onChange={onUploadFiles} />
-
-      {/* Danh sách file đính kèm */}
-      {step.files && step.files.length > 0 && (
-        <Box mt={2}>
-          <Typography variant="subtitle2">
-            Danh sách file đã đính kèm:
-          </Typography>
-          <List dense>
-            {step.files.map((file, index) => (
-              <ListItem key={index}>
-                <ListItemText primary={file.name} />
-              </ListItem>
-            ))}
-          </List>
+      {/* Lưu & Upload file cùng hàng */}
+      {/* <Stack direction="row" spacing={2} alignItems="center" mt={2}>
+        <Button
+          variant="contained"
+          startIcon={<Save />}
+          onClick={onSaveContent}
+        >
+          Lưu nội dung
+        </Button>
+        <Box flex={1}>
+          <FileAttachments
+            files={attachments}
+            onUpload={handleUpload}
+            onDelete={handleDelete}
+          />
         </Box>
-      )}
+      </Stack> */}
+      <Stack direction="row" spacing={2} alignItems="flex-start" mt={2}>
+        <Button
+          variant="contained"
+          startIcon={<Save />}
+          onClick={onSaveContent}
+        >
+          Lưu nội dung
+        </Button>
+        <Box sx={{ flex: 1 }}>
+          <FileAttachments
+            files={attachments}
+            onUpload={handleUpload}
+            onDelete={handleDelete}
+          />
+        </Box>
+      </Stack>
     </Box>
   );
 };
