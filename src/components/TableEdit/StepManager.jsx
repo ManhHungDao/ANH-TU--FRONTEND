@@ -3,12 +3,15 @@ import { Box } from "@mui/material";
 import StepList from "./StepList";
 import StepEditor from "./StepEditor";
 import StepDialog from "./StepDialog";
+import ConfirmDialog from "../common/ConfirmDialog";
 
 const StepManager = ({ steps, onStepsChange }) => {
   const [selectedStepId, setSelectedStepId] = useState(steps[0]?.id || null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editStep, setEditStep] = useState(null);
   const [contentDraft, setContentDraft] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   useEffect(() => {
     const selected = steps.find((s) => s.id === selectedStepId);
@@ -25,14 +28,21 @@ const StepManager = ({ steps, onStepsChange }) => {
     setDialogOpen(true);
   };
 
-  const handleDeleteStep = (id) => {
-    const filtered = steps.filter((s) => s.id !== id);
+  const requestDeleteStep = (id) => {
+    setPendingDeleteId(id);
+    setConfirmOpen(true);
+  };
+
+  const confirmDeleteStep = () => {
+    const filtered = steps.filter((s) => s.id !== pendingDeleteId);
     onStepsChange(filtered);
-    if (selectedStepId === id) {
+    if (selectedStepId === pendingDeleteId) {
       const first = filtered[0];
       setSelectedStepId(first?.id || null);
       setContentDraft(first?.content || "");
     }
+    setConfirmOpen(false);
+    setPendingDeleteId(null);
   };
 
   const handleDialogSave = (title, id) => {
@@ -78,7 +88,7 @@ const StepManager = ({ steps, onStepsChange }) => {
         onSelect={setSelectedStepId}
         onAdd={handleAddStep}
         onEdit={handleEditStep}
-        onDelete={handleDeleteStep}
+        onDelete={requestDeleteStep}
         onReorder={handleReorder}
       />
       <StepEditor
@@ -93,6 +103,14 @@ const StepManager = ({ steps, onStepsChange }) => {
         onClose={() => setDialogOpen(false)}
         onSave={handleDialogSave}
         step={editStep}
+        steps={steps}
+      />
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Xác nhận xóa bước"
+        message="Bạn có chắc chắn muốn xóa bước này không?"
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={confirmDeleteStep}
       />
     </Box>
   );

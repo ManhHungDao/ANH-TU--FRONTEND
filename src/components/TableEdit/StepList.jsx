@@ -23,7 +23,7 @@ const StepList = ({
   return (
     <Box sx={{ width: 300, borderRight: "1px solid #ccc", pr: 2 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-        <Typography fontWeight="bold">Danh sách bước</Typography>
+        <Typography fontWeight="bold">Danh mục</Typography>
         <IconButton size="small" onClick={onAdd}>
           <Add />
         </IconButton>
