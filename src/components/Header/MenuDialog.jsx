@@ -13,9 +13,11 @@ const MenuDialog = ({ dialog, setDialog, menuData, setMenuData, selected }) => {
   const handleSubmit = async () => {
     const value = dialog.value.trim();
     if (!value) return;
+
     const updated = { ...menuData };
 
     try {
+      // ➤ CẤP 1
       if (dialog.level === "level1") {
         if (dialog.type === "add") {
           const newMenu = await api.createMenu(value);
@@ -27,8 +29,10 @@ const MenuDialog = ({ dialog, setDialog, menuData, setMenuData, selected }) => {
         }
       }
 
+      // ➤ CẤP 2
       if (dialog.level === "level2" && selected.l1) {
         const parentId = menuData[selected.l1].__id;
+
         if (dialog.type === "add") {
           const newLevel2 = await api.addLevel2(parentId, value);
           updated[selected.l1][value] = { __id: newLevel2._id, __steps__: [] };
@@ -39,22 +43,26 @@ const MenuDialog = ({ dialog, setDialog, menuData, setMenuData, selected }) => {
         }
       }
 
+      // ➤ CẤP 3 (SỬA TẠI ĐÂY)
       if (dialog.level === "level3" && selected.l1 && selected.l2) {
-        const parentId = menuData[selected.l1][selected.l2].__id;
+        const menuId = menuData[selected.l1].__id;
+        const level2Id = menuData[selected.l1][selected.l2].__id;
+
         if (dialog.type === "add") {
-          const newLevel3 = await api.addLevel3(parentId, value);
+          const newLevel3 = await api.addLevel3(menuId, level2Id, value);
           updated[selected.l1][selected.l2][value] = {
             __id: newLevel3._id,
             __steps__: [],
           };
         } else {
-          await api.updateLevel3(parentId, dialog.target, value);
+          await api.updateLevel3(menuId, level2Id, dialog.target, value);
           updated[selected.l1][selected.l2][value] =
             updated[selected.l1][selected.l2][dialog.target];
           delete updated[selected.l1][selected.l2][dialog.target];
         }
       }
 
+      // ➤ Reset state sau khi xử lý
       setMenuData(updated);
       setDialog({
         open: false,
