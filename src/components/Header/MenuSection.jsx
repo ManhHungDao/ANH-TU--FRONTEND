@@ -14,6 +14,7 @@ const MenuSection = ({
 }) => {
   const handleDelete = async (level, key) => {
     const updated = { ...menuData };
+
     try {
       if (level === "level1") {
         const id = menuData[key].__id;
@@ -21,18 +22,24 @@ const MenuSection = ({
         delete updated[key];
         setSelected({ l1: null, l2: null, l3: null });
       }
+
       if (level === "level2") {
-        const id = menuData[selected.l1][key].__id;
-        await api.deleteLevel2(id);
+        const parentId = menuData[selected.l1].__id;
+        const level2Id = menuData[selected.l1][key].__id;
+        await api.deleteLevel2(parentId, level2Id);
         delete updated[selected.l1][key];
         setSelected({ ...selected, l2: null, l3: null });
       }
+
       if (level === "level3") {
-        const id = menuData[selected.l1][selected.l2][key].__id;
-        await api.deleteLevel3(id);
+        const parentId = menuData[selected.l1].__id;
+        const level2Id = menuData[selected.l1][selected.l2].__id;
+        const level3Id = menuData[selected.l1][selected.l2][key].__id;
+        await api.deleteLevel3(parentId, level2Id, level3Id);
         delete updated[selected.l1][selected.l2][key];
         setSelected({ ...selected, l3: null });
       }
+
       setMenuData(updated);
     } catch (err) {
       console.error("Delete error:", err);
