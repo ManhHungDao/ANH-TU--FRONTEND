@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -13,28 +13,12 @@ import {
   Link,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import MenuItemChip from "./MenuItemChip";
+import MenuItemChip from "./MenuHeader/MenuItemChip";
 import StepManager from "./TableEdit/StepManager";
-import ConfirmDialog from "./common/ConfirmDialog";
-
-const initialMenu = {
-  "Trang chủ": {
-    __steps__: [{ id: 1, title: "Bước A1", content: "## Cấp 1 - Trang chủ" }],
-    "Giới thiệu": {
-      __steps__: [
-        { id: 2, title: "Bước B1", content: "## Cấp 2 - Giới thiệu" },
-      ],
-      "Thông tin": {
-        __steps__: [
-          { id: 3, title: "Bước C1", content: "## Cấp 3 - Thông tin" },
-        ],
-      },
-    },
-  },
-};
+import * as api from "../utils/api";
 
 const Header = () => {
-  const [menuData, setMenuData] = useState(initialMenu);
+  const [menuData, setMenuData] = useState({});
   const [selectedLevel1, setSelectedLevel1] = useState(null);
   const [selectedLevel2, setSelectedLevel2] = useState(null);
   const [selectedLevel3, setSelectedLevel3] = useState(null);
@@ -45,8 +29,47 @@ const Header = () => {
   const [dialogType, setDialogType] = useState("add");
   const [dialogValue, setDialogValue] = useState("");
   const [editTarget, setEditTarget] = useState(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState(null);
+
+  useEffect(() => {
+    const fetchMenus = async () => {
+      try {
+        const menus = await api.fetchAllMenus();
+        const formattedMenus = menus.reduce((acc, menu) => {
+          const level1 = menu.name;
+          const level1Obj = {
+            __id: menu._id,
+            __steps__: menu.steps || [],
+          };
+
+          menu.children?.forEach((level2) => {
+            const level2Name = level2.name;
+            const level2Obj = {
+              __id: level2._id,
+              __steps__: level2.steps || [],
+            };
+
+            level2.children?.forEach((level3) => {
+              const level3Name = level3.name;
+              level2Obj[level3Name] = {
+                __id: level3._id,
+                __steps__: level3.steps || [],
+              };
+            });
+
+            level1Obj[level2Name] = level2Obj;
+          });
+
+          acc[level1] = level1Obj;
+          return acc;
+        }, {});
+        setMenuData(formattedMenus);
+      } catch (error) {
+        console.error("Failed to fetch menus:", error);
+      }
+    };
+
+    fetchMenus();
+  }, []);
 
   const openDialog = (level, type, target = null, defaultValue = "") => {
     setDialogLevel(level);
@@ -62,86 +85,113 @@ const Header = () => {
     setEditTarget(null);
   };
 
-  const handleDialogSubmit = () => {
+  const handleDialogSubmit = async () => {
     const value = dialogValue.trim();
     if (!value) return;
+
     const updated = { ...menuData };
 
-    if (dialogLevel === "level1") {
-      if (dialogType === "add") {
-        updated[value] = { __steps__: [] };
-      } else {
-        updated[value] = updated[editTarget];
-        delete updated[editTarget];
-        if (selectedLevel1 === editTarget) setSelectedLevel1(value);
+    try {
+      if (dialogLevel === "level1") {
+        if (dialogType === "add") {
+          const newMenu = await api.createMenu(value);
+          updated[value] = {
+            __id: newMenu._id,
+            __steps__: [],
+          };
+        } else {
+          await api.updateMenu(editTarget, value);
+          updated[value] = updated[editTarget];
+          delete updated[editTarget];
+          if (selectedLevel1 === editTarget) setSelectedLevel1(value);
+        }
       }
-    }
 
-    if (dialogLevel === "level2" && selectedLevel1) {
-      if (dialogType === "add") {
-        updated[selectedLevel1][value] = { __steps__: [] };
-      } else {
-        updated[selectedLevel1][value] = updated[selectedLevel1][editTarget];
-        delete updated[selectedLevel1][editTarget];
-        if (selectedLevel2 === editTarget) setSelectedLevel2(value);
+      if (dialogLevel === "level2" && selectedLevel1) {
+        if (dialogType === "add") {
+          const parentId = menuData[selectedLevel1].__id;
+          const newLevel2 = await api.addLevel2(parentId, value);
+          updated[selectedLevel1][value] = {
+            __id: newLevel2._id,
+            __steps__: [],
+          };
+        } else {
+          const parentId = menuData[selectedLevel1].__id;
+          await api.updateLevel2(parentId, editTarget, value);
+          updated[selectedLevel1][value] = updated[selectedLevel1][editTarget];
+          delete updated[selectedLevel1][editTarget];
+          if (selectedLevel2 === editTarget) setSelectedLevel2(value);
+        }
       }
-    }
 
-    if (dialogLevel === "level3" && selectedLevel1 && selectedLevel2) {
-      if (dialogType === "add") {
-        updated[selectedLevel1][selectedLevel2][value] = { __steps__: [] };
-      } else {
-        updated[selectedLevel1][selectedLevel2][value] =
-          updated[selectedLevel1][selectedLevel2][editTarget];
-        delete updated[selectedLevel1][selectedLevel2][editTarget];
-        if (selectedLevel3 === editTarget) setSelectedLevel3(value);
+      if (dialogLevel === "level3" && selectedLevel1 && selectedLevel2) {
+        const parentId = menuData[selectedLevel1][selectedLevel2].__id;
+        if (dialogType === "add") {
+          const newLevel3 = await api.addLevel3(parentId, value);
+          updated[selectedLevel1][selectedLevel2][value] = {
+            __id: newLevel3._id,
+            __steps__: [],
+          };
+        } else {
+          await api.updateLevel3(parentId, editTarget, value);
+          updated[selectedLevel1][selectedLevel2][value] =
+            updated[selectedLevel1][selectedLevel2][editTarget];
+          delete updated[selectedLevel1][selectedLevel2][editTarget];
+          if (selectedLevel3 === editTarget) setSelectedLevel3(value);
+        }
       }
-    }
 
-    setMenuData(updated);
-    closeDialog();
+      setMenuData(updated);
+      closeDialog();
+    } catch (error) {
+      console.error("Failed to update menu:", error);
+    }
   };
 
-  const requestDelete = (level, key) => {
-    setDeleteTarget({ level, key });
-    setConfirmOpen(true);
-  };
-
-  const confirmDelete = () => {
-    const { level, key } = deleteTarget;
+  const handleDelete = async (level, key) => {
     const updated = { ...menuData };
 
-    if (level === "level1") {
-      delete updated[key];
-      setSelectedLevel1(null);
-      setSelectedLevel2(null);
-      setSelectedLevel3(null);
-    }
+    try {
+      if (level === "level1") {
+        const id = menuData[key].__id;
+        await api.deleteMenu(id);
+        delete updated[key];
+        setSelectedLevel1(null);
+        setSelectedLevel2(null);
+        setSelectedLevel3(null);
+      }
 
-    if (level === "level2") {
-      delete updated[selectedLevel1][key];
-      setSelectedLevel2(null);
-      setSelectedLevel3(null);
-    }
+      if (level === "level2") {
+        const id = menuData[selectedLevel1][key].__id;
+        await api.deleteLevel2(id);
+        delete updated[selectedLevel1][key];
+        setSelectedLevel2(null);
+        setSelectedLevel3(null);
+      }
 
-    if (level === "level3") {
-      delete updated[selectedLevel1][selectedLevel2][key];
-      setSelectedLevel3(null);
-    }
+      if (level === "level3") {
+        const id = menuData[selectedLevel1][selectedLevel2][key].__id;
+        await api.deleteLevel3(id);
+        delete updated[selectedLevel1][selectedLevel2][key];
+        setSelectedLevel3(null);
+      }
 
-    setMenuData(updated);
-    setDeleteTarget(null);
-    setConfirmOpen(false);
+      setMenuData(updated);
+    } catch (error) {
+      console.error("Failed to delete menu:", error);
+    }
   };
 
   const level2 = selectedLevel1
-    ? Object.keys(menuData[selectedLevel1]).filter((k) => k !== "__steps__")
+    ? Object.keys(menuData[selectedLevel1]).filter(
+        (k) => k !== "__steps__" && k !== "__id"
+      )
     : [];
 
   const level3 =
     selectedLevel1 && selectedLevel2
       ? Object.keys(menuData[selectedLevel1][selectedLevel2]).filter(
-          (k) => k !== "__steps__"
+          (k) => k !== "__steps__" && k !== "__id"
         )
       : [];
 
@@ -157,6 +207,12 @@ const Header = () => {
             newSteps;
           setMenuData(updated);
         },
+        location: {
+          menuId: menuData[selectedLevel1].__id,
+          level2Id: menuData[selectedLevel1][selectedLevel2].__id,
+          level3Id:
+            menuData[selectedLevel1][selectedLevel2][selectedLevel3].__id,
+        },
       };
 
     if (selectedLevel1 && selectedLevel2)
@@ -166,6 +222,10 @@ const Header = () => {
           const updated = { ...menuData };
           updated[selectedLevel1][selectedLevel2].__steps__ = newSteps;
           setMenuData(updated);
+        },
+        location: {
+          menuId: menuData[selectedLevel1].__id,
+          level2Id: menuData[selectedLevel1][selectedLevel2].__id,
         },
       };
 
@@ -177,6 +237,9 @@ const Header = () => {
           updated[selectedLevel1].__steps__ = newSteps;
           setMenuData(updated);
         },
+        location: {
+          menuId: menuData[selectedLevel1].__id,
+        },
       };
 
     return null;
@@ -186,7 +249,6 @@ const Header = () => {
 
   return (
     <Box sx={{ bgcolor: "#f5f7fa", p: 3, minHeight: "100vh" }}>
-      {/* ===== Toggle & Breadcrumb ===== */}
       <Button
         variant="outlined"
         size="small"
@@ -227,10 +289,9 @@ const Header = () => {
         )}
       </Breadcrumbs>
 
-      {/* ===== QUẢN LÝ MENU ẨN/HIỆN ===== */}
       {showMenu && (
         <Box>
-          {/* ===== Menu cấp 1 ===== */}
+          {/* Menu cấp 1 */}
           <Box mb={2}>
             <Stack direction="row" justifyContent="space-between">
               <Typography fontWeight="bold">Menu cấp 1</Typography>
@@ -252,14 +313,14 @@ const Header = () => {
                     setSelectedLevel2(null);
                     setSelectedLevel3(null);
                   }}
-                  onDelete={() => requestDelete("level1", key)}
+                  onDelete={() => handleDelete("level1", key)}
                   onEdit={() => openDialog("level1", "edit", key, key)}
                 />
               ))}
             </Stack>
           </Box>
 
-          {/* ===== Menu cấp 2 ===== */}
+          {/* Menu cấp 2 */}
           {selectedLevel1 && (
             <Box mb={2}>
               <Stack direction="row" justifyContent="space-between">
@@ -281,7 +342,7 @@ const Header = () => {
                       setSelectedLevel2(key);
                       setSelectedLevel3(null);
                     }}
-                    onDelete={() => requestDelete("level2", key)}
+                    onDelete={() => handleDelete("level2", key)}
                     onEdit={() => openDialog("level2", "edit", key, key)}
                   />
                 ))}
@@ -289,7 +350,7 @@ const Header = () => {
             </Box>
           )}
 
-          {/* ===== Menu cấp 3 ===== */}
+          {/* Menu cấp 3 */}
           {selectedLevel2 && (
             <Box mb={3}>
               <Stack direction="row" justifyContent="space-between">
@@ -308,7 +369,7 @@ const Header = () => {
                     label={key}
                     selected={selectedLevel3 === key}
                     onClick={() => setSelectedLevel3(key)}
-                    onDelete={() => requestDelete("level3", key)}
+                    onDelete={() => handleDelete("level3", key)}
                     onEdit={() => openDialog("level3", "edit", key, key)}
                   />
                 ))}
@@ -318,17 +379,18 @@ const Header = () => {
         </Box>
       )}
 
-      {/* ===== Danh sách các bước ===== */}
+      {/* Danh sách các bước */}
       {current && (
         <Box mt={1}>
-          {/* <Typography variant="h6" fontWeight="bold" gutterBottom>
-            Danh sách các bước
-          </Typography> */}
-          <StepManager steps={current.steps} onStepsChange={current.setSteps} />
+          <StepManager
+            steps={current.steps}
+            onStepsChange={current.setSteps}
+            location={current.location}
+          />
         </Box>
       )}
 
-      {/* ===== Dialog ===== */}
+      {/* Dialog */}
       <Dialog open={dialogOpen} onClose={closeDialog} fullWidth>
         <DialogTitle>
           {dialogType === "add" ? "Thêm" : "Sửa"} {dialogLevel}
@@ -348,13 +410,6 @@ const Header = () => {
           <Button onClick={handleDialogSubmit}>Lưu</Button>
         </DialogActions>
       </Dialog>
-      <ConfirmDialog
-        open={confirmOpen}
-        title="Xác nhận xóa menu"
-        message="Bạn có chắc chắn muốn xóa menu này không?"
-        onCancel={() => setConfirmOpen(false)}
-        onConfirm={confirmDelete}
-      />
     </Box>
   );
 };

@@ -26,9 +26,9 @@ const StepDialog = ({ open, onClose, onSave, step, steps }) => {
       return;
     }
 
-    const isDuplicate = steps.some(
+    const isDuplicate = steps?.some(
       (s) =>
-        s.title.toLowerCase() === trimmed.toLowerCase() && s.id !== step?.id
+        s.title.toLowerCase() === trimmed.toLowerCase() && s._id !== step?._id
     );
 
     if (isDuplicate) {
@@ -36,8 +36,8 @@ const StepDialog = ({ open, onClose, onSave, step, steps }) => {
       return;
     }
 
-    onSave(trimmed, step?.id);
-    setTitle(""); // reset sau khi lưu
+    onSave(trimmed, step?._id);
+    setTitle("");
   };
 
   const handleClose = () => {
