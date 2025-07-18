@@ -15,7 +15,6 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import MenuItemChip from "./MenuItemChip";
 import StepManager from "./TableEdit/StepManager";
-import ConfirmDialog from "./common/ConfirmDialog";
 
 const initialMenu = {
   "Trang chủ": {
@@ -45,8 +44,6 @@ const Header = () => {
   const [dialogType, setDialogType] = useState("add");
   const [dialogValue, setDialogValue] = useState("");
   const [editTarget, setEditTarget] = useState(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const openDialog = (level, type, target = null, defaultValue = "") => {
     setDialogLevel(level);
@@ -102,13 +99,7 @@ const Header = () => {
     closeDialog();
   };
 
-  const requestDelete = (level, key) => {
-    setDeleteTarget({ level, key });
-    setConfirmOpen(true);
-  };
-
-  const confirmDelete = () => {
-    const { level, key } = deleteTarget;
+  const handleDelete = (level, key) => {
     const updated = { ...menuData };
 
     if (level === "level1") {
@@ -130,8 +121,6 @@ const Header = () => {
     }
 
     setMenuData(updated);
-    setDeleteTarget(null);
-    setConfirmOpen(false);
   };
 
   const level2 = selectedLevel1
@@ -252,7 +241,7 @@ const Header = () => {
                     setSelectedLevel2(null);
                     setSelectedLevel3(null);
                   }}
-                  onDelete={() => requestDelete("level1", key)}
+                  onDelete={() => handleDelete("level1", key)}
                   onEdit={() => openDialog("level1", "edit", key, key)}
                 />
               ))}
@@ -281,7 +270,7 @@ const Header = () => {
                       setSelectedLevel2(key);
                       setSelectedLevel3(null);
                     }}
-                    onDelete={() => requestDelete("level2", key)}
+                    onDelete={() => handleDelete("level2", key)}
                     onEdit={() => openDialog("level2", "edit", key, key)}
                   />
                 ))}
@@ -308,7 +297,7 @@ const Header = () => {
                     label={key}
                     selected={selectedLevel3 === key}
                     onClick={() => setSelectedLevel3(key)}
-                    onDelete={() => requestDelete("level3", key)}
+                    onDelete={() => handleDelete("level3", key)}
                     onEdit={() => openDialog("level3", "edit", key, key)}
                   />
                 ))}
@@ -348,13 +337,6 @@ const Header = () => {
           <Button onClick={handleDialogSubmit}>Lưu</Button>
         </DialogActions>
       </Dialog>
-      <ConfirmDialog
-        open={confirmOpen}
-        title="Xác nhận xóa menu"
-        message="Bạn có chắc chắn muốn xóa menu này không?"
-        onCancel={() => setConfirmOpen(false)}
-        onConfirm={confirmDelete}
-      />
     </Box>
   );
 };
