@@ -129,7 +129,23 @@ export const updateStepTitle = async (id, newTitle) => {
   });
   return res.data;
 };
-
+// get all name files in step
+export const getAttachments = async (id) => {
+  const res = await axios.get(`${API_URL_STEP}/${id}/attachments`);
+  return res.data;
+};
+// delete file
+export const deleteAttachment = async (stepId, fileId) => {
+  const res = await axios.delete(
+    `${API_URL_STEP}/${stepId}/attachments/${fileId}`
+  );
+  return res.data;
+};
+// thay đổi nội dung content của step
+export const updateStepContent = async (id, content) => {
+  const res = await axios.put(`${API_URL_STEP}/${id}`, { content });
+  return res.data;
+};
 export const api = {
   getMenus,
   getMenuById,
@@ -144,4 +160,6 @@ export const api = {
   getMenuTreeById,
   updateMenuTitle,
   updateStepTitle,
+  getAttachments,
+  updateStepContent,
 };

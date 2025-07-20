@@ -7,7 +7,6 @@ import { api } from "../api/api";
 
 const StepManager = ({ menuId }) => {
   const [steps, setSteps] = useState([]);
-  console.log("🚀 ~ StepManager ~ steps:", steps);
   const [selectedStepId, setSelectedStepId] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editStep, setEditStep] = useState(null);
@@ -35,14 +34,29 @@ const StepManager = ({ menuId }) => {
       fetchSteps();
     }
   }, [menuId]);
+  useEffect(() => {
+    if (selectedStepId) {
+      const step = steps.find((s) => s._id === selectedStepId);
+      setContentDraft(step?.content || "");
+    }
+  }, [selectedStepId, steps]);
 
-  // Khi thay đổi nội dung content
-  const handleContentSave = () => {
-    setSteps(
-      steps.map((s) =>
-        s._id === selectedStepId ? { ...s, content: contentDraft } : s
-      )
-    );
+  const handleContentSave = async () => {
+    try {
+      await api.updateStepContent(selectedStepId, contentDraft);
+
+      // Tải lại dữ liệu từ server để đồng bộ hoàn toàn
+      const updatedSteps = await api.getSteps(menuId);
+      setSteps(updatedSteps);
+
+      // Tìm lại step đang chọn và cập nhật contentDraft
+      const currentStep = updatedSteps.find((s) => s._id === selectedStepId);
+      setContentDraft(currentStep?.content || "");
+
+      console.log("✅ Cập nhật content thành công.");
+    } catch (error) {
+      console.error("❌ Lỗi khi cập nhật nội dung:", error);
+    }
   };
 
   const handleAddStep = () => {
@@ -104,21 +118,44 @@ const StepManager = ({ menuId }) => {
     }
 
     setDialogOpen(false);
+    setEditStep(null);
   };
 
-  const handleFileUpload = (e) => {
-    const newFiles = Array.from(e.target.files);
-    setSteps(
-      steps.map((s) =>
-        s._id === selectedStepId
-          ? { ...s, files: [...(s.files || []), ...newFiles] }
-          : s
-      )
-    );
+  const handleFileUpload = async (files) => {
+    try {
+      const uploaded = await api.uploadFilesToStep(selectedStepId, files);
+
+      setSteps((prev) =>
+        prev.map((s) =>
+          s._id === selectedStepId
+            ? { ...s, files: [...(s.files || []), ...uploaded] }
+            : s
+        )
+      );
+    } catch (err) {
+      console.error("❌ Upload file thất bại:", err);
+    }
   };
 
   const handleReorder = (reorderedSteps) => {
     setSteps(reorderedSteps);
+  };
+  const handleDeleteFile = async (fileId) => {
+    try {
+      await api.deleteFileFromStep(selectedStepId, fileId);
+      setSteps((prev) =>
+        prev.map((s) =>
+          s._id === selectedStepId
+            ? {
+                ...s,
+                attachments: s.attachments.filter((f) => f._id !== fileId),
+              }
+            : s
+        )
+      );
+    } catch (err) {
+      console.error("❌ Xoá file thất bại:", err);
+    }
   };
 
   return (
@@ -132,16 +169,19 @@ const StepManager = ({ menuId }) => {
         onDelete={handleDeleteStep}
         onReorder={handleReorder}
       />
-      {/* <StepEditor
+      <StepEditor
         step={steps.find((s) => s._id === selectedStepId)}
         content={contentDraft}
         onChangeContent={setContentDraft}
         onSaveContent={handleContentSave}
         onUploadFiles={handleFileUpload}
-      /> */}
+      />
       <StepDialog
         open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
+        onClose={() => {
+          setDialogOpen(false);
+          setEditStep(null); // reset luôn cả khi bấm "Hủy"
+        }}
         onSave={handleDialogSave}
         step={editStep}
       />

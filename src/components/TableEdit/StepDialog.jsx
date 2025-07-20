@@ -12,8 +12,10 @@ const StepDialog = ({ open, onClose, onSave, step }) => {
   const [title, setTitle] = useState("");
 
   useEffect(() => {
-    setTitle(step?.title || "");
-  }, [step]);
+    if (open) {
+      setTitle(step?.title || "");
+    }
+  }, [step, open]);
 
   const handleSave = () => {
     if (!title.trim()) return;

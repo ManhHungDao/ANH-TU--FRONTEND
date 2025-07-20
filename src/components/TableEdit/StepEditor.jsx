@@ -4,21 +4,6 @@ import { Save } from "@mui/icons-material";
 import CKEditorFieldBasic from "../Ckeditor/CKEditorFieldBasic";
 import FileAttachments from "./FileAttachments";
 
-const mockAttachments = [
-  {
-    name: "Tài liệu hướng dẫn.pdf",
-    size: 243000,
-    url: "#",
-    type: "application/pdf",
-  },
-  {
-    name: "bieu-mau.docx",
-    size: 98000,
-    url: "#",
-    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  },
-];
-
 const StepEditor = ({
   step,
   content,
@@ -26,27 +11,26 @@ const StepEditor = ({
   onSaveContent,
   onUploadFiles,
 }) => {
+  console.log("🚀 ~ content:", content);
+  console.log("🚀 ~ step:", step);
   const [attachments, setAttachments] = useState([]);
 
   useEffect(() => {
-    // Giả lập: nếu step có file thật thì dùng, không thì dùng mock
-    setAttachments(
-      step?.attachments?.length ? step.attachments : mockAttachments
-    );
+    // Luôn dùng file thật từ step
+    setAttachments(step?.files || []);
+  }, [step]);
+  useEffect(() => {
+    // Luôn dùng file thật từ step
+    setAttachments(step?.files || []);
   }, [step]);
 
   const handleUpload = (files) => {
-    // Giả lập thêm file vào danh sách
-    const newFiles = files.map((file) => ({
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      url: "#",
-    }));
-    setAttachments((prev) => [...prev, ...newFiles]);
+    if (!step?._id) return;
+    onUploadFiles(files); // gọi hàm upload từ StepManager
   };
 
   const handleDelete = (fileToDelete) => {
+    // TODO: Gọi API xoá file nếu cần
     setAttachments((prev) => prev.filter((f) => f.name !== fileToDelete.name));
   };
 
@@ -61,23 +45,6 @@ const StepEditor = ({
       {/* CKEditor */}
       <CKEditorFieldBasic value={content} onChange={onChangeContent} />
 
-      {/* Lưu & Upload file cùng hàng */}
-      {/* <Stack direction="row" spacing={2} alignItems="center" mt={2}>
-        <Button
-          variant="contained"
-          startIcon={<Save />}
-          onClick={onSaveContent}
-        >
-          Lưu nội dung
-        </Button>
-        <Box flex={1}>
-          <FileAttachments
-            files={attachments}
-            onUpload={handleUpload}
-            onDelete={handleDelete}
-          />
-        </Box>
-      </Stack> */}
       <Stack direction="row" spacing={2} alignItems="flex-start" mt={2}>
         <Button
           variant="contained"
