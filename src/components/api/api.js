@@ -21,6 +21,17 @@ export const getMenus = async (parent = null) => {
     throw error;
   }
 };
+// lấy toàn bộ cây con của menu
+export const getMenuTreeById = async (menuId) => {
+  try {
+    const res = await axios.get(`${API_URL_MENU}/full-tree/${menuId}`);
+    return res.data;
+  } catch (err) {
+    console.error("Lỗi khi gọi getMenuTreeById:", err);
+    throw err;
+  }
+};
+
 // Lấy menu theo ID
 export const getMenuById = async (id) => {
   const res = await axios.get(`${API_URL_MENU}/${id}`);
@@ -111,4 +122,5 @@ export const api = {
   createStep,
   updateStep,
   deleteStep,
+  getMenuTreeById,
 };

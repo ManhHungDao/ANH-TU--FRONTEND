@@ -53,6 +53,69 @@ const Header = () => {
     fetchMenus();
   }, []);
 
+  const fetchMenuFromApi = async (
+    menuId,
+    onUpdateSteps,
+    level,
+    parentKey = null
+  ) => {
+    try {
+      const menu = await api.getMenuTreeById(menuId);
+      const steps = menu.steps || [];
+      const children = menu.children || [];
+
+      onUpdateSteps(steps);
+
+      setMenuData((prev) => {
+        const updated = { ...prev };
+
+        if (level === "level1") {
+          updated[menu.title] = {
+            ...updated[menu.title],
+            __steps__: steps,
+            _id: menu._id,
+          };
+
+          // Thêm menu con (level 2)
+          for (const child of children) {
+            updated[menu.title][child.title] = {
+              __steps__: [],
+              _id: child._id,
+            };
+          }
+        }
+
+        if (level === "level2" && parentKey) {
+          updated[parentKey][menu.title] = {
+            ...updated[parentKey][menu.title],
+            __steps__: steps,
+            _id: menu._id,
+          };
+
+          // Thêm menu con (level 3)
+          for (const child of children) {
+            updated[parentKey][menu.title][child.title] = {
+              __steps__: [],
+              _id: child._id,
+            };
+          }
+        }
+
+        if (level === "level3" && parentKey) {
+          updated[parentKey.parent][parentKey.child][menu.title] = {
+            ...updated[parentKey.parent][parentKey.child][menu.title],
+            __steps__: steps,
+            _id: menu._id,
+          };
+        }
+
+        return updated;
+      });
+    } catch (error) {
+      console.error("Lỗi khi lấy menu từ API:", error);
+    }
+  };
+
   const handleDialogSave = async () => {
     const newTitle = dialogValue.trim();
     if (!newTitle) return;
@@ -273,6 +336,9 @@ const Header = () => {
                     setSelectedLevel1(key);
                     setSelectedLevel2(null);
                     setSelectedLevel3(null);
+
+                    const menuId = menuData[key]._id;
+                    fetchMenuFromApi(menuId, () => {}, "level1");
                   }}
                   onDelete={() => handleDelete("level1", key)}
                   onEdit={() => openDialog("level1", "edit", key, key)}
@@ -302,6 +368,14 @@ const Header = () => {
                     onClick={() => {
                       setSelectedLevel2(key);
                       setSelectedLevel3(null);
+
+                      const menuId = menuData[selectedLevel1]?.[key]?._id;
+                      fetchMenuFromApi(
+                        menuId,
+                        () => {},
+                        "level2",
+                        selectedLevel1
+                      );
                     }}
                     onDelete={() => handleDelete("level2", key)}
                     onEdit={() => openDialog("level2", "edit", key, key)}
@@ -329,7 +403,16 @@ const Header = () => {
                     key={key}
                     label={key}
                     selected={selectedLevel3 === key}
-                    onClick={() => setSelectedLevel3(key)}
+                    onClick={() => {
+                      setSelectedLevel3(key);
+
+                      const menuId =
+                        menuData[selectedLevel1]?.[selectedLevel2]?.[key]?._id;
+                      fetchMenuFromApi(menuId, () => {}, "level3", {
+                        parent: selectedLevel1,
+                        child: selectedLevel2,
+                      });
+                    }}
                     onDelete={() => handleDelete("level3", key)}
                     onEdit={() => openDialog("level3", "edit", key, key)}
                   />
