@@ -262,7 +262,7 @@ const MenuTree = ({
       <ConfirmDialog
         open={confirmOpen}
         title={`Xác nhận xoá ${
-          itemToDelete?.type === "menu" ? "menu" : "bước"
+          itemToDelete?.type === "menu" ? "menu" : "danh mục"
         }`}
         message={`Bạn có chắc chắn muốn xoá "${itemToDelete?.title}"?`}
         onCancel={() => setConfirmOpen(false)}

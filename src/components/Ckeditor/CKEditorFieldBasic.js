@@ -154,7 +154,7 @@ const CKEditorFieldBasic = ({
                 editor.ui.getEditableElement()
               );
 
-            // ✅ Gán giá trị content lúc ready
+            //  Gán giá trị content lúc ready
             if (value && editor.getData() !== value) {
               editor.setData(value);
             }

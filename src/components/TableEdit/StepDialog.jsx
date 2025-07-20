@@ -27,11 +27,11 @@ const StepDialog = ({ open, onClose, onSave, step }) => {
   };
   return (
     <Dialog open={open} onClose={handleClose} fullWidth>
-      <DialogTitle>{step ? "Sửa bước" : "Thêm bước"}</DialogTitle>
+      <DialogTitle>{step ? "Sửa danh mục" : "Thêm danh mục"}</DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
-          label="Tên bước"
+          label="Tên danh mục"
           fullWidth
           value={title}
           onChange={(e) => setTitle(e.target.value)}

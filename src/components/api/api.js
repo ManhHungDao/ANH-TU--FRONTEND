@@ -149,7 +149,7 @@ export const updateStepContent = async (id, content) => {
 
 export const uploadFilesToStep = async (stepId, files) => {
   const formData = new FormData();
-  files.forEach((file) => formData.append("files", file)); // ✅ phải là "files"
+  files.forEach((file) => formData.append("files", file)); //  phải là "files"
   const res = await axios.post(
     `${API_URL_STEP}/${stepId}/attachments`,
     formData,

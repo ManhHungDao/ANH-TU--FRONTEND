@@ -4,6 +4,7 @@ import { Save } from "@mui/icons-material";
 import CKEditorFieldBasic from "../Ckeditor/CKEditorFieldBasic";
 import FileAttachments from "./FileAttachments";
 import { api } from "../api/api";
+
 const StepEditor = ({
   step,
   content,
@@ -12,7 +13,6 @@ const StepEditor = ({
   onUploadFiles,
   onDeleteFile,
 }) => {
-  console.log("🚀 ~ content:", content);
   const [attachments, setAttachments] = useState([]);
   useEffect(() => {
     const fetchAttachments = async () => {
@@ -41,7 +41,7 @@ const StepEditor = ({
     onDeleteFile(fileToDelete._id);
   };
 
-  if (!step) return <Typography sx={{ pl: 4 }}>Chưa chọn bước nào</Typography>;
+  if (!step) return <Typography sx={{ pl: 4 }}>Chưa chọn mục</Typography>;
 
   return (
     <Box sx={{ flex: 1, pl: 4, display: "flex", flexDirection: "column" }}>

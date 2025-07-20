@@ -3,6 +3,8 @@ import { Box } from "@mui/material";
 import StepList from "./StepList";
 import StepEditor from "./StepEditor";
 import StepDialog from "./StepDialog";
+import LoadingBackdrop from "../common/LoadingBackdrop";
+import SnackbarAlert from "../common/SnackbarAlert";
 import { api } from "../api/api";
 
 const StepManager = ({ menuId }) => {
@@ -12,9 +14,21 @@ const StepManager = ({ menuId }) => {
   const [editStep, setEditStep] = useState(null);
   const [contentDraft, setContentDraft] = useState("");
 
-  // Load steps khi menuId thay đổi
+  // Loading & Snackbar
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const showSnackbar = (message, severity = "success") => {
+    setSnackbar({ open: true, message, severity });
+  };
+
   useEffect(() => {
     const fetchSteps = async () => {
+      setLoading(true);
       try {
         const res = await api.getSteps(menuId);
         setSteps(res);
@@ -27,6 +41,9 @@ const StepManager = ({ menuId }) => {
         }
       } catch (err) {
         console.error("Lỗi khi load steps:", err);
+        showSnackbar("Lỗi khi tải danh mục", "error");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -34,6 +51,7 @@ const StepManager = ({ menuId }) => {
       fetchSteps();
     }
   }, [menuId]);
+
   useEffect(() => {
     if (selectedStepId) {
       const step = steps.find((s) => s._id === selectedStepId);
@@ -42,20 +60,21 @@ const StepManager = ({ menuId }) => {
   }, [selectedStepId, steps]);
 
   const handleContentSave = async () => {
+    setLoading(true);
     try {
       await api.updateStepContent(selectedStepId, contentDraft);
-
-      // Tải lại dữ liệu từ server để đồng bộ hoàn toàn
       const updatedSteps = await api.getSteps(menuId);
       setSteps(updatedSteps);
 
-      // Tìm lại step đang chọn và cập nhật contentDraft
       const currentStep = updatedSteps.find((s) => s._id === selectedStepId);
       setContentDraft(currentStep?.content || "");
 
-      console.log("✅ Cập nhật content thành công.");
+      showSnackbar(" Cập nhật nội dung thành công.");
     } catch (error) {
-      console.error("❌ Lỗi khi cập nhật nội dung:", error);
+      console.error("  Lỗi khi cập nhật nội dung:", error);
+      showSnackbar("  Cập nhật nội dung thất bại", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -77,31 +96,23 @@ const StepManager = ({ menuId }) => {
       setSelectedStepId(first?._id || null);
       setContentDraft(first?.content || "");
     }
+    showSnackbar("🗑️ Đã xoá danh mục.");
   };
 
   const handleDialogSave = async (title, id, files = []) => {
+    setLoading(true);
     if (id) {
       try {
-        // Gọi API cập nhật title
         await api.updateStepTitle(id, title);
-
-        // Cập nhật local state
         setSteps(steps.map((s) => (s._id === id ? { ...s, title } : s)));
+        showSnackbar(" Đã cập nhật tên danh mục.");
       } catch (err) {
-        console.error(
-          "❌ Lỗi khi đổi tên step:",
-          err.response?.data?.error || err.message
-        );
+        console.error("  Lỗi khi đổi tên step:", err);
+        showSnackbar("  Đổi tên thất bại", "error");
       }
     } else {
-      // Tạo mới step
-      const newStepData = {
-        menu: menuId,
-        title,
-        content: "",
-      };
-
       try {
+        const newStepData = { menu: menuId, title, content: "" };
         const createdStep = await api.createStep(newStepData, files);
         const newStep = {
           ...createdStep,
@@ -112,23 +123,26 @@ const StepManager = ({ menuId }) => {
         setSteps(updatedSteps);
         setSelectedStepId(newStep._id);
         setContentDraft("");
+        showSnackbar(" Đã tạo danh mục.");
       } catch (err) {
-        console.error("❌ Failed to create step:", err);
+        console.error("  Failed to create step:", err);
+        showSnackbar("  Tạo danh mục mới thất bại", "error");
       }
     }
 
+    setLoading(false);
     setDialogOpen(false);
     setEditStep(null);
   };
 
   const handleFileUpload = async (files) => {
+    setLoading(true);
     try {
       const result = await api.uploadFilesToStep(selectedStepId, files);
-
       const newFiles = result.attachments.map((f) => ({
         ...f,
         name: f.filename,
-        url: `/api/steps/${selectedStepId}/attachments/${f._id}`, // bạn cần route GET trả file
+        url: `/api/steps/${selectedStepId}/attachments/${f._id}`,
       }));
 
       setSteps((prev) =>
@@ -138,16 +152,17 @@ const StepManager = ({ menuId }) => {
             : s
         )
       );
+      showSnackbar("Tải tệp lên thành công.");
     } catch (err) {
-      console.error("❌ Upload file thất bại:", err);
+      console.error("  Upload file thất bại:", err);
+      showSnackbar("  Tải tệp thất bại", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleReorder = (reorderedSteps) => {
-    setSteps(reorderedSteps);
-  };
-
   const handleDeleteFile = async (fileId) => {
+    setLoading(true);
     try {
       await api.deleteFileFromStep(selectedStepId, fileId);
       setSteps((prev) =>
@@ -160,9 +175,18 @@ const StepManager = ({ menuId }) => {
             : s
         )
       );
+      showSnackbar("🗑️ Xoá file thành công.");
     } catch (err) {
-      console.error("❌ Xoá file thất bại:", err);
+      console.error("  Xoá file thất bại:", err);
+      showSnackbar("  Xoá file thất bại", "error");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleReorder = (reorderedSteps) => {
+    setSteps(reorderedSteps);
+    showSnackbar("🔀 Đã thay đổi thứ tự.");
   };
 
   return (
@@ -188,10 +212,17 @@ const StepManager = ({ menuId }) => {
         open={dialogOpen}
         onClose={() => {
           setDialogOpen(false);
-          setEditStep(null); // reset luôn cả khi bấm "Hủy"
+          setEditStep(null);
         }}
         onSave={handleDialogSave}
         step={editStep}
+      />
+      <LoadingBackdrop open={loading} />
+      <SnackbarAlert
+        open={snackbar.open}
+        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+        message={snackbar.message}
+        severity={snackbar.severity}
       />
     </Box>
   );
