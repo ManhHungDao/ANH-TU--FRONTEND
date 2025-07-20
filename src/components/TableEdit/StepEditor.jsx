@@ -12,6 +12,7 @@ const StepEditor = ({
   onUploadFiles,
   onDeleteFile,
 }) => {
+  console.log("🚀 ~ content:", content);
   const [attachments, setAttachments] = useState([]);
   useEffect(() => {
     const fetchAttachments = async () => {

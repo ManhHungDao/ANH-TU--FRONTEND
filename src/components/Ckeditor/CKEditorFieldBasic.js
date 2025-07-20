@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import { Editor } from "ckeditor5-custom-build/build/ckeditor";
 import FormHelperText from "@mui/material/FormHelperText";
@@ -11,14 +11,14 @@ const CKEditorFieldBasic = ({
   isError,
   errorText,
   minWidth,
-  title,
 }) => {
+  const editorRef = useRef(null); // Ref để giữ CKEditor instance
+
   const defaultConfig = {
     toolbar: {
       items: [
         "heading",
         "|",
-
         "fontSize",
         "fontFamily",
         "|",
@@ -42,10 +42,8 @@ const CKEditorFieldBasic = ({
         "indent",
         "|",
         "todoList",
-
         "blockQuote",
         "codeBlock",
-
         "|",
         "removeFormat",
         "undo",
@@ -55,7 +53,6 @@ const CKEditorFieldBasic = ({
         "findAndReplace",
         "highlight",
         "horizontalLine",
-        // "htmlEmbed",
         "pageBreak",
         "specialCharacters",
         "restrictedEditingException",
@@ -76,82 +73,40 @@ const CKEditorFieldBasic = ({
         "toggleTableCaption",
       ],
     },
-    mention: {
-      feeds: [
-        {
-          marker: "@",
-          feed: [
-            "@apple",
-            "@bears",
-            "@brownie",
-            "@cake",
-            "@cake",
-            "@candy",
-            "@canes",
-            "@chocolate",
-            "@cookie",
-            "@cotton",
-            "@cream",
-            "@cupcake",
-            "@danish",
-            "@donut",
-            "@dragée",
-            "@fruitcake",
-            "@gingerbread",
-            "@gummi",
-            "@ice",
-            "@jelly-o",
-            "@liquorice",
-            "@macaroon",
-            "@marzipan",
-            "@oat",
-            "@pie",
-            "@plum",
-            "@pudding",
-            "@sesame",
-            "@snaps",
-            "@soufflé",
-            "@sugar",
-            "@sweet",
-            "@topping",
-            "@wafer",
-          ],
-          minimumCharacters: 1,
-        },
-      ],
-    },
     fontSize: {
       options: [9, 11, 13, "default", 17, 19, 21],
       supportAllValues: true,
     },
     fontColor: {
-      // Display 6 columns in the color grid.
       columns: 6,
-
-      // And 12 document colors (2 rows of them).
       documentColors: 12,
-
-      // ...
+    },
+    fontBackgroundColor: {
+      documentColors: 0,
+    },
+    mention: {
+      feeds: [
+        {
+          marker: "@",
+          feed: ["@apple", "@cake", "@donut", "@gummi"],
+          minimumCharacters: 1,
+        },
+      ],
     },
     htmlEmbed: {
       showPreviews: true,
     },
-    fontBackgroundColor: {
-      // Remove the "Document colors" section.
-      documentColors: 0,
-
-      // ...
-    },
     updateSourceElementOnDestroy: true,
     allowedContent: true,
-    // extraPlugins: [uploadPlugin],
   };
+
   const API_URl = "https://noteyard-backend.herokuapp.com";
   const UPLOAD_ENDPOINT = "api/blogs/uploadImg";
+
   function uploadAdapter(loader) {
     return {
-      upload: () => {
-        return new Promise((resolve, reject) => {
+      upload: () =>
+        new Promise((resolve, reject) => {
           const body = new FormData();
           loader.file.then((file) => {
             body.append("uploadImg", file);
@@ -163,22 +118,24 @@ const CKEditorFieldBasic = ({
               .then((res) => {
                 resolve({ default: `${API_URl}/${res.url}` });
               })
-              .catch((err) => {
-                reject(err);
-              });
+              .catch(reject);
           });
-        });
-      },
+        }),
     };
   }
 
   function uploadPlugin(editor) {
-    editor.plugins.get("FileRepository").createUploadAdapter = (loader) => {
-      return uploadAdapter(loader);
-    };
+    editor.plugins.get("FileRepository").createUploadAdapter = (loader) =>
+      uploadAdapter(loader);
   }
 
-  // } );
+  // 👉 Theo dõi thay đổi `value` và cập nhật editor nếu khác nhau
+  useEffect(() => {
+    if (editorRef.current && editorRef.current.getData() !== value) {
+      editorRef.current.setData(value || "");
+    }
+  }, [value]);
+
   return (
     <FormControl
       error={isError}
@@ -188,7 +145,11 @@ const CKEditorFieldBasic = ({
         className={`ckeditor-basic ${isError ? "ckeditor-basic--error" : ""}`}
       >
         <CKEditor
+          editor={Editor}
+          data={value}
+          config={defaultConfig}
           onReady={(editor) => {
+            editorRef.current = editor; // 👈 gán ref
             editor.ui
               .getEditableElement()
               .parentElement.insertBefore(
@@ -196,23 +157,15 @@ const CKEditorFieldBasic = ({
                 editor.ui.getEditableElement()
               );
           }}
-          editor={Editor}
-          data={value}
-          config={defaultConfig}
           onChange={(event, editor) => {
             const data = editor.getData();
             onChange(data);
           }}
-          //   onBlur={(event, editor) => {
-          //     console.log("Blur.", editor);
-          //   }}
-          //   onFocus={(event, editor) => {
-          //     console.log("Focus.", editor);
-          //   }}
         />
       </div>
       {isError && <FormHelperText>{errorText}</FormHelperText>}
     </FormControl>
   );
 };
+
 export default CKEditorFieldBasic;
