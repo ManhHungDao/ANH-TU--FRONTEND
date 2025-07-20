@@ -141,7 +141,7 @@ const FileAttachments = ({ files, onUpload, onDelete }) => {
                 sx={{ flex: 1, mr: 2 }}
                 title={file.name}
               >
-                📎 {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                {file.name} ({(file.size / 1024).toFixed(1)} KB)
               </Typography>
 
               <Stack direction="row" spacing={0.5}>

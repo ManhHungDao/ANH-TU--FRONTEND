@@ -169,6 +169,15 @@ export const getStepAttachments = async (stepId) => {
     url: `${API_URL_STEP}/${stepId}/attachments/${f._id}`,
   }));
 };
+
+// thay đổi stt step
+export const reorderSteps = async (menuId, orderedStepIds) => {
+  const res = await axios.put(`${API_URL_STEP}/reorder`, {
+    menuId,
+    orderedStepIds,
+  });
+  return res.data;
+};
 export const api = {
   getMenus,
   getMenuById,
@@ -188,4 +197,5 @@ export const api = {
   deleteFileFromStep,
   uploadFilesToStep,
   getStepAttachments,
+  reorderSteps,
 };

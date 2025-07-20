@@ -125,17 +125,23 @@ const MenuTree = ({
 
   const level2 =
     selectedLevel1 &&
-    Object.keys(menuData[selectedLevel1]).filter(
-      (k) => k !== "__steps__" && k !== "_id"
-    );
+    menuData[selectedLevel1] &&
+    typeof menuData[selectedLevel1] === "object"
+      ? Object.keys(menuData[selectedLevel1]).filter(
+          (k) => k !== "__steps__" && k !== "_id"
+        )
+      : [];
 
   const level3 =
     selectedLevel1 &&
     selectedLevel2 &&
-    Object.keys(menuData[selectedLevel1][selectedLevel2]).filter(
-      (k) => k !== "__steps__" && k !== "_id"
-    );
-
+    menuData[selectedLevel1] &&
+    menuData[selectedLevel1][selectedLevel2] &&
+    typeof menuData[selectedLevel1][selectedLevel2] === "object"
+      ? Object.keys(menuData[selectedLevel1][selectedLevel2]).filter(
+          (k) => k !== "__steps__" && k !== "_id"
+        )
+      : [];
   return (
     <>
       <Box>

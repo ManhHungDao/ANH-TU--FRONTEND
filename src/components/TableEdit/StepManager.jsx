@@ -5,6 +5,7 @@ import StepEditor from "./StepEditor";
 import StepDialog from "./StepDialog";
 import LoadingBackdrop from "../common/LoadingBackdrop";
 import SnackbarAlert from "../common/SnackbarAlert";
+import ConfirmDialog from "../common/ConfirmDialog"; // <- Thêm ConfirmDialog
 import { api } from "../api/api";
 
 const StepManager = ({ menuId }) => {
@@ -14,13 +15,16 @@ const StepManager = ({ menuId }) => {
   const [editStep, setEditStep] = useState(null);
   const [contentDraft, setContentDraft] = useState("");
 
-  // Loading & Snackbar
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "success",
   });
+
+  // Xác nhận xoá
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [stepToDelete, setStepToDelete] = useState(null);
 
   const showSnackbar = (message, severity = "success") => {
     setSnackbar({ open: true, message, severity });
@@ -69,10 +73,10 @@ const StepManager = ({ menuId }) => {
       const currentStep = updatedSteps.find((s) => s._id === selectedStepId);
       setContentDraft(currentStep?.content || "");
 
-      showSnackbar(" Cập nhật nội dung thành công.");
+      showSnackbar("Cập nhật nội dung thành công.");
     } catch (error) {
-      console.error("  Lỗi khi cập nhật nội dung:", error);
-      showSnackbar("  Cập nhật nội dung thất bại", "error");
+      console.error("Lỗi khi cập nhật nội dung:", error);
+      showSnackbar("Cập nhật nội dung thất bại", "error");
     } finally {
       setLoading(false);
     }
@@ -88,15 +92,38 @@ const StepManager = ({ menuId }) => {
     setDialogOpen(true);
   };
 
-  const handleDeleteStep = (id) => {
-    const filtered = steps.filter((s) => s._id !== id);
-    setSteps(filtered);
-    if (selectedStepId === id) {
-      const first = filtered[0];
-      setSelectedStepId(first?._id || null);
-      setContentDraft(first?.content || "");
+  // Gọi khi bấm xoá -> mở dialog xác nhận
+  const requestDeleteStep = (id) => {
+    setStepToDelete(id);
+    setConfirmDialogOpen(true);
+  };
+
+  // Thực hiện xoá thật sau khi xác nhận
+  const confirmDeleteStep = async () => {
+    if (!stepToDelete) return;
+
+    setConfirmDialogOpen(false);
+    setLoading(true);
+
+    try {
+      await api.deleteStep(stepToDelete);
+      const filtered = steps.filter((s) => s._id !== stepToDelete);
+      setSteps(filtered);
+
+      if (selectedStepId === stepToDelete) {
+        const first = filtered[0];
+        setSelectedStepId(first?._id || null);
+        setContentDraft(first?.content || "");
+      }
+
+      showSnackbar("Đã xoá danh mục.");
+    } catch (error) {
+      console.error("Lỗi xoá step:", error);
+      showSnackbar("Xoá thất bại", "error");
+    } finally {
+      setLoading(false);
+      setStepToDelete(null);
     }
-    showSnackbar("🗑️ Đã xoá danh mục.");
   };
 
   const handleDialogSave = async (title, id, files = []) => {
@@ -105,10 +132,10 @@ const StepManager = ({ menuId }) => {
       try {
         await api.updateStepTitle(id, title);
         setSteps(steps.map((s) => (s._id === id ? { ...s, title } : s)));
-        showSnackbar(" Đã cập nhật tên danh mục.");
+        showSnackbar("Đã cập nhật tên danh mục.");
       } catch (err) {
-        console.error("  Lỗi khi đổi tên step:", err);
-        showSnackbar("  Đổi tên thất bại", "error");
+        console.error("Lỗi khi đổi tên step:", err);
+        showSnackbar("Đổi tên thất bại", "error");
       }
     } else {
       try {
@@ -123,10 +150,10 @@ const StepManager = ({ menuId }) => {
         setSteps(updatedSteps);
         setSelectedStepId(newStep._id);
         setContentDraft("");
-        showSnackbar(" Đã tạo danh mục.");
+        showSnackbar("Đã tạo danh mục.");
       } catch (err) {
-        console.error("  Failed to create step:", err);
-        showSnackbar("  Tạo danh mục mới thất bại", "error");
+        console.error("Failed to create step:", err);
+        showSnackbar("Tạo danh mục mới thất bại", "error");
       }
     }
 
@@ -154,8 +181,8 @@ const StepManager = ({ menuId }) => {
       );
       showSnackbar("Tải tệp lên thành công.");
     } catch (err) {
-      console.error("  Upload file thất bại:", err);
-      showSnackbar("  Tải tệp thất bại", "error");
+      console.error("Upload file thất bại:", err);
+      showSnackbar("Tải tệp thất bại", "error");
     } finally {
       setLoading(false);
     }
@@ -175,29 +202,37 @@ const StepManager = ({ menuId }) => {
             : s
         )
       );
-      showSnackbar("🗑️ Xoá file thành công.");
+      showSnackbar("Xoá file thành công.");
     } catch (err) {
-      console.error("  Xoá file thất bại:", err);
-      showSnackbar("  Xoá file thất bại", "error");
+      console.error("Xoá file thất bại:", err);
+      showSnackbar("Xoá file thất bại", "error");
     } finally {
       setLoading(false);
     }
   };
-
-  const handleReorder = (reorderedSteps) => {
+  const handleReorder = async (reorderedSteps) => {
     setSteps(reorderedSteps);
-    showSnackbar("🔀 Đã thay đổi thứ tự.");
+    try {
+      const orderedIds = reorderedSteps.map((s) => s._id);
+      await api.reorderSteps(menuId, orderedIds);
+      showSnackbar("Đã thay đổi thứ tự.");
+    } catch (err) {
+      console.error("Lỗi khi sắp xếp lại:", err);
+      showSnackbar("Sắp xếp thất bại", "error");
+    }
   };
 
   return (
     <Box sx={{ display: "flex", height: "100%", p: 2 }}>
       <StepList
         steps={steps}
+        setSteps={setSteps}
+        menuId={menuId}
         selectedStepId={selectedStepId}
         onSelect={setSelectedStepId}
         onAdd={handleAddStep}
         onEdit={handleEditStep}
-        onDelete={handleDeleteStep}
+        onDelete={requestDeleteStep} // <-- dùng hàm xác nhận xoá
         onReorder={handleReorder}
       />
       <StepEditor
@@ -216,6 +251,16 @@ const StepManager = ({ menuId }) => {
         }}
         onSave={handleDialogSave}
         step={editStep}
+      />
+      <ConfirmDialog
+        open={confirmDialogOpen}
+        title="Xác nhận xoá"
+        message="Bạn có chắc chắn muốn xoá danh mục này?"
+        onCancel={() => {
+          setConfirmDialogOpen(false);
+          setStepToDelete(null);
+        }}
+        onConfirm={confirmDeleteStep}
       />
       <LoadingBackdrop open={loading} />
       <SnackbarAlert
