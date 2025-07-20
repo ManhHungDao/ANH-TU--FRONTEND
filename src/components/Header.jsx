@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -15,25 +15,10 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import MenuItemChip from "./MenuItemChip";
 import StepManager from "./TableEdit/StepManager";
-
-const initialMenu = {
-  "Trang chủ": {
-    __steps__: [{ id: 1, title: "Bước A1", content: "## Cấp 1 - Trang chủ" }],
-    "Giới thiệu": {
-      __steps__: [
-        { id: 2, title: "Bước B1", content: "## Cấp 2 - Giới thiệu" },
-      ],
-      "Thông tin": {
-        __steps__: [
-          { id: 3, title: "Bước C1", content: "## Cấp 3 - Thông tin" },
-        ],
-      },
-    },
-  },
-};
+import { api } from "./api/api";
 
 const Header = () => {
-  const [menuData, setMenuData] = useState(initialMenu);
+  const [menuData, setMenuData] = useState({});
   const [selectedLevel1, setSelectedLevel1] = useState(null);
   const [selectedLevel2, setSelectedLevel2] = useState(null);
   const [selectedLevel3, setSelectedLevel3] = useState(null);
@@ -44,6 +29,84 @@ const Header = () => {
   const [dialogType, setDialogType] = useState("add");
   const [dialogValue, setDialogValue] = useState("");
   const [editTarget, setEditTarget] = useState(null);
+
+  useEffect(() => {
+    const fetchMenus = async () => {
+      try {
+        const level1Menus = await api.getMenus(null);
+
+        // Tạo cấu trúc menuData từ danh sách trả về
+        const structured = {};
+        for (const item of level1Menus) {
+          structured[item.title] = {
+            __steps__: [],
+            _id: item._id,
+          };
+        }
+
+        setMenuData(structured);
+      } catch (error) {
+        console.error("Lỗi khi tải menu cấp 1:", error);
+      }
+    };
+
+    fetchMenus();
+  }, []);
+
+  const handleDialogSave = async () => {
+    const newTitle = dialogValue.trim();
+    if (!newTitle) return;
+
+    try {
+      let parentId = null;
+
+      if (dialogLevel === "level2") {
+        const parentMenu = menuData[selectedLevel1];
+        parentId = parentMenu?._id;
+      }
+
+      if (dialogLevel === "level3") {
+        const parentMenu = menuData[selectedLevel1]?.[selectedLevel2];
+        parentId = parentMenu?._id;
+      }
+
+      const createdMenu = await api.createMenu({
+        title: newTitle,
+        parent: parentId, // null nếu là level1
+      });
+
+      setMenuData((prev) => {
+        const updated = { ...prev };
+
+        if (dialogLevel === "level1") {
+          updated[newTitle] = { __steps__: [], _id: createdMenu._id };
+        }
+
+        if (dialogLevel === "level2") {
+          if (!updated[selectedLevel1]) return prev;
+          updated[selectedLevel1] = {
+            ...updated[selectedLevel1],
+            [newTitle]: { __steps__: [], _id: createdMenu._id },
+          };
+        }
+
+        if (dialogLevel === "level3") {
+          if (!updated[selectedLevel1]?.[selectedLevel2]) return prev;
+          updated[selectedLevel1][selectedLevel2] = {
+            ...updated[selectedLevel1][selectedLevel2],
+            [newTitle]: { __steps__: [], _id: createdMenu._id },
+          };
+        }
+
+        return updated;
+      });
+
+      setDialogOpen(false);
+    } catch (err) {
+      console.error("Lỗi tạo menu:", err);
+      alert("Không thể tạo menu. Vui lòng thử lại.");
+    }
+  };
 
   const openDialog = (level, type, target = null, defaultValue = "") => {
     setDialogLevel(level);
@@ -60,43 +123,13 @@ const Header = () => {
   };
 
   const handleDialogSubmit = () => {
-    const value = dialogValue.trim();
-    if (!value) return;
-    const updated = { ...menuData };
+    try {
+      const value = dialogValue.trim();
+      if (!value) return;
 
-    if (dialogLevel === "level1") {
-      if (dialogType === "add") {
-        updated[value] = { __steps__: [] };
-      } else {
-        updated[value] = updated[editTarget];
-        delete updated[editTarget];
-        if (selectedLevel1 === editTarget) setSelectedLevel1(value);
-      }
-    }
-
-    if (dialogLevel === "level2" && selectedLevel1) {
-      if (dialogType === "add") {
-        updated[selectedLevel1][value] = { __steps__: [] };
-      } else {
-        updated[selectedLevel1][value] = updated[selectedLevel1][editTarget];
-        delete updated[selectedLevel1][editTarget];
-        if (selectedLevel2 === editTarget) setSelectedLevel2(value);
-      }
-    }
-
-    if (dialogLevel === "level3" && selectedLevel1 && selectedLevel2) {
-      if (dialogType === "add") {
-        updated[selectedLevel1][selectedLevel2][value] = { __steps__: [] };
-      } else {
-        updated[selectedLevel1][selectedLevel2][value] =
-          updated[selectedLevel1][selectedLevel2][editTarget];
-        delete updated[selectedLevel1][selectedLevel2][editTarget];
-        if (selectedLevel3 === editTarget) setSelectedLevel3(value);
-      }
-    }
-
-    setMenuData(updated);
-    closeDialog();
+      // Gọi API để lưu menu mới
+      handleDialogSave(); //
+    } catch (error) {}
   };
 
   const handleDelete = (level, key) => {
