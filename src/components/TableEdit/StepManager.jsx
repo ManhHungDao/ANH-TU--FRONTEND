@@ -164,8 +164,36 @@ const StepManager = ({ menuId }) => {
 
   const handleFileUpload = async (files) => {
     setLoading(true);
+
+    // Hàm loại bỏ dấu tiếng Việt & ký tự đặc biệt
+    const normalizeFileName = (file) => {
+      const removeVietnameseTones = (str) => {
+        return str
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "") // loại dấu
+          .replace(/đ/g, "d")
+          .replace(/Đ/g, "D") // thay đ
+          .replace(/[^\w\s.-]/gi, "") // loại ký tự đặc biệt ngoài chữ-số-gạch
+          .replace(/\s+/g, "_"); // khoảng trắng -> _
+      };
+
+      const normalizedName = removeVietnameseTones(file.name);
+
+      return new File([file], normalizedName, {
+        type: file.type,
+        lastModified: file.lastModified,
+      });
+    };
+
     try {
-      const result = await api.uploadFilesToStep(selectedStepId, files);
+      // Normalize tên file trước khi upload
+      const normalizedFiles = Array.from(files).map(normalizeFileName);
+
+      const result = await api.uploadFilesToStep(
+        selectedStepId,
+        normalizedFiles
+      );
+
       const newFiles = result.attachments.map((f) => ({
         ...f,
         name: f.filename,
