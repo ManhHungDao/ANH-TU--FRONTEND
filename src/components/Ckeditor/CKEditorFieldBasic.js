@@ -12,7 +12,7 @@ const CKEditorFieldBasic = ({
   errorText,
   minWidth,
 }) => {
-  const editorRef = useRef(null); // Ref để giữ CKEditor instance
+  const editorRef = useRef(null);
 
   const defaultConfig = {
     toolbar: {
@@ -77,13 +77,8 @@ const CKEditorFieldBasic = ({
       options: [9, 11, 13, "default", 17, 19, 21],
       supportAllValues: true,
     },
-    fontColor: {
-      columns: 6,
-      documentColors: 12,
-    },
-    fontBackgroundColor: {
-      documentColors: 0,
-    },
+    fontColor: { columns: 6, documentColors: 12 },
+    fontBackgroundColor: { documentColors: 0 },
     mention: {
       feeds: [
         {
@@ -93,11 +88,10 @@ const CKEditorFieldBasic = ({
         },
       ],
     },
-    htmlEmbed: {
-      showPreviews: true,
-    },
+    htmlEmbed: { showPreviews: true },
     updateSourceElementOnDestroy: true,
     allowedContent: true,
+    extraPlugins: [uploadPlugin],
   };
 
   const API_URl = "https://noteyard-backend.herokuapp.com";
@@ -129,10 +123,11 @@ const CKEditorFieldBasic = ({
       uploadAdapter(loader);
   }
 
-  // 👉 Theo dõi thay đổi `value` và cập nhật editor nếu khác nhau
+  // ⚠️ Đồng bộ nội dung mỗi khi step thay đổi
   useEffect(() => {
-    if (editorRef.current && editorRef.current.getData() !== value) {
-      editorRef.current.setData(value || "");
+    const editor = editorRef.current;
+    if (editor && editor.getData() !== value) {
+      editor.setData(value || "");
     }
   }, [value]);
 
@@ -146,16 +141,23 @@ const CKEditorFieldBasic = ({
       >
         <CKEditor
           editor={Editor}
-          data={value}
+          data={value || ""}
           config={defaultConfig}
           onReady={(editor) => {
-            editorRef.current = editor; // 👈 gán ref
+            editorRef.current = editor;
+
+            // 👉 Di chuyển toolbar lên (nếu cần)
             editor.ui
               .getEditableElement()
               .parentElement.insertBefore(
                 editor.ui.view.toolbar.element,
                 editor.ui.getEditableElement()
               );
+
+            // ✅ Gán giá trị content lúc ready
+            if (value && editor.getData() !== value) {
+              editor.setData(value);
+            }
           }}
           onChange={(event, editor) => {
             const data = editor.getData();
