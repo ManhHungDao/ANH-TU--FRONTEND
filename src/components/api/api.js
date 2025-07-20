@@ -161,7 +161,14 @@ export const uploadFilesToStep = async (stepId, files) => {
   );
   return res.data;
 };
-
+export const getStepAttachments = async (stepId) => {
+  const res = await axios.get(`${API_URL_STEP}/${stepId}`);
+  return res.data.attachments.map((f) => ({
+    ...f,
+    name: f.filename,
+    url: `${API_URL_STEP}/${stepId}/attachments/${f._id}`,
+  }));
+};
 export const api = {
   getMenus,
   getMenuById,
@@ -180,4 +187,5 @@ export const api = {
   updateStepContent,
   deleteFileFromStep,
   uploadFilesToStep,
+  getStepAttachments,
 };

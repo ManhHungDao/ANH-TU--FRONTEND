@@ -3,7 +3,7 @@ import { Box, Typography, Button, Stack } from "@mui/material";
 import { Save } from "@mui/icons-material";
 import CKEditorFieldBasic from "../Ckeditor/CKEditorFieldBasic";
 import FileAttachments from "./FileAttachments";
-
+import { api } from "../api/api";
 const StepEditor = ({
   step,
   content,
@@ -12,17 +12,22 @@ const StepEditor = ({
   onUploadFiles,
   onDeleteFile,
 }) => {
-  console.log("🚀 ~ content:", content);
-  console.log("🚀 ~ step:", step);
   const [attachments, setAttachments] = useState([]);
+  useEffect(() => {
+    const fetchAttachments = async () => {
+      if (step?._id) {
+        try {
+          const files = await api.getStepAttachments(step._id);
+          setAttachments(files);
+        } catch (err) {
+          console.error("Lỗi khi tải file đính kèm:", err);
+        }
+      } else {
+        setAttachments([]);
+      }
+    };
 
-  useEffect(() => {
-    // Luôn dùng file thật từ step
-    setAttachments(step?.files || []);
-  }, [step]);
-  useEffect(() => {
-    // Luôn dùng file thật từ step
-    setAttachments(step?.files || []);
+    fetchAttachments();
   }, [step]);
 
   const handleUpload = (files) => {

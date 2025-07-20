@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -6,19 +6,90 @@ import {
   Paper,
   Stack,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DownloadIcon from "@mui/icons-material/Download";
+import mammoth from "mammoth";
 
 const FileAttachments = ({ files, onUpload, onDelete }) => {
   const inputRef = useRef();
+  const [previewFile, setPreviewFile] = useState(null);
+  const [docxHtml, setDocxHtml] = useState("");
 
+  useEffect(() => {
+    if (
+      previewFile?.mimetype ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      fetch(previewFile.url)
+        .then((res) => res.arrayBuffer())
+        .then((buffer) =>
+          mammoth.convertToHtml({ arrayBuffer: buffer }).then((result) => {
+            setDocxHtml(result.value);
+          })
+        )
+        .catch(() => setDocxHtml("<p>Lỗi khi xem file .docx</p>"));
+    }
+  }, [previewFile]);
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       onUpload(Array.from(e.target.files));
     }
+  };
+
+  const handleClosePreview = () => {
+    setPreviewFile(null);
+  };
+
+  const renderPreviewContent = (file) => {
+    if (!file?.mimetype) return <p>Không thể hiển thị file.</p>;
+
+    // Image
+    if (file.mimetype.startsWith("image/")) {
+      return (
+        <img
+          src={file.url}
+          alt={file.name}
+          style={{ maxWidth: "100%", maxHeight: "70vh" }}
+        />
+      );
+    }
+
+    // PDF
+    if (file.mimetype === "application/pdf") {
+      return (
+        <iframe
+          src={file.url}
+          title={file.name}
+          style={{ width: "100%", height: "70vh", border: "none" }}
+        />
+      );
+    }
+
+    // DOCX Preview using mammoth
+    if (
+      file.mimetype ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      return docxHtml ? (
+        <div
+          dangerouslySetInnerHTML={{ __html: docxHtml }}
+          style={{
+            maxHeight: "90vh",
+            overflowY: "auto",
+          }}
+        />
+      ) : (
+        <p>Đang tải nội dung file .docx...</p>
+      );
+    }
+
+    return <p>Không hỗ trợ xem trước loại file này.</p>;
   };
 
   return (
@@ -76,10 +147,7 @@ const FileAttachments = ({ files, onUpload, onDelete }) => {
               <Stack direction="row" spacing={0.5}>
                 {/* View */}
                 <Tooltip title="Xem">
-                  <IconButton
-                    size="small"
-                    onClick={() => window.open(file.url, "_blank")}
-                  >
+                  <IconButton size="small" onClick={() => setPreviewFile(file)}>
                     <VisibilityIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>
@@ -107,6 +175,19 @@ const FileAttachments = ({ files, onUpload, onDelete }) => {
           ))}
         </Stack>
       )}
+
+      {/* Preview Dialog */}
+      <Dialog
+        open={!!previewFile}
+        onClose={handleClosePreview}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle>{previewFile?.name}</DialogTitle>
+        <DialogContent dividers>
+          {renderPreviewContent(previewFile)}
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };
