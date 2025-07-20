@@ -121,53 +121,116 @@ const Header = () => {
     if (!newTitle) return;
 
     try {
-      let parentId = null;
-
-      if (dialogLevel === "level2") {
-        const parentMenu = menuData[selectedLevel1];
-        parentId = parentMenu?._id;
-      }
-
-      if (dialogLevel === "level3") {
-        const parentMenu = menuData[selectedLevel1]?.[selectedLevel2];
-        parentId = parentMenu?._id;
-      }
-
-      const createdMenu = await api.createMenu({
-        title: newTitle,
-        parent: parentId, // null nếu là level1
-      });
-
-      setMenuData((prev) => {
-        const updated = { ...prev };
+      if (dialogType === "edit") {
+        // === Chỉnh sửa ===
+        let targetId = null;
+        let oldTitle = editTarget;
 
         if (dialogLevel === "level1") {
-          updated[newTitle] = { __steps__: [], _id: createdMenu._id };
+          targetId = menuData[oldTitle]?._id;
         }
 
         if (dialogLevel === "level2") {
-          if (!updated[selectedLevel1]) return prev;
-          updated[selectedLevel1] = {
-            ...updated[selectedLevel1],
-            [newTitle]: { __steps__: [], _id: createdMenu._id },
-          };
+          targetId = menuData[selectedLevel1]?.[oldTitle]?._id;
         }
 
         if (dialogLevel === "level3") {
-          if (!updated[selectedLevel1]?.[selectedLevel2]) return prev;
-          updated[selectedLevel1][selectedLevel2] = {
-            ...updated[selectedLevel1][selectedLevel2],
-            [newTitle]: { __steps__: [], _id: createdMenu._id },
-          };
+          targetId =
+            menuData[selectedLevel1]?.[selectedLevel2]?.[oldTitle]?._id;
         }
 
-        return updated;
-      });
+        if (!targetId) throw new Error("Không tìm thấy menu để sửa");
+
+        await api.updateMenuTitle(targetId, newTitle);
+
+        setMenuData((prev) => {
+          const updated = { ...(prev || {}) };
+
+          if (dialogLevel === "level1") {
+            if (!updated[oldTitle]) return prev;
+            updated[newTitle] = updated[oldTitle];
+            delete updated[oldTitle];
+          }
+
+          if (dialogLevel === "level2") {
+            if (!updated[selectedLevel1]?.[oldTitle]) return prev;
+            updated[selectedLevel1] = {
+              ...(updated[selectedLevel1] || {}),
+              [newTitle]: updated[selectedLevel1][oldTitle],
+            };
+            delete updated[selectedLevel1][oldTitle];
+          }
+
+          if (dialogLevel === "level3") {
+            if (!updated[selectedLevel1]?.[selectedLevel2]?.[oldTitle])
+              return prev;
+            updated[selectedLevel1][selectedLevel2] = {
+              ...(updated[selectedLevel1][selectedLevel2] || {}),
+              [newTitle]: updated[selectedLevel1][selectedLevel2][oldTitle],
+            };
+            delete updated[selectedLevel1][selectedLevel2][oldTitle];
+          }
+
+          return updated;
+        });
+
+        // Nếu đang chọn menu bị sửa → cập nhật tên đã chọn
+        if (dialogLevel === "level1" && selectedLevel1 === oldTitle)
+          setSelectedLevel1(newTitle);
+        if (dialogLevel === "level2" && selectedLevel2 === oldTitle)
+          setSelectedLevel2(newTitle);
+        if (dialogLevel === "level3" && selectedLevel3 === oldTitle)
+          setSelectedLevel3(newTitle);
+      } else {
+        // === Thêm mới ===
+        let parentId = null;
+
+        if (dialogLevel === "level2") {
+          const parentMenu = menuData[selectedLevel1];
+          parentId = parentMenu?._id;
+        }
+
+        if (dialogLevel === "level3") {
+          const parentMenu = menuData[selectedLevel1]?.[selectedLevel2];
+          parentId = parentMenu?._id;
+        }
+
+        const createdMenu = await api.createMenu({
+          title: newTitle,
+          parent: parentId, // null nếu là level1
+        });
+
+        setMenuData((prev) => {
+          const updated = { ...prev };
+
+          if (dialogLevel === "level1") {
+            updated[newTitle] = { __steps__: [], _id: createdMenu._id };
+          }
+
+          if (dialogLevel === "level2") {
+            if (!updated[selectedLevel1]) return prev;
+            updated[selectedLevel1] = {
+              ...updated[selectedLevel1],
+              [newTitle]: { __steps__: [], _id: createdMenu._id },
+            };
+          }
+
+          if (dialogLevel === "level3") {
+            if (!updated[selectedLevel1]?.[selectedLevel2]) return prev;
+            updated[selectedLevel1][selectedLevel2] = {
+              ...updated[selectedLevel1][selectedLevel2],
+              [newTitle]: { __steps__: [], _id: createdMenu._id },
+            };
+          }
+
+          return updated;
+        });
+      }
 
       setDialogOpen(false);
     } catch (err) {
-      console.error("Lỗi tạo menu:", err);
-      alert("Không thể tạo menu. Vui lòng thử lại.");
+      console.error("Lỗi tạo/sửa menu:", err);
+      alert("Không thể thực hiện thao tác. Vui lòng thử lại.");
     }
   };
 

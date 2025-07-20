@@ -3,6 +3,18 @@ import axios from "axios";
 const API_URL_MENU = "http://localhost:5000/api/menus";
 const API_URL_STEP = "http://localhost:5000/api/steps";
 
+// update menu theo tên
+export const updateMenuTitle = async (id, newTitle) => {
+  try {
+    const res = await axios.put(`${API_URL_MENU}/${id}/title`, {
+      title: newTitle,
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Lỗi updateMenuTitle:", err);
+    throw err;
+  }
+};
 // Lấy toàn bộ menu (kèm steps nếu backend trả về)
 export const getMenus = async (parent = null) => {
   try {
@@ -123,4 +135,5 @@ export const api = {
   updateStep,
   deleteStep,
   getMenuTreeById,
+  updateMenuTitle,
 };
