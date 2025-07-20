@@ -1,4 +1,3 @@
-// components/MenuDialog.jsx
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -18,6 +17,8 @@ const MenuDialog = ({
   setMenuData,
   selected,
   setSelected,
+  setLoading,
+  showSnackbar,
 }) => {
   const [value, setValue] = useState(config.value || "");
 
@@ -32,6 +33,8 @@ const MenuDialog = ({
     const { type, level, target } = config;
 
     try {
+      setLoading(true);
+
       if (type === "edit") {
         let id = null;
         if (level === "level1") id = menuData[target]?._id;
@@ -76,6 +79,8 @@ const MenuDialog = ({
 
           return updated;
         });
+
+        showSnackbar("Cập nhật menu thành công.");
       } else {
         // Add
         let parentId = null;
@@ -106,12 +111,16 @@ const MenuDialog = ({
           }
           return updated;
         });
+
+        showSnackbar("Thêm menu mới thành công.");
       }
 
       onClose();
     } catch (err) {
-      alert("Không thể thực hiện thao tác");
       console.error(err);
+      showSnackbar("Không thể thực hiện thao tác", "error");
+    } finally {
+      setLoading(false);
     }
   };
 

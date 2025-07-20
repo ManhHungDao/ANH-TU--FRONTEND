@@ -3,6 +3,8 @@ import { Box, Button, Breadcrumbs, Link, Typography } from "@mui/material";
 import StepManager from "./TableEdit/StepManager";
 import MenuTree from "./MenuTree";
 import MenuDialog from "./MenuDialog";
+import LoadingBackdrop from "./common/LoadingBackdrop";
+import SnackbarAlert from "./common/SnackbarAlert";
 import { api } from "./api/api";
 
 const Header = () => {
@@ -20,8 +22,20 @@ const Header = () => {
     target: null,
   });
 
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const showSnackbar = (message, severity = "success") => {
+    setSnackbar({ open: true, message, severity });
+  };
+
   useEffect(() => {
     const fetchMenus = async () => {
+      setLoading(true);
       try {
         const topMenus = await api.getMenus(null);
         const structured = {};
@@ -31,6 +45,9 @@ const Header = () => {
         setMenuData(structured);
       } catch (error) {
         console.error("Lỗi khi tải menu cấp 1:", error);
+        showSnackbar("Lỗi khi tải menu cấp 1", "error");
+      } finally {
+        setLoading(false);
       }
     };
     fetchMenus();
@@ -68,7 +85,7 @@ const Header = () => {
         onClick={() => setShowMenu((prev) => !prev)}
         sx={{ mb: 2 }}
       >
-        {showMenu ? "Ẩn quản lý menu" : "Hiện quản lý menu"}
+        {showMenu ? "Ẩn menu" : "Hiện menu"}
       </Button>
 
       <Breadcrumbs sx={{ mb: 2 }}>
@@ -123,7 +140,7 @@ const Header = () => {
       {/* Step Manager */}
       {menuId && (
         <Box mt={1}>
-          <StepManager menuId={menuId} />{" "}
+          <StepManager menuId={menuId} />
         </Box>
       )}
 
@@ -140,6 +157,17 @@ const Header = () => {
           setSelectedLevel2,
           setSelectedLevel3,
         }}
+        setLoading={setLoading}
+        showSnackbar={showSnackbar}
+      />
+
+      {/* Global UI helpers */}
+      <LoadingBackdrop open={loading} />
+      <SnackbarAlert
+        open={snackbar.open}
+        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+        message={snackbar.message}
+        severity={snackbar.severity}
       />
     </Box>
   );
