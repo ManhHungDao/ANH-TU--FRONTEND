@@ -67,8 +67,18 @@ const StepManager = ({ menuId }) => {
 
   const handleDialogSave = async (title, id, files = []) => {
     if (id) {
-      // Cập nhật tiêu đề local
-      setSteps(steps.map((s) => (s._id === id ? { ...s, title } : s)));
+      try {
+        // Gọi API cập nhật title
+        await api.updateStepTitle(id, title);
+
+        // Cập nhật local state
+        setSteps(steps.map((s) => (s._id === id ? { ...s, title } : s)));
+      } catch (err) {
+        console.error(
+          "❌ Lỗi khi đổi tên step:",
+          err.response?.data?.error || err.message
+        );
+      }
     } else {
       // Tạo mới step
       const newStepData = {

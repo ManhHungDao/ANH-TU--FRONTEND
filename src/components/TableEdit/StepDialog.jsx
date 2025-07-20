@@ -17,7 +17,7 @@ const StepDialog = ({ open, onClose, onSave, step }) => {
 
   const handleSave = () => {
     if (!title.trim()) return;
-    onSave(title, step?.id);
+    onSave(title, step?._id);
   };
   const handleClose = () => {
     onClose();
