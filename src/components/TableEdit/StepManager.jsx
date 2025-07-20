@@ -123,12 +123,18 @@ const StepManager = ({ menuId }) => {
 
   const handleFileUpload = async (files) => {
     try {
-      const uploaded = await api.uploadFilesToStep(selectedStepId, files);
+      const result = await api.uploadFilesToStep(selectedStepId, files);
+
+      const newFiles = result.attachments.map((f) => ({
+        ...f,
+        name: f.filename,
+        url: `/api/steps/${selectedStepId}/attachments/${f._id}`, // bạn cần route GET trả file
+      }));
 
       setSteps((prev) =>
         prev.map((s) =>
           s._id === selectedStepId
-            ? { ...s, files: [...(s.files || []), ...uploaded] }
+            ? { ...s, files: [...(s.files || []), ...newFiles] }
             : s
         )
       );
@@ -140,6 +146,7 @@ const StepManager = ({ menuId }) => {
   const handleReorder = (reorderedSteps) => {
     setSteps(reorderedSteps);
   };
+
   const handleDeleteFile = async (fileId) => {
     try {
       await api.deleteFileFromStep(selectedStepId, fileId);
@@ -148,7 +155,7 @@ const StepManager = ({ menuId }) => {
           s._id === selectedStepId
             ? {
                 ...s,
-                attachments: s.attachments.filter((f) => f._id !== fileId),
+                files: (s.files || []).filter((f) => f._id !== fileId),
               }
             : s
         )
@@ -175,6 +182,7 @@ const StepManager = ({ menuId }) => {
         onChangeContent={setContentDraft}
         onSaveContent={handleContentSave}
         onUploadFiles={handleFileUpload}
+        onDeleteFile={handleDeleteFile}
       />
       <StepDialog
         open={dialogOpen}

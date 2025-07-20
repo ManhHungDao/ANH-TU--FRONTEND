@@ -10,6 +10,7 @@ const StepEditor = ({
   onChangeContent,
   onSaveContent,
   onUploadFiles,
+  onDeleteFile,
 }) => {
   console.log("🚀 ~ content:", content);
   console.log("🚀 ~ step:", step);
@@ -30,8 +31,8 @@ const StepEditor = ({
   };
 
   const handleDelete = (fileToDelete) => {
-    // TODO: Gọi API xoá file nếu cần
-    setAttachments((prev) => prev.filter((f) => f.name !== fileToDelete.name));
+    if (!step?._id || !fileToDelete?._id) return;
+    onDeleteFile(fileToDelete._id);
   };
 
   if (!step) return <Typography sx={{ pl: 4 }}>Chưa chọn bước nào</Typography>;

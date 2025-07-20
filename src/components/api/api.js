@@ -135,7 +135,7 @@ export const getAttachments = async (id) => {
   return res.data;
 };
 // delete file
-export const deleteAttachment = async (stepId, fileId) => {
+export const deleteFileFromStep = async (stepId, fileId) => {
   const res = await axios.delete(
     `${API_URL_STEP}/${stepId}/attachments/${fileId}`
   );
@@ -146,6 +146,22 @@ export const updateStepContent = async (id, content) => {
   const res = await axios.put(`${API_URL_STEP}/${id}`, { content });
   return res.data;
 };
+
+export const uploadFilesToStep = async (stepId, files) => {
+  const formData = new FormData();
+  files.forEach((file) => formData.append("files", file)); // ✅ phải là "files"
+  const res = await axios.post(
+    `${API_URL_STEP}/${stepId}/attachments`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  return res.data;
+};
+
 export const api = {
   getMenus,
   getMenuById,
@@ -162,4 +178,6 @@ export const api = {
   updateStepTitle,
   getAttachments,
   updateStepContent,
+  deleteFileFromStep,
+  uploadFilesToStep,
 };
