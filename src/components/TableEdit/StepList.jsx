@@ -32,68 +32,73 @@ const StepList = ({
         <Droppable droppableId="steps">
           {(provided) => (
             <div {...provided.droppableProps} ref={provided.innerRef}>
-              {steps.map((step, index) => (
-                <Draggable
-                  key={step.id}
-                  draggableId={step.id.toString()}
-                  index={index}
-                >
-                  {(provided) => (
-                    <Box
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      sx={{
-                        px: 2,
-                        py: 1.5,
-                        mb: 1,
-                        borderRadius: 2,
-                        backgroundColor:
-                          step.id === selectedStepId ? "#e3f2fd" : "#fff",
-                        border:
-                          step.id === selectedStepId
-                            ? "2px solid #1976d2"
-                            : "1px solid #ddd",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        "&:hover .actions": { visibility: "visible" },
-                        cursor: "pointer",
-                      }}
-                      onClick={() => onSelect(step.id)}
-                    >
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Box
-                          {...provided.dragHandleProps}
-                          sx={{ mr: 1, color: "gray" }}
-                        >
-                          <DragIndicator fontSize="small" />
+              {steps.map((step, index) => {
+                const stepId = step._id || step.id;
+                if (!stepId) return null; // bỏ qua step không có id
+
+                return (
+                  <Draggable
+                    key={stepId}
+                    draggableId={stepId.toString()}
+                    index={index}
+                  >
+                    {(provided) => (
+                      <Box
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        sx={{
+                          px: 2,
+                          py: 1.5,
+                          mb: 1,
+                          borderRadius: 2,
+                          backgroundColor:
+                            stepId === selectedStepId ? "#e3f2fd" : "#fff",
+                          border:
+                            stepId === selectedStepId
+                              ? "2px solid #1976d2"
+                              : "1px solid #ddd",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          "&:hover .actions": { visibility: "visible" },
+                          cursor: "pointer",
+                        }}
+                        onClick={() => onSelect(stepId)}
+                      >
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Box
+                            {...provided.dragHandleProps}
+                            sx={{ mr: 1, color: "gray" }}
+                          >
+                            <DragIndicator fontSize="small" />
+                          </Box>
+                          <Typography>{step.title}</Typography>
                         </Box>
-                        <Typography>{step.title}</Typography>
+                        <Box className="actions" sx={{ visibility: "hidden" }}>
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEdit(step);
+                            }}
+                          >
+                            <Edit fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDelete(stepId);
+                            }}
+                          >
+                            <Delete fontSize="small" />
+                          </IconButton>
+                        </Box>
                       </Box>
-                      <Box className="actions" sx={{ visibility: "hidden" }}>
-                        <IconButton
-                          size="small"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onEdit(step);
-                          }}
-                        >
-                          <Edit fontSize="small" />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDelete(step.id);
-                          }}
-                        >
-                          <Delete fontSize="small" />
-                        </IconButton>
-                      </Box>
-                    </Box>
-                  )}
-                </Draggable>
-              ))}
+                    )}
+                  </Draggable>
+                );
+              })}
               {provided.placeholder}
             </div>
           )}

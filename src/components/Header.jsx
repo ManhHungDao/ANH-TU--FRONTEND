@@ -7,7 +7,6 @@ import { api } from "./api/api";
 
 const Header = () => {
   const [menuData, setMenuData] = useState({});
-  console.log("🚀 ~ Header ~ menuData:", menuData);
   const [selectedLevel1, setSelectedLevel1] = useState(null);
   const [selectedLevel2, setSelectedLevel2] = useState(null);
   const [selectedLevel3, setSelectedLevel3] = useState(null);
@@ -37,44 +36,28 @@ const Header = () => {
     fetchMenus();
   }, []);
 
-  const getCurrentStepContext = () => {
-    if (selectedLevel1 && selectedLevel2 && selectedLevel3)
-      return {
-        steps:
-          menuData[selectedLevel1][selectedLevel2][selectedLevel3].__steps__ ||
-          [],
-        setSteps: (newSteps) => {
-          const updated = { ...menuData };
-          updated[selectedLevel1][selectedLevel2][selectedLevel3].__steps__ =
-            newSteps;
-          setMenuData(updated);
-        },
-      };
-
-    if (selectedLevel1 && selectedLevel2)
-      return {
-        steps: menuData[selectedLevel1][selectedLevel2].__steps__ || [],
-        setSteps: (newSteps) => {
-          const updated = { ...menuData };
-          updated[selectedLevel1][selectedLevel2].__steps__ = newSteps;
-          setMenuData(updated);
-        },
-      };
-
-    if (selectedLevel1)
-      return {
-        steps: menuData[selectedLevel1].__steps__ || [],
-        setSteps: (newSteps) => {
-          const updated = { ...menuData };
-          updated[selectedLevel1].__steps__ = newSteps;
-          setMenuData(updated);
-        },
-      };
-
-    return null;
+  const getCurrentMenuId = () => {
+    try {
+      if (selectedLevel1 && selectedLevel2 && selectedLevel3) {
+        return (
+          menuData?.[selectedLevel1]?.[selectedLevel2]?.[selectedLevel3]?._id ||
+          null
+        );
+      }
+      if (selectedLevel1 && selectedLevel2) {
+        return menuData?.[selectedLevel1]?.[selectedLevel2]?._id || null;
+      }
+      if (selectedLevel1) {
+        return menuData?.[selectedLevel1]?._id || null;
+      }
+      return null;
+    } catch (err) {
+      console.error("Lỗi khi lấy menuId:", err);
+      return null;
+    }
   };
 
-  const current = getCurrentStepContext();
+  const menuId = getCurrentMenuId();
 
   return (
     <Box sx={{ bgcolor: "#f5f7fa", p: 3, minHeight: "100vh" }}>
@@ -137,10 +120,10 @@ const Header = () => {
         />
       )}
 
-      {/* Steps */}
-      {current && (
+      {/* Step Manager */}
+      {menuId && (
         <Box mt={1}>
-          <StepManager steps={current.steps} onStepsChange={current.setSteps} />
+          <StepManager menuId={menuId} />{" "}
         </Box>
       )}
 

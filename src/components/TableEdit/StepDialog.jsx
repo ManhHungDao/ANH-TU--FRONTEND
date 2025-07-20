@@ -19,9 +19,12 @@ const StepDialog = ({ open, onClose, onSave, step }) => {
     if (!title.trim()) return;
     onSave(title, step?.id);
   };
-
+  const handleClose = () => {
+    onClose();
+    setTitle("");
+  };
   return (
-    <Dialog open={open} onClose={onClose} fullWidth>
+    <Dialog open={open} onClose={handleClose} fullWidth>
       <DialogTitle>{step ? "Sửa bước" : "Thêm bước"}</DialogTitle>
       <DialogContent>
         <TextField

@@ -122,6 +122,13 @@ export const deleteStep = async (id) => {
   const res = await axios.delete(`${API_URL_STEP}/${id}`);
   return res.data;
 };
+// đổi tên step
+export const updateStepTitle = async (id, newTitle) => {
+  const res = await axios.put(`${API_URL_STEP}/${id}/title`, {
+    title: newTitle,
+  });
+  return res.data;
+};
 
 export const api = {
   getMenus,
@@ -136,4 +143,5 @@ export const api = {
   deleteStep,
   getMenuTreeById,
   updateMenuTitle,
+  updateStepTitle,
 };

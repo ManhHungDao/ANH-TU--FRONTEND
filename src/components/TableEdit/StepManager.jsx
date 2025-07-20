@@ -3,17 +3,47 @@ import { Box } from "@mui/material";
 import StepList from "./StepList";
 import StepEditor from "./StepEditor";
 import StepDialog from "./StepDialog";
+import { api } from "../api/api";
 
-const StepManager = ({ steps, onStepsChange }) => {
-  const [selectedStepId, setSelectedStepId] = useState(steps[0]?.id || null);
+const StepManager = ({ menuId }) => {
+  const [steps, setSteps] = useState([]);
+  console.log("🚀 ~ StepManager ~ steps:", steps);
+  const [selectedStepId, setSelectedStepId] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editStep, setEditStep] = useState(null);
   const [contentDraft, setContentDraft] = useState("");
 
+  // Load steps khi menuId thay đổi
   useEffect(() => {
-    const selected = steps.find((s) => s.id === selectedStepId);
-    setContentDraft(selected?.content || "");
-  }, [selectedStepId, steps]);
+    const fetchSteps = async () => {
+      try {
+        const res = await api.getSteps(menuId);
+        setSteps(res);
+        if (res.length > 0) {
+          setSelectedStepId(res[0]._id);
+          setContentDraft(res[0].content || "");
+        } else {
+          setSelectedStepId(null);
+          setContentDraft("");
+        }
+      } catch (err) {
+        console.error("Lỗi khi load steps:", err);
+      }
+    };
+
+    if (menuId) {
+      fetchSteps();
+    }
+  }, [menuId]);
+
+  // Khi thay đổi nội dung content
+  const handleContentSave = () => {
+    setSteps(
+      steps.map((s) =>
+        s._id === selectedStepId ? { ...s, content: contentDraft } : s
+      )
+    );
+  };
 
   const handleAddStep = () => {
     setEditStep(null);
@@ -26,40 +56,51 @@ const StepManager = ({ steps, onStepsChange }) => {
   };
 
   const handleDeleteStep = (id) => {
-    const filtered = steps.filter((s) => s.id !== id);
-    onStepsChange(filtered);
+    const filtered = steps.filter((s) => s._id !== id);
+    setSteps(filtered);
     if (selectedStepId === id) {
       const first = filtered[0];
-      setSelectedStepId(first?.id || null);
+      setSelectedStepId(first?._id || null);
       setContentDraft(first?.content || "");
     }
   };
 
-  const handleDialogSave = (title, id) => {
+  const handleDialogSave = async (title, id, files = []) => {
     if (id) {
-      onStepsChange(steps.map((s) => (s.id === id ? { ...s, title } : s)));
+      // Cập nhật tiêu đề local
+      setSteps(steps.map((s) => (s._id === id ? { ...s, title } : s)));
     } else {
-      const newStep = { id: Date.now(), title, content: "", files: [] };
-      onStepsChange([...steps, newStep]);
-      setSelectedStepId(newStep.id);
-      setContentDraft("");
-    }
-    setDialogOpen(false);
-  };
+      // Tạo mới step
+      const newStepData = {
+        menu: menuId,
+        title,
+        content: "",
+      };
 
-  const handleContentSave = () => {
-    onStepsChange(
-      steps.map((s) =>
-        s.id === selectedStepId ? { ...s, content: contentDraft } : s
-      )
-    );
+      try {
+        const createdStep = await api.createStep(newStepData, files);
+        const newStep = {
+          ...createdStep,
+          files: createdStep.attachments || [],
+        };
+
+        const updatedSteps = [...steps, newStep];
+        setSteps(updatedSteps);
+        setSelectedStepId(newStep._id);
+        setContentDraft("");
+      } catch (err) {
+        console.error("❌ Failed to create step:", err);
+      }
+    }
+
+    setDialogOpen(false);
   };
 
   const handleFileUpload = (e) => {
     const newFiles = Array.from(e.target.files);
-    onStepsChange(
+    setSteps(
       steps.map((s) =>
-        s.id === selectedStepId
+        s._id === selectedStepId
           ? { ...s, files: [...(s.files || []), ...newFiles] }
           : s
       )
@@ -67,7 +108,7 @@ const StepManager = ({ steps, onStepsChange }) => {
   };
 
   const handleReorder = (reorderedSteps) => {
-    onStepsChange(reorderedSteps);
+    setSteps(reorderedSteps);
   };
 
   return (
@@ -81,13 +122,13 @@ const StepManager = ({ steps, onStepsChange }) => {
         onDelete={handleDeleteStep}
         onReorder={handleReorder}
       />
-      <StepEditor
-        step={steps.find((s) => s.id === selectedStepId)}
+      {/* <StepEditor
+        step={steps.find((s) => s._id === selectedStepId)}
         content={contentDraft}
         onChangeContent={setContentDraft}
         onSaveContent={handleContentSave}
         onUploadFiles={handleFileUpload}
-      />
+      /> */}
       <StepDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}

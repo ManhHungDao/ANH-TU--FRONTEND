@@ -69,6 +69,7 @@ const MenuTree = ({
       console.error("Lỗi khi fetch menu:", err);
     }
   };
+
   const handleConfirmDelete = async () => {
     try {
       if (itemToDelete?.type === "menu") {
@@ -124,13 +125,15 @@ const MenuTree = ({
 
   const level2 =
     selectedLevel1 &&
-    Object.keys(menuData[selectedLevel1]).filter((k) => k !== "__steps__");
+    Object.keys(menuData[selectedLevel1]).filter(
+      (k) => k !== "__steps__" && k !== "_id"
+    );
 
   const level3 =
     selectedLevel1 &&
     selectedLevel2 &&
     Object.keys(menuData[selectedLevel1][selectedLevel2]).filter(
-      (k) => k !== "__steps__"
+      (k) => k !== "__steps__" && k !== "_id"
     );
 
   return (
@@ -148,28 +151,30 @@ const MenuTree = ({
             </Button>
           </Stack>
           <Stack direction="row" spacing={1} mt={1} flexWrap="wrap">
-            {Object.keys(menuData).map((key) => (
-              <MenuItemChip
-                key={key}
-                label={key}
-                selected={selectedLevel1 === key}
-                onClick={() => {
-                  setSelectedLevel1(key);
-                  setSelectedLevel2(null);
-                  setSelectedLevel3(null);
-                  fetchMenuFromApi(menuData[key]._id, "level1");
-                }}
-                onDelete={() => handleDelete("level1", key)}
-                onEdit={() =>
-                  openDialog({
-                    level: "level1",
-                    type: "edit",
-                    target: key,
-                    value: key,
-                  })
-                }
-              />
-            ))}
+            {Object.keys(menuData)
+              .filter((key) => key !== "_id")
+              .map((key) => (
+                <MenuItemChip
+                  key={key}
+                  label={key}
+                  selected={selectedLevel1 === key}
+                  onClick={() => {
+                    setSelectedLevel1(key);
+                    setSelectedLevel2(null);
+                    setSelectedLevel3(null);
+                    fetchMenuFromApi(menuData[key]._id, "level1");
+                  }}
+                  onDelete={() => handleDelete("level1", key)}
+                  onEdit={() =>
+                    openDialog({
+                      level: "level1",
+                      type: "edit",
+                      target: key,
+                      value: key,
+                    })
+                  }
+                />
+              ))}
           </Stack>
         </Box>
 
