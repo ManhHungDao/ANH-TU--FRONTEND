@@ -72,7 +72,16 @@ const StepList = ({
                           >
                             <DragIndicator fontSize="small" />
                           </Box>
-                          <Typography>{step.title}</Typography>
+                          <Typography
+                            sx={{
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              maxWidth: 160,
+                            }}
+                          >
+                            {step.title}
+                          </Typography>
                         </Box>
                         <Box className="actions" sx={{ visibility: "hidden" }}>
                           <IconButton

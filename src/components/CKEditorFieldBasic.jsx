@@ -4,21 +4,22 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import {
   DecoupledEditor,
   Alignment,
+  Autoformat,
   AutoImage,
   AutoLink,
   Autosave,
   BalloonToolbar,
-  Base64UploadAdapter,
   BlockQuote,
   Bold,
   Bookmark,
+  CloudServices,
   Essentials,
   FindAndReplace,
   FontBackgroundColor,
   FontColor,
   FontFamily,
   FontSize,
-  GeneralHtmlSupport,
+  Fullscreen,
   Heading,
   Highlight,
   HorizontalLine,
@@ -26,7 +27,6 @@ import {
   ImageCaption,
   ImageEditing,
   ImageInline,
-  ImageInsert,
   ImageInsertViaUrl,
   ImageResize,
   ImageStyle,
@@ -44,6 +44,7 @@ import {
   PageBreak,
   Paragraph,
   PasteFromOffice,
+  PlainTableOutput,
   RemoveFormat,
   SpecialCharacters,
   SpecialCharactersArrows,
@@ -68,8 +69,8 @@ import {
 } from "ckeditor5";
 import translations from "ckeditor5/translations/vi.js";
 import "ckeditor5/ckeditor5.css";
-const LICENSE_KEY =
-  "eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3NTU1NjE1OTksImp0aSI6IjI2OGFjMGRiLTEyNTAtNDAwZS05NWE3LWYzOTc4MmQ1Yjg4YyIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiLCJzaCJdLCJ3aGl0ZUxhYmVsIjp0cnVlLCJsaWNlbnNlVHlwZSI6InRyaWFsIiwiZmVhdHVyZXMiOlsiKiJdLCJ2YyI6ImNjMmRkZDVmIn0.Pb56FKj31W5xRcHt5RJJWJ2jNBWONxprlMFyJ8Q_a545LQtBVbngfppHtjxZi_TTOfitoqobEhO15SM3NMRa6A";
+import "./style.scss";
+const LICENSE_KEY = "GPL"; // Thay bằng key thật nếu cần
 
 const CKEditorFieldBasic = ({ value, onChange }) => {
   const editorRef = useRef();
@@ -101,8 +102,6 @@ const CKEditorFieldBasic = ({ value, onChange }) => {
               "undo",
               "redo",
               "|",
-              "findAndReplace",
-              "|",
               "heading",
               "|",
               "fontSize",
@@ -113,18 +112,8 @@ const CKEditorFieldBasic = ({ value, onChange }) => {
               "bold",
               "italic",
               "underline",
-              "strikethrough",
-              "subscript",
-              "superscript",
-              "removeFormat",
               "|",
-              "specialCharacters",
-              "horizontalLine",
-              // "pageBreak",
               "link",
-              // "bookmark",
-              "insertImage",
-              // "insertImageViaUrl",
               "insertTable",
               "insertTableLayout",
               "highlight",
@@ -142,21 +131,22 @@ const CKEditorFieldBasic = ({ value, onChange }) => {
           },
           plugins: [
             Alignment,
+            Autoformat,
             AutoImage,
             AutoLink,
             Autosave,
             BalloonToolbar,
-            Base64UploadAdapter,
             BlockQuote,
             Bold,
             Bookmark,
+            CloudServices,
             Essentials,
             FindAndReplace,
             FontBackgroundColor,
             FontColor,
             FontFamily,
             FontSize,
-            GeneralHtmlSupport,
+            Fullscreen,
             Heading,
             Highlight,
             HorizontalLine,
@@ -164,7 +154,6 @@ const CKEditorFieldBasic = ({ value, onChange }) => {
             ImageCaption,
             ImageEditing,
             ImageInline,
-            ImageInsert,
             ImageInsertViaUrl,
             ImageResize,
             ImageStyle,
@@ -182,6 +171,7 @@ const CKEditorFieldBasic = ({ value, onChange }) => {
             PageBreak,
             Paragraph,
             PasteFromOffice,
+            PlainTableOutput,
             RemoveFormat,
             SpecialCharacters,
             SpecialCharactersArrows,
@@ -209,7 +199,6 @@ const CKEditorFieldBasic = ({ value, onChange }) => {
             "italic",
             "|",
             "link",
-            "insertImage",
             "|",
             "bulletedList",
             "numberedList",
@@ -220,6 +209,15 @@ const CKEditorFieldBasic = ({ value, onChange }) => {
           fontSize: {
             options: [10, 12, 14, "default", 18, 20, 22],
             supportAllValues: true,
+          },
+          fullscreen: {
+            onEnterCallback: (container) =>
+              container.classList.add(
+                "editor-container",
+                "editor-container_document-editor",
+                "editor-container_include-fullscreen",
+                "main-container"
+              ),
           },
           heading: {
             options: [
@@ -266,16 +264,6 @@ const CKEditorFieldBasic = ({ value, onChange }) => {
               },
             ],
           },
-          htmlSupport: {
-            allow: [
-              {
-                name: /^.*$/,
-                styles: true,
-                attributes: true,
-                classes: true,
-              },
-            ],
-          },
           image: {
             toolbar: [
               "toggleImageCaption",
@@ -290,27 +278,7 @@ const CKEditorFieldBasic = ({ value, onChange }) => {
           },
           language: "vi",
           licenseKey: LICENSE_KEY,
-          link: {
-            addTargetToExternalLinks: true,
-            defaultProtocol: "https://",
-            decorators: {
-              toggleDownloadable: {
-                mode: "manual",
-                label: "Downloadable",
-                attributes: {
-                  download: "file",
-                },
-              },
-            },
-          },
-          list: {
-            properties: {
-              styles: true,
-              startIndex: true,
-              reversed: true,
-            },
-          },
-          placeholder: "Type or paste your content here!",
+          placeholder: "Nhập nội dung bước...",
           table: {
             contentToolbar: [
               "tableColumn",
