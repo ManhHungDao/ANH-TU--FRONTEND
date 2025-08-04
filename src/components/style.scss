@@ -1,30 +1,8 @@
-/*
- * General styles
- */
-body,
-html {
-  background-image: "#fff";
-  background-repeat: no-repeat;
-  background-size: cover;
-  font-family: $fontmain;
-  font-size: $base-size - 2px;
-  height: 100vh;
-  // overflow: hidden;
-}
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
-.content-container {
-  .title {
-    text-align: center;
-    text-transform: uppercase;
-    font-weight: bold;
-    font-size: $base-size + 4px;
-    margin-top: 15px;
-    color: $colormain;
-  }
-  .content {
-    margin: 15px 30px;
-    box-shadow: 2px 2px 4px 0 $box-shadow-color;
-    -webkit-box-shadow: 2px 2px 4px 0 $box-shadow-color;
+@media print {
+  body {
+    margin: 0 !important;
   }
 }
 
@@ -51,6 +29,7 @@ html {
 
 .editor-container_document-editor .editor-container__toolbar {
   display: flex;
+  flex-wrap: wrap; /* Cho phép toolbar xuống dòng */
   position: relative;
   box-shadow: 0 2px 3px hsla(0, 0%, 0%, 0.078);
 }
@@ -58,6 +37,16 @@ html {
 .editor-container_document-editor .editor-container__toolbar > .ck.ck-toolbar {
   flex-grow: 1;
   width: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+}
+
+.editor-container_document-editor
+  .editor-container__menu-bar
+  > .ck.ck-menu-bar {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
   border-top: 0;
@@ -94,6 +83,6 @@ html {
   margin-left: 72px;
   margin-right: 72px;
 }
-.editor-container .ck-content {
-  line-height: 1.5;
+.ck-toolbar__items {
+  flex-wrap: wrap !important;
 }

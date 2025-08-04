@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Button, Stack } from "@mui/material";
 import { Save } from "@mui/icons-material";
-import CKEditorFieldBasic from "../Ckeditor/CKEditorFieldBasic";
 import FileAttachments from "./FileAttachments";
 import { api } from "../api/api";
+import CKEditorFieldBasic from "../CKEditorFieldBasic";
 
 const StepEditor = ({
   step,
